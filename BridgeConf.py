@@ -41,7 +41,7 @@ class ControlClass:
         # TODO: Tuning Parameters "
         self.ThreadPeriod           = 0.5
         self.Time                   = 0.5
-        self.MaxDegDispl            = 5
+        self.MaxDegDispl            = 10
         " Massimo spostamento 3D [m]"
         self.S                      = 0.02
 
@@ -49,10 +49,10 @@ class ControlClass:
         self.Tollerance             = 5e-4
         self.Eps                    = 0.5
         " Peso per smorzare la velocita' di giunto vicino alle singolarita'/limiti WS - NB massimo valore 1 "
-        self.Wq0s                   = 0.5
+        self.Wq0s                   = 0.8
 
         " IK parameters "
-        self.Dol                    = 5     # gradi di distanza da ROM
+        self.Dol                    = 3     # gradi di distanza da ROM
         self.Du                     = 1   # step to increase/decrease joint limit ramps
         self.Alpha                  = 1
         self.Alpha0                 = 1
@@ -109,7 +109,7 @@ class JoystickClass:
         self.GotoSavedPosition  = 0
         self.Alarm              = 0
         #TODO: INIT JOYSTICK
-        self.Gain               = 1.5
+        self.Gain               = 1
         self.AxisOffset         = [-0.273468017578 , -0.257843017578]
 
 
