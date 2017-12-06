@@ -378,48 +378,59 @@ class BridgeConfClass:
 
     def WriteConfFile (self):
 
-        Config = ConfigParser.ConfigParser()
-        Config.optionxform = str
-        section = 'BRIDGE'
-        Config.add_section(section)
+        print 'WriteConfFile called.'
 
-        Config.set(section, 'FileName', self.Patient.Filename)
-        Config.set(section, 'COM_J1', self.Serial.COM[0])
-        Config.set(section, 'COM_J2', self.Serial.COM[1])
-        Config.set(section, 'COM_J3', self.Serial.COM[2])
-        Config.set(section, 'COM_J4', self.Serial.COM[3])
-        Config.set(section, 'COM_J5', self.Serial.COM[4])
+        try:
+            Config = ConfigParser.ConfigParser()
+            Config.optionxform = str
+            section = 'BRIDGE'
+            Config.add_section(section)
 
-        Config.set(section, 'J1_max', self.Exo.Jmax[0])
-        Config.set(section, 'J2_max', self.Exo.Jmax[1])
-        Config.set(section, 'J3_max', self.Exo.Jmax[2])
-        Config.set(section, 'J4_max', self.Exo.Jmax[3])
-        Config.set(section, 'J5_max', self.Exo.Jmax[4])
+            Config.set(section, 'FileName', self.Patient.Filename)
+            Config.set(section, 'COM_J1', self.Serial.COM[0])
+            Config.set(section, 'COM_J2', self.Serial.COM[1])
+            Config.set(section, 'COM_J3', self.Serial.COM[2])
+            Config.set(section, 'COM_J4', self.Serial.COM[3])
+            Config.set(section, 'COM_J5', self.Serial.COM[4])
 
-        Config.set(section, 'J1_min', self.Exo.Jmin[0])
-        Config.set(section, 'J2_min', self.Exo.Jmin[1])
-        Config.set(section, 'J3_min', self.Exo.Jmin[2])
-        Config.set(section, 'J4_min', self.Exo.Jmin[3])
-        Config.set(section, 'J5_min', self.Exo.Jmin[4])
+            Config.set(section, 'J1_min', self.Exo.Jmin[0])
+            Config.set(section, 'J2_min', self.Exo.Jmin[1])
+            Config.set(section, 'J3_min', self.Exo.Jmin[2])
+            Config.set(section, 'J4_min', self.Exo.Jmin[3])
+            Config.set(section, 'J5_min', self.Exo.Jmin[4])
 
-        Config.set(section, 'J1_ratio', self.Exo.Jratio[0])
-        Config.set(section, 'J2_ratio', self.Exo.Jratio[1])
-        Config.set(section, 'J3_ratio', self.Exo.Jratio[2])
-        Config.set(section, 'J4_ratio', self.Exo.Jratio[3])
-        Config.set(section, 'J5_ratio', self.Exo.Jratio[4])
+            Config.set(section, 'J1_max', self.Exo.Jmax[0])
+            Config.set(section, 'J2_max', self.Exo.Jmax[1])
+            Config.set(section, 'J3_max', self.Exo.Jmax[2])
+            Config.set(section, 'J4_max', self.Exo.Jmax[3])
+            Config.set(section, 'J5_max', self.Exo.Jmax[4])
 
-        Config.set(section, 'J1_offset', self.Exo.Joffset[0])
-        Config.set(section, 'J2_offset', self.Exo.Joffset[1])
-        Config.set(section, 'J3_offset', self.Exo.Joffset[2])
-        Config.set(section, 'J4_offset', self.Exo.Joffset[3])
-        Config.set(section, 'J5_offset', self.Exo.Joffset[4])
+            Config.set(section, 'J1_ratio', self.Exo.Jratio[0])
+            Config.set(section, 'J2_ratio', self.Exo.Jratio[1])
+            Config.set(section, 'J3_ratio', self.Exo.Jratio[2])
+            Config.set(section, 'J4_ratio', self.Exo.Jratio[3])
+            Config.set(section, 'J5_ratio', self.Exo.Jratio[4])
 
-        cfgfile = open(self.exo_file,'w')
-        Config.write(cfgfile)
-        cfgfile.close()
+            Config.set(section, 'J1_offset', self.Exo.Joffset[0])
+            Config.set(section, 'J2_offset', self.Exo.Joffset[1])
+            Config.set(section, 'J3_offset', self.Exo.Joffset[2])
+            Config.set(section, 'J4_offset', self.Exo.Joffset[3])
+            Config.set(section, 'J5_offset', self.Exo.Joffset[4])
+
+            cfgfile = open(self.exo_file,'w')
+            Config.write(cfgfile)
+            cfgfile.close()
+            return True
+        except Exception, e:
+            print '# Error: couldn\'t save exoskeleton configuration | ' + str(e)
+            return False
+
 
 
     def SavePatient (self, Filename, Patient):
+
+        print 'SavePatient called.'
+
         try:
             Config = ConfigParser.ConfigParser()
             Config.optionxform = str
