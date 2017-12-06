@@ -224,6 +224,8 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
     def UpdateInputInfo (self, msg):
 
+        self.inputDescription_lbl.SetLabel(str(self.Conf.Patient.Input))
+
         if not self.Bridge.Joystick.Mode:
             self.JoystickModeA_lbl.SetBackgroundColour((57,232,149))
             self.JoystickModeB_lbl.SetBackgroundColour((242,255,242))
@@ -250,6 +252,8 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         self.P0_Y_lbl.SetLabel("%.2f" % self.Coord.p0[1])
         self.P0_Z_lbl.SetLabel("%.2f" % self.Coord.p0[2])
         self.P0_PS_lbl.SetLabel("%.2f" % self.Coord.p0[3])
+
+
 
     def animate(self, i):
 
@@ -292,7 +296,8 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
     def BridgeInitialization(self):
 
-        print 'Bridge Init'
+        print 'BridgeInitialization called.'
+
         " Joints Init "
         for i in range(0, self.Bridge.JointsNum):
             self.Bridge.Joints[i]   = Joint(i+1,
@@ -305,7 +310,8 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         self.Bridge.Patient         = self.Conf.Patient
         self.Bridge.Control.Input   = self.Bridge.Patient.Input
 
-        " Define control thread "
+        " Define Threads "
+
         self.Bridge.ControlThread = Thread_ControlClass("ControlThread", self.Bridge, self.Coord, self.Conf)
         self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord)
 
@@ -463,9 +469,11 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
             self.disconnect_butt.Enable()
 
             self.UpdateControlInfo(None)
+            self.UpdateInputInfo(None)
 
             " Update statubar "
             self.statusbar.SetStatusText('Connected', 0)
+
 
         else:
 

@@ -70,7 +70,7 @@ class BridgeWin ( wx.Frame ):
 
 		bSizer2311112.Add( self.m_staticText62, 0, wx.ALL, 5 )
 
-		self.inputDescription_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Joystick", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
+		self.inputDescription_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"None", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
 		self.inputDescription_lbl.Wrap( -1 )
 		self.inputDescription_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 93, 90, False, wx.EmptyString ) )
 
