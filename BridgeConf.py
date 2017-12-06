@@ -45,7 +45,7 @@ class ControlClass:
         " Massimo spostamento 3D [m]"
         self.S                      = 0.02
 
-        " Tolleranza sull'errore cartesiano nella cinematica inversa "
+        " Tollerance sull'errore cartesiano nella cinematica inversa "
         self.Tollerance             = 5e-4
         self.Eps                    = 0.5
         " Peso per smorzare la velocita' di giunto vicino alle singolarita'/limiti WS - NB massimo valore 1 "
