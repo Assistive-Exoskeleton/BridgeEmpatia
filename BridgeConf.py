@@ -16,8 +16,6 @@ SPEED_CTRL          = 7
 POS_CTRL            = 8
 
 
-
-
 class BridgeClass:
     def __init__(self):
         self.JointsNum              = 4
@@ -33,13 +31,14 @@ class BridgeClass:
 
 class ControlClass:
     def __init__(self):
+
         self.Status                 = IDLE
         self.InputList              = ["Joystick", "Visual", "Vocal"]
         self.Input                  = ""
         self.Listen = 0
         self.FIRST_RUN = False
 
-        # TODO "
+        # TODO: Tuning Parameters "
         self.ThreadPeriod           = 0.5
         self.Time                   = 0.5
         self.MaxDegDispl            = 5
@@ -53,15 +52,15 @@ class ControlClass:
         self.Wq0s                   = 0.2
 
         " IK parameters "
-        self.Dol                    = 5 # gradi di distanza da ROM
-        self.Du                     = 1 # step to increase/decrease joint limit ramps
+        self.Dol                    = 5     # gradi di distanza da ROM
+        self.Du                     = 0.5   # step to increase/decrease joint limit ramps
         self.Alpha                  = 1
         self.Alpha0                 = 1
         self.IterMax                = 2000
-        self.Threshold              = 3 # deg di tolleranza
+        self.Threshold              = 3     # deg di tolleranza
 
-        " Flag per limitare velocità "
-        self.BoundedJv              = [False, False, False, False, False]
+        # " Flag per limitare velocità "
+        # self.BoundedJv              = [False, False, False, False, False]
 
         " ############# "
         " VOCAL CONTROL "

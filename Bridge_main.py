@@ -103,9 +103,9 @@ class ChildFrame(BRIDGE_GUI.BridgeTerminal):
         BRIDGE_GUI.BridgeTerminal.__init__(self, parent)
 
 
-#############
-# GUI CLASS #
-#############
+" ############# "
+" # GUI CLASS # "
+" ############# "
 
 class MainWindow(BRIDGE_GUI.BridgeWin):
     def __init__(self, parent):

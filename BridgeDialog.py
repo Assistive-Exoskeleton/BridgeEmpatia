@@ -296,6 +296,7 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
 
 
     def load_command (self,event):
+
         path = os.path.dirname(os.path.realpath(sys.argv[0]))
         # otherwise ask the user what new file to open
         dlg = wx.FileDialog(self, "Choose a File:", wildcard="INI files (*.ini)|*.ini", defaultDir=path, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
