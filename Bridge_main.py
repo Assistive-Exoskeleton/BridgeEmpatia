@@ -590,6 +590,8 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         " Get active threads "
         threads_list            = threading.enumerate()
         print threads_list
+        inputThread_running = False
+        controlThread_running = False
 
         " Set control status "
         self.Bridge.Control.Status = POS_CTRL
@@ -604,6 +606,31 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
                 if not "JointUpdateThread"+str(i) in threads_list:
                     print 'JointUpdateThread: ', i
                     self.Bridge.JointUpdateThreads[i].start()
+
+        inputThread_running = False
+        controlThread_running = False
+
+        self.Bridge.ControlThread = Thread_ControlClass("ControlThread", self.Bridge, self.Coord, self.Conf)
+        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord)
+
+
+        for i in range(0, len(threads_list)):
+            th = threads_list[i]
+            if th.name == "ControlThread":
+                print '# Warning: ControlThread already running.'
+                controlThread_running = True
+
+            if th.name == "InputThread":
+                print '# Warning: InputThread already running.'
+                inputThread_running = True
+
+
+        " Run InputThread "
+        if not inputThread_running:
+            self.Bridge.InputThread.start()
+
+        if not controlThread_running:
+            self.Bridge.ControlThread.start()
 
         '''
         " TODO: da rendere pitonico (ciclo for) "
@@ -639,6 +666,8 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         " Kill all the threads except MainThread and ControlThread"
 
         threads_list= threading.enumerate()
+        print threads_list
+
         try:
             for i in range(0, len(threads_list)):
                 th = threads_list[i]
