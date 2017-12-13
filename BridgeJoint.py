@@ -500,7 +500,7 @@ class Joint:
 class Thread_JointInitClass(threading.Thread):
 
     def __init__(self, Name, Jj):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name=Name)
         self.Name           = Name
         self.Running        = False
         self.Jn             = Jj
@@ -634,7 +634,7 @@ class Thread_JointRestPositionClass(threading.Thread):
 " ##################### "
 class Thread_JointUpdateClass(threading.Thread):
     def __init__(self, Name, Jj, Coord, Bridge):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name=Name)
         self.Name           = Name
         self.Running        = False
         self.Jn             = Jj
@@ -694,16 +694,12 @@ class Thread_JointUpdateClass(threading.Thread):
                         command = ["#1y3\r", "#1s0\r", "#1A\r"]
 
                     else:
+
+                        print ' J%d Error -> Position Control ' % self.Jn.Num
                         command = ["#1y3\r", "#1p2\r"]
 
                     while self.Jn.WriteCmd(command) == False:
-                        time.sleep(1)
-
-                    if self.Bridge.Control.Status == POS_CTRL:
                         time.sleep(0.1)
-                        #self.Position = self.Jn.GetPositionDeg()
-
-
 
                 " If the control is enabled "
                 if self.Bridge.Control.Status == SPEED_CTRL:
@@ -725,14 +721,13 @@ class Thread_JointUpdateClass(threading.Thread):
                 elapsed_time = time.clock() - t0
 
                 if elapsed_time > self.Period:
-                    print ' - JointUpdate %d: overrun' % self.Jn.Num
-
+                    print '- Warning: JointUpdate %d Overrun: %d' % (self.Jn.Num, time.clock())
                 else:
 
                     time.sleep(self.Period - elapsed_time)
 
             except Exception, e:
-                print 'Thread_JointUpdate %d failure. %s' % (self.Jn.Num, str(e))
+                print '# Error: JointUpdate %d failure. %s' % (self.Jn.Num, str(e))
 
 
         print ' - JointUpdate %d: thread exit' % self.Jn.Num

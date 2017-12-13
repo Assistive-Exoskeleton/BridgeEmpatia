@@ -54,7 +54,7 @@ class Thread_InputClass(threading.Thread):
         self.NumVarMem                  = 0
         self.vm                         = 4*[0]
 
-        self.Step_Param                 = [20, 50, 100]
+        self.Step_Param                 = [1, 5, 20]
 
         " Dizionari "
         self.instr_dict    = {'fer':'fermo', 'rip':'riposo', 'mem':'memorizza', 'dor':'dormi', 'ter':'termina'}
@@ -401,19 +401,23 @@ class Thread_InputClass(threading.Thread):
 
         with sr.Microphone() as source:
             try:
-                cmd = self.r.listen(source, timeout = 2)
+                # cmd = self.r.listen(source, timeout = 2)
+                print '+ Microphone Record called.'
+                cmd = self.r.record(source, duration=2)
                 self.Bridge.Control.Status = POS_CTRL
 
 
                 # TODO: evitare deadlock "
 
-                print '*** Ho sentito qualcosa... ***'
+
 
 
                 # metto al massimo il numero di step fatti così interrompo il ciclo
                 #ALE
                 self.Bridge.Control.VocalStepsCnt = self.Bridge.Control.VocalSteps
+
                 try:
+                    print '+ Recognize Google called.'
                     instruction = self.r.recognize_google(cmd, language = "it-IT")
                 except Exception, e:
                     instruction = 'Recognition Failed'

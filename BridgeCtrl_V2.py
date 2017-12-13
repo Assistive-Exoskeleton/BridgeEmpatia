@@ -218,8 +218,6 @@ class Thread_ControlClass(threading.Thread):
 
             self.Jpos_rad[i] = self.Coord.Jpos[i]*math.pi/180
 
-        # print self.Coord.Jpos
-
         " FK per calcolo di posizione attuale -> Elbow "
 
         # 3 Giunti
@@ -419,7 +417,7 @@ class Thread_ControlClass(threading.Thread):
                             self.Bridge.Control.Status = POS_CTRL
 
 
-                    print ' + Maximum # of iterations'
+                    print '  Maximum # of iterations'
 
             " Verifico che la soluzione trovata rispetti i limiti di giunto altrimenti li limito all'estremo più vicino --> riporto errore "
 
@@ -488,8 +486,8 @@ class Thread_ControlClass(threading.Thread):
                 else:
             '''
 
-            print 'Jv ', self.Coord.Jv
-            #for i in range(0,self.Bridge.JointsNum):
+            # print 'Jv ', self.Coord.Jv
+            # for i in range(0,self.Bridge.JointsNum):
             #   print
             #   print str(i) + ' ' + str(self.Coord.Jv[i])
 

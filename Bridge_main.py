@@ -499,21 +499,9 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
     def disconnect_command (self, event):
 
-        if not __debug__:
-            try:
-                " Close Serial ports "
-                for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
-                    if self.Conf.Serial.Connected[i]:
-                        J.ClosePort()
-                        print '+ %s Closed' % J.CommPort
-                        self.Conf.Serial.Connected[i] = False
-                    else:
-                        print '- Error: couldn\'t close %s.' % J.CommPort
-            except Exception, e:
-                print str(e)
-
         " Get active threads "
         threads_list = threading.enumerate()
+        print threads_list
 
         " Kill all the threads except MainThread "
         try:
@@ -532,6 +520,19 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
                 th.join()
 
         " Disable all buttons "
+
+        if not __debug__:
+            try:
+                " Close Serial ports "
+                for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
+                    if self.Conf.Serial.Connected[i]:
+                        J.ClosePort()
+                        print '+ %s Closed' % J.CommPort
+                        self.Conf.Serial.Connected[i] = False
+                    else:
+                        print '- Error: couldn\'t close %s.' % J.CommPort
+            except Exception, e:
+                print str(e)
 
         for item in self.button_list:
             item.Disable()
@@ -662,13 +663,13 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
     def stop_command (self, event):
 
-        if self.Bridge.Patient.Input== 'Joystick':
+        if self.Bridge.Control.Input== 'Joystick':
             if self.Bridge.Joystick.Mode == 0:
                 self.Bridge.Joystick.Mode = 1
             else:
                 self.Bridge.Joystick.Mode = 0
 
-        elif self.Bridge.Patient.Input== 'Vocal':
+        elif self.Bridge.Control.Input== 'Vocal':
 
             if self.Bridge.Control.Listen == 0:
                 self.Bridge.Control.Listen = 1
@@ -708,7 +709,7 @@ class RedirectText(object):
 # MAIN #
 ########
 
-print __debug__
+print 'Debug Mode: ',__debug__
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout
 app = wx.App(False)
 
