@@ -430,7 +430,7 @@ class Thread_ControlClass(threading.Thread):
 
                     self.Coord.Jdes[i] = J.Jmin + self.Bridge.Control.Threshold
                     print '# J%d new Jdes: %f' % (i+1, self.Coord.Jdes[i])
-                    self.Coord.Jv[i]   = 5
+                    self.Coord.Jv[i]   = 0
                     self.Bridge.Control.Status = POS_CTRL
 
                 elif self.Coord.Jdes[i] >= (J.Jmax - self.Bridge.Control.Threshold) and (self.Coord.Jdes[i] - J.Position) >= 0:
@@ -439,7 +439,7 @@ class Thread_ControlClass(threading.Thread):
 
                     self.Coord.Jdes[i] = J.Jmax - self.Bridge.Control.Threshold
                     print '# J%d new Jdes: %f' % (i + 1, self.Coord.Jdes[i])
-                    self.Coord.Jv[i]   = -5
+                    self.Coord.Jv[i]   = 0
                     self.Bridge.Control.Status = POS_CTRL
                 else:
                     JCurrentPos = []

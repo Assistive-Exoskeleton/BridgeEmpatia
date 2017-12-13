@@ -337,7 +337,7 @@ class Joint:
 
         " NON PUOI DARE RIFERIMENTO 0 "
         if speed == 0:
-            speed = 1
+
 
        
         if speed > 0:
@@ -351,11 +351,11 @@ class Joint:
 
         speed = abs(speed)
 
-        if speed < 5:
-            speed = 5
+        #if speed < 5:
+        #    speed = 5
 
         #check che sia nel range
-        if speed >= 0 and speed <= 25000:
+        if speed >= 5 and speed <= 25000:
             targetspeed = "#1o%d\r" % speed
             command = [targetdirection, targetspeed]  #target position, start movement
             print 'Speed J%d: ' % self.Num + targetspeed
