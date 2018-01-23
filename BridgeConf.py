@@ -109,7 +109,7 @@ class JoystickClass:
         self.GotoSavedPosition  = 0
         self.Alarm              = 0
         #TODO: INIT JOYSTICK
-        self.Gain               = 1
+        self.Gain               = 1.2
         self.AxisOffset         = [-0.273468017578 , -0.257843017578]
 
 
@@ -170,7 +170,7 @@ class BridgeConfClass:
         self.Exo                    = ExoClass()
 
         " Input values timer in milliseconds "
-        self.InputValuesRefreshTmr  = 200
+        self.InputValuesRefreshTmr  = 50
 
         self.FirstStart             = True
 

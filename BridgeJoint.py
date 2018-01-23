@@ -336,7 +336,7 @@ class Joint:
         #    speed = speed * -1
 
         " NON PUOI DARE RIFERIMENTO 0 "
-        if speed == 0:
+        # if speed == 0:
 
 
        

@@ -112,13 +112,21 @@ class Thread_InputClass(threading.Thread):
             if self.Bridge.Control.Input == "Joystick":
                 
                 events = pygame.event.get()
-
+                self.Bridge.Joystick.Mode = self.PyJoystick.get_button(1)
                 " If a joystick event occurred "
                 for event in events:
                     if event.type == pygame.QUIT:
                         self.terminate()
 
+                    elif event.type == pygame.JOYBUTTONDOWN:
+                        self.Bridge.Joystick.Mode                 = self.PyJoystick.get_button(1)
+
+                        self.Bridge.Joystick.SavePosition         = self.PyJoystick.get_button(2)
+                        self.Bridge.Joystick.GotoSavedPosition    = self.PyJoystick.get_button(3)
+                        self.Bridge.Joystick.Alarm                = self.PyJoystick.get_button(4)
+
                     elif event.type == pygame.JOYAXISMOTION:
+                        self.Bridge.Joystick.Mode = self.PyJoystick.get_button(1)
                         for i in range (0,2):
                             axis = (self.PyJoystick.get_axis(i) - self.Bridge.Joystick.AxisOffset[i]) * self.Bridge.Joystick.Gain
 
@@ -148,14 +156,10 @@ class Thread_InputClass(threading.Thread):
 
                         # print self.Coord.p0
 
-                    '''elif event.type == pygame.JOYBUTTONDOWN or event.type == pygame.JOYBUTTONUP:
-                        self.Bridge.Joystick.Mode                 = self.PyJoystick.get_button(1)
-                        self.Bridge.Joystick.SavePosition         = self.PyJoystick.get_button(2)
-                        self.Bridge.Joystick.GotoSavedPosition    = self.PyJoystick.get_button(3)
-                        self.Bridge.Joystick.Alarm                = self.PyJoystick.get_button(4)
+
 
                         " Update input info in main window "
-                        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)'''
+                        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
 
                 pygame.event.clear()
 
