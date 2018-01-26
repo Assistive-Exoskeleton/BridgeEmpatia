@@ -361,7 +361,7 @@ class Joint:
             print 'Speed J%d: ' % self.Num + targetspeed
             return self.WriteCmd(command)
         else:
-            print 'Velocity out of range'
+            print 'Speed J%d: out of range' % self.Num
             return False, -1
 
     def StartSpeed(self):
