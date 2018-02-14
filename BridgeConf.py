@@ -108,7 +108,7 @@ class JoystickClass:
         self.SavePosition       = 0
         self.GotoSavedPosition  = 0
         self.Alarm              = 0
-        #TODO: INIT JOYSTICK
+        #TODO: INIT JOYSTICK Dove va?
         self.Gain               = 1.2
         self.AxisOffset         = [-0.273468017578 , -0.257843017578]
 

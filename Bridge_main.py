@@ -632,28 +632,6 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         if not controlThread_running:
             self.Bridge.ControlThread.start()
 
-        '''
-        " TODO: da rendere pitonico (ciclo for) "
-        if not "JointUpdateThread0" in threads_list:
-            self.Bridge.JointUpdateThreads[0].start()
-
-        if not "JointUpdateThread1" in threads_list:
-            self.Bridge.JointUpdateThreads[1].start()
-        '''
-        ''' MARTA da ripristinare per Giunto 3
-        if not "JointUpdateThread2" in threads_list:
-            self.Bridge.JointUpdateThreads[2].start()
-        '''
-        '''
-        if not "JointUpdateThread3" in threads_list:
-            self.Bridge.JointUpdateThreads[3].start()
-        '''
-
-        ''' MARTA da ripristinare
-        if not "JointUpdateThread4" in threads_list:
-            self.Bridge.JointUpdateThreads[4].start()
-        '''
-
         " Enable Control Flag "
         self.Bridge.Status = RUNNING
         self.Bridge.Control.FIRST_RUN = True
@@ -709,7 +687,6 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         " Update input info in main window "
         wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
 
-    # TODO: verificare indentazione "
     def savePos_command (self):
         self.Coord.SavePos = [True, True, True, True, True, True]
 

@@ -49,17 +49,19 @@ class Thread_InputClass(threading.Thread):
         " Variabili per controllo 'step' "
         self.VocalSteps                 = self.Bridge.Control.VocalMaxSteps
 
-        " Variabili per la memorizzazione "
+        " Variabili per la memorizzazione " # TODO: SAVED POS
         self.var_mem                    = ['', '', '', '', '']
         self.NumVarMem                  = 0
         self.vm                         = 4*[0]
 
         self.Step_Param                 = [1, 5, 20]
+        self.Speed_Param                = []
 
         " Dizionari "
         self.instr_dict    = {'fer':'fermo', 'rip':'riposo', 'mem':'memorizza', 'dor':'dormi', 'ter':'termina'}
-        self.direction_dict = {'sin':[1,0,0,0], 'des':[-1,0,0,0], 'sal':[0,0,1,0], 'sce':[0,0,-1,0], 'ava':[0,1,0,0], 'ind':[0,-1,0,0]}
+        self.direction_dict = {'sin':[0.5,0,0,0], 'des':[-0.5,0,0,0], 'sal':[0,0,0.5,0], 'sce':[0,0,-0.5,0], 'ava':[0,0.5,0,0], 'ind':[0,-0.5,0,0]}
         self.step_dict      = {'spostamento picc': self.Step_Param[0], 'spostamento medi': self.Step_Param[1], 'spostamento gran': self.Step_Param[2]}
+        self.speed_dict = {'velocità picc': self.Step_Param[0], 'velocità medi': self.Step_Param[1], 'velocità gran': self.Step_Param[2]}
 
     def run(self):
 
@@ -316,27 +318,8 @@ class Thread_InputClass(threading.Thread):
         print 'Input Thread Out'
 
     " Funzione di riconoscimento dei comandi che può essere personalizzata -> custumizzazione "
+
     def CommandRecognition(self, instr):
-
-        " instr_dict "
-        # 'fer': 'fermo'
-        # 'rip': 'riposo'
-        # 'mem': 'memorizza'
-        # 'dor': 'dormi'
-
-        " direction_dict "
-        # 'sin':[-1, 0, 0, 0]
-        # 'des':[ 1, 0, 0, 0]
-        # 'sal':[ 0, 0,-1, 0]
-        # 'sce':[ 0, 0, 1, 0]
-        # 'ava':[ 0,-1, 0, 0]
-        # 'ind':[ 0, 1, 0, 0]
-
-        " step_dict "
-        # 'spostamento picc': self.Step_Param[0]
-        # 'spostamento medi': self.Step_Param[1]
-        # 'spostamento gran': self.Step_Param[2]
-
 
         self.Coord.p0                       = [0,0,0,0]
         self.Bridge.Control.VocalStepsCnt   = 0

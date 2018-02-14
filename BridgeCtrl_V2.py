@@ -155,7 +155,7 @@ class Thread_ControlClass(threading.Thread):
 
                 t0 = time.clock()
 
-                "TODO check self.p0_check - da valutare "
+                #TODO check self.p0_check - da valutare "
                 if self.Bridge.Control.Input == 'Vocal':
 
                     if self.Bridge.Control.VocalStepsCnt == self.Bridge.Control.VocalSteps:
@@ -189,6 +189,8 @@ class Thread_ControlClass(threading.Thread):
 
         print 'Control Thread Out'
 
+    " ##################################################################################### "
+
 
     def MartaCtrl(self):
 
@@ -205,6 +207,7 @@ class Thread_ControlClass(threading.Thread):
 
         self.ul                 = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0])
         self.dl                 = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0])
+        #TODO: ?
         self.change_dir_count   = [0]*5
         self.p0_check           = [0]*4
 
@@ -265,6 +268,7 @@ class Thread_ControlClass(threading.Thread):
         self.dq_prev = numpy.array([0.0, 0.0, 0.0, 0.0])
 
         # TODO: check input movimento nel thread gestione input "
+
         if self.WS_is_gay and (abs(self.Coord.p0[0]) > 0 or abs(self.Coord.p0[1]) > 0 or abs(self.Coord.p0[2]) > 0 or abs(self.Coord.p0[3]) > 0):
             
             dp = self.Coord.EndEff_des[0:3]-self.temp_EndEff_current[0:3]
@@ -494,6 +498,7 @@ class Thread_ControlClass(threading.Thread):
 
 
             # TODO: vericare che con Jv = 1 passo in ctrl posizione - chi lo decide? Update dei joints?"
+
             for i in range(0,self.Bridge.JointsNum):
                 if abs(self.Coord.Jv[i]) <= 5/360:
                     self.Bridge.Control.Status = POS_CTRL

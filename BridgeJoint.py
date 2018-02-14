@@ -331,6 +331,7 @@ class Joint:
     def SetMaxSpeedHz(self, speed):
 
         # TODO: check array [1 1 -1 1 1] "
+        # TODO: check roba
 
         # if self.Num == 3:
         #    speed = speed * -1
@@ -361,7 +362,7 @@ class Joint:
             print 'Speed J%d: ' % self.Num + targetspeed
             return self.WriteCmd(command)
         else:
-            print 'Speed J%d: out of range' % self.Num
+            print 'Speed J%d: out of range: %d' % self.Num , speed
             return False, -1
 
     def StartSpeed(self):
