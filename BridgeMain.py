@@ -686,7 +686,6 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
         " Update input info in main window "
         wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
-
     def savePos_command (self):
         self.Coord.SavePos = [True, True, True, True, True, True]
 
