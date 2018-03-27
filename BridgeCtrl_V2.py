@@ -32,9 +32,9 @@ global file_elbow
 file_elbow = []
 
 class Thread_ControlClass(threading.Thread):
-    def __init__(self, Name, Bridge, Coord, Conf, CheckWs = False):
+    def __init__(self, Name, Bridge, Coord, Conf, CheckWs=False):
 
-        threading.Thread.__init__(self, name = Name)
+        threading.Thread.__init__(self, name=Name)
         self.Running            = False
         self.Name               = Name
         self.Coord              = Coord
@@ -67,7 +67,7 @@ class Thread_ControlClass(threading.Thread):
                 self.Bridge.JointInitThreads[1].start()
 
                 " Wait for the joint to get to the home position "
-                while self.Bridge.Joints[1].Homed == False:
+                while self.Bridge.Joints[1].Homed is False:
                     " Keep escape chance "
                     if not self.Running:
                         break
@@ -87,7 +87,7 @@ class Thread_ControlClass(threading.Thread):
                 " MARTA: da ripristinare per giunto 5 "
                 " MARTA: da ripristinare per giunto 3 "
                 # while self.Bridge.Joints[0].Homed == False or self.Bridge.Joints[1].Homed == False or self.Bridge.Joints[2].Homed == False or self.Bridge.Joints[3].Homed == False or self.Bridge.Joints[4].Homed == False:
-                while self.Bridge.Joints[0].Homed == False or self.Bridge.Joints[1].Homed == False or self.Bridge.Joints[2].Homed == False or self.Bridge.Joints[3].Homed == False:
+                while self.Bridge.Joints[0].Homed is False or self.Bridge.Joints[1].Homed == False or self.Bridge.Joints[2].Homed == False or self.Bridge.Joints[3].Homed == False:
                 # while self.Bridge.Joints[0].Homed == False or self.Bridge.Joints[1].Homed == False or self.Bridge.Joints[2].Homed == False:
                     " Keep escape chance "
                     if not self.Running:
