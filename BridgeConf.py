@@ -28,12 +28,12 @@ class BridgeClass:
         self.Patient                = PatientClass()
         self.Joystick               = JoystickClass()
         self.Status                 = IDLE
+        self.InputList = ["Vocal", "Visual", "Joystick"]
 
 class ControlClass:
     def __init__(self):
 
         self.Status                 = IDLE
-        self.InputList              = ["Joystick", "Visual", "Vocal"]
         self.Input                  = ""
         self.Listen = 0
         self.FIRST_RUN = False
@@ -124,15 +124,6 @@ class SerialClass:
         " Errore dovuto a un numero non sufficiente di porte seriali o configurazione mancante/sbagliata "
         self.Error          = True
 
-
-class PyGameConfClass:
-    def __init__(self):
-
-        self.size   = self.width, self.height = 320, 240
-        self.color  = 0, 0, 0
-        self.period = 0.05
-
-
 class PatientClass:
     def __init__(self):
         self.Name           = ''
@@ -161,10 +152,10 @@ class ExoClass:
 
 
 class BridgeConfClass:
-    def __init__(self):
+    def __init__(self,Bridge):
+        self.Bridge                 = Bridge
         self.version                = '1.0'
         self.exo_file               = 'Conf.ini'
-        self.PyGameConf             = PyGameConfClass()
         self.Serial                 = SerialClass()
         self.Patient                = PatientClass()
         self.Exo                    = ExoClass()
@@ -179,8 +170,11 @@ class BridgeConfClass:
         self.w_plot_joy             = 0
         self.h_plot_joy             = 0
 
-        self.ReadConfFile()
+
+        self.ReadConfFile(self.Bridge)
+
         self.ReadPatientFile(self.Patient.Filename)
+        print '* Reading Patient File ...'
 
         '''
         print self.Exo.Jmin
@@ -189,13 +183,16 @@ class BridgeConfClass:
         print self.Exo.Joffset
         '''
 
-    def ReadConfFile (self):
+    def ReadConfFile (self,Bridge):
+        self.Bridge = Bridge
+        print '* Reading Configuration File ...'
         try:
             Config = ConfigParser.ConfigParser()
             Config.read(self.exo_file)
             section = Config.sections()
 
             self.Patient.Filename      = Config.get(section[0],"FileName")
+            self.Bridge.InputList     = Config.get(section[0],"HMI").split(" ")
             self.Serial.COM[0]         = Config.get(section[0],"COM_J1")
             self.Serial.COM[1]         = Config.get(section[0],"COM_J2")
             self.Serial.COM[2]         = Config.get(section[0],"COM_J3")

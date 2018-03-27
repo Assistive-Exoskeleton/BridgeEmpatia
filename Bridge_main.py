@@ -114,7 +114,7 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
         # Define bridge configurations
         self.Bridge = BridgeClass()
-        self.Conf   = BridgeConfClass()
+        self.Conf   = BridgeConfClass(self.Bridge)
         self.Coord  = BridgeCoordClass()
 
         " Initialize plots "
@@ -308,7 +308,9 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
         " Copy patient to Bridge "
         self.Bridge.Patient         = self.Conf.Patient
-        self.Bridge.Control.Input   = self.Bridge.Patient.Input
+        self.Bridge.Control.Input   = 'Vocal' #["Joystick", "Vocal"]
+        #self.Bridge.Patient.Input
+
 
         " Define Threads "
 
@@ -358,6 +360,7 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
     " ################## "
     " #### COMMANDS #### "
     " ################## "
+
     def connect_command(self, event):
 
         " Verifico che le il file paziente sia stato caricato "
@@ -380,32 +383,49 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         " Init Joints and threads "
         if not self.BridgeInitialization():
             " If BridgeInitialization() fails, return with error dialog"
-            dialog = DialogError(self, "Bridge initialization failed.")
+            dialog = DialogError(self, "Error: Bridge initialization failed.")
             dialog.ShowModal()
             return
 
-        " Joystick Inizialization"
-        if self.Bridge.Control.Input == "Joystick":
-            try:
-                print 'Init Joystick'
-                " Init pygame "
-                pygame.init()
+        " Init Human-Machine Interfaces"
 
-                " Count available joysticks "
-                if pygame.joystick.get_count() == 0:
-                    dialog = DialogError(self, "Joystick missing.")
+        for i in range(len(self.Bridge.InputList)):
+            if self.Bridge.InputList[i] == 'Joystick':
+
+                try:
+                    print '+ Joystick Interface'
+                    " Init pygame "
+                    pygame.init()
+
+                    " Count available joysticks "
+                    if pygame.joystick.get_count() == 0:
+                        print '# Warning: Joystick missing'
+                        dialog = DialogError(self, "Joystick missing")
+                        dialog.ShowModal()
+                        return
+
+                    " Init Joystick "
+                    pygame.joystick.init()
+                    pygame.joystick.Joystick(0)
+
+
+                except Exception, e:
+
+                    print '# Error: Pygame initialization failed | ' + str(e)
+                    dialog = DialogError(self, "Error: Pygame initialization failed")
                     dialog.ShowModal()
                     return
 
-                " Init Joystick "
-                pygame.joystick.init()
-                pygame.joystick.Joystick(0)
-
-
-            except:
-                dialog = DialogError(self, "Error: Pygame init failed.")
+            elif self.Bridge.InputList[i] == 'Vocal':
+                print '+ Vocal Interface'
+            elif self.Bridge.InputList[i] == 'Visual':
+                print '+ Visual Interface'
+            else:
+                print '# Error: Not implemented interface: ' + self.Bridge.InputList[i]
+                dialog = DialogError(self, "Error: Not implemented interface")
                 dialog.ShowModal()
-                return
+
+
 
         if not __debug__:
 
