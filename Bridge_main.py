@@ -38,9 +38,6 @@ from matplotlib import cm
 import scipy.io as spio
 import winsound
 
-# TODO: sistemare audio
-# audio_file = "/Users/AlessandraCalcagno/Desktop/Tesi/Vocale/"
-
 " ############## "
 " #PLOT 3D EXO # "
 " ############## "
@@ -165,12 +162,6 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
         #self.UpdateControlInfo(None)
 
-        '''
-        "Redirect output to ctrl text "
-        redir      = RedirectText(self.child.show_terminal)
-        sys.stdout = redir
-        '''
-
         " Create timer function - Update input values "
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.UpdateInputValues, self.timer)
@@ -241,7 +232,6 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
             self.JoystickModeA_lbl.SetBackgroundColour((242,255,242))
             self.JoystickModeB_lbl.SetBackgroundColour((57,232,149))
 
-
         if self.Bridge.Joystick.SavePosition:
             self.JoystickSavePos_lbl.SetBackgroundColour((57,232,149))
         else:
@@ -253,7 +243,8 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
             self.JoystickRecallPos_lbl.SetBackgroundColour((242,255,242))
 
         " Force win refresh (background issue) "
-        # self.Refresh()
+        # TODO: Is this necessary?
+        self.Refresh()
 
     def UpdateInputValues (self, msg):
         self.P0_X_lbl.SetLabel("%.2f" % self.Coord.p0[0])
@@ -316,8 +307,8 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
         " Copy patient to Bridge "
         self.Bridge.Patient         = self.Conf.Patient
-        self.Bridge.Control.Input   = 'Vocal' #["Joystick", "Vocal"]
-        #self.Bridge.Patient.Input
+        # self.Bridge.Control.Input   = 'Vocal' #["Joystick", "Vocal"]
+        # self.Bridge.Patient.Input
 
 
         " Define Threads "
@@ -667,11 +658,9 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
             if self.Bridge.Control.Listen == 0:
                 self.Bridge.Control.Listen = 1
 
-
-
-
         " Update input info in main window "
         wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
+
     def savePos_command (self):
         self.Coord.SavePos = [True, True, True, True, True, True]
 

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from serial import *
 import math
 from numpy.linalg import inv
 import math
@@ -687,10 +686,8 @@ class Thread_JointUpdateClass(threading.Thread):
                     elif self.Bridge.Control.Status == POS_CTRL:
 
                         print ' J%d Position Control ' % self.Jn.Num
-
                         # "Position Control - Absolute Position"
                         # command = ["#1y1\r", "#1p2\r", "#1A\r"]
-
                         "Position Control - Relative Position"
                         command = ["#1y3\r", "#1s0\r", "#1A\r"]
 

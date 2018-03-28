@@ -35,7 +35,7 @@ class ControlClass:
     def __init__(self):
 
         self.Status                 = IDLE
-        self.Input                  = ""
+        self.Input                  = "None"
         self.Listen = 0
         self.FIRST_RUN = False
 
@@ -105,13 +105,15 @@ class BridgeCoordClass:
 class JoystickClass:
     def __init__(self):
         " 0: Normale - 1: Advanced "
-        self.Mode               = 0
+        self.Mode               = 1
+        self.LastButtonStatus   = 0
         self.SavePosition       = 0
         self.GotoSavedPosition  = 0
         self.Alarm              = 0
         #TODO: INIT JOYSTICK Dove va?
         self.Gain               = 1.2
         self.AxisOffset         = [-0.273468017578, -0.257843017578]
+
 
 
 class SerialClass:
@@ -235,7 +237,7 @@ class BridgeConfClass:
             section = Config.sections()
 
             self.Patient.Name               = Config.get(section[0],"Name")
-            self.Patient.Input              = Config.get(section[0],"Input")
+            #self.Patient.Input              = Config.get(section[0],"Input")
             self.Patient.Jmin[0]            = int(Config.get(section[0],"J1_min"))
             self.Patient.Jmin[1]            = int(Config.get(section[0],"J2_min"))
             self.Patient.Jmin[2]            = int(Config.get(section[0],"J3_min"))
@@ -296,7 +298,7 @@ class BridgeConfClass:
             section     = Config.sections()
 
             Patient.Name               = Config.get(section[0],"Name")
-            Patient.Input              = Config.get(section[0],"Input")
+            #Patient.Input              = Config.get(section[0],"Input")
             Patient.Jmin[0]            = int(Config.get(section[0],"J1_min"))
             Patient.Jmin[1]            = int(Config.get(section[0],"J2_min"))
             Patient.Jmin[2]            = int(Config.get(section[0],"J3_min"))
@@ -385,6 +387,7 @@ class BridgeConfClass:
             Config.add_section(section)
 
             Config.set(section, 'FileName', self.Patient.Filename)
+            Config.set(section, 'HMI', 'Joystick Vocal')
             Config.set(section, 'COM_J1', self.Serial.COM[0])
             Config.set(section, 'COM_J2', self.Serial.COM[1])
             Config.set(section, 'COM_J3', self.Serial.COM[2])
@@ -427,7 +430,7 @@ class BridgeConfClass:
 
     def SavePatient (self, Filename, Patient):
 
-        print 'SavePatient called.'
+        print '* Saving Patient Configuration File'
 
         try:
             Config = ConfigParser.ConfigParser()
@@ -436,7 +439,7 @@ class BridgeConfClass:
             Config.add_section(section)
 
             Config.set(section, 'Name', Patient.Name)
-            Config.set(section, 'Input', Patient.Input)
+            #Config.set(section, 'Input', Patient.Input)
 
             Config.set(section, 'J1_min', Patient.Jmin[0])
             Config.set(section, 'J2_min', Patient.Jmin[1])

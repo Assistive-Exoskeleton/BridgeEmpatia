@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
 
@@ -17,11 +16,9 @@ import unicodedata
 from BridgeConf     import *
 from BridgeJoint    import *
 
-from serial import *
 
+" Search available Serial Ports "
 
-
-# PORTE DISPONIBILI
 def availableSerialPort():
     suffixes = "S", "USB", "ACM", "AMA"
     nameList = ["COM"] + ["/dev/tty%s" % suffix for suffix in suffixes]
@@ -30,7 +27,7 @@ def availableSerialPort():
         for number in range(48):
             portName = "%s%s" % (name, number)
             try:
-                Serial(portName).close()
+                serial.Serial(portName).close()
                 portList.append(portName)
             except IOError:
                 pass
@@ -42,15 +39,18 @@ class DialogExoSetup(BRIDGE_GUI.Dialog_ExoSetup):
     def __init__(self,parent,Conf, Bridge):
         BRIDGE_GUI.Dialog_ExoSetup.__init__(self,parent)
 
+
+
         self.Conf   = Conf
         self.Bridge = Bridge
         self.Error  = False
-
 
         self.Jmin_entry_list        = [self.J1min_entry, self.J2min_entry, self.J3min_entry, self.J4min_entry, self.J5min_entry]
         self.Jmax_entry_list        = [self.J1max_entry, self.J2max_entry, self.J3max_entry, self.J4max_entry, self.J5max_entry]
         self.Joffset_entry_list     = [self.J1offset_entry, self.J2offset_entry, self.J3offset_entry, self.J4offset_entry, self.J5offset_entry]
         self.Jratio_entry_list      = [self.J1ratio_entry, self.J2ratio_entry, self.J3ratio_entry, self.J4ratio_entry, self.J5ratio_entry]
+
+
 
         " Motor plot choice "
         self.choice_COM_list        = [self.choice_COM_M1, self.choice_COM_M2, self.choice_COM_M3, self.choice_COM_M4, self.choice_COM_M5]
@@ -62,12 +62,14 @@ class DialogExoSetup(BRIDGE_GUI.Dialog_ExoSetup):
             " Set widget name - Index number "
             but.Name = str(i)
 
+        start = time.time()
         # Get available serial port
         self.portList = availableSerialPort()
-
+        end = time.time()
+        print end - start
 
         if len(self.portList) < 5:
-            self.error_lbl.SetLabel("ERROR: not enough serial COM (%d found)" % len(self.portList))
+            self.error_lbl.SetLabel("# ERROR: not enough serial COM (%d found)" % len(self.portList))
             self.Error = True
 
         for i, choice in zip(range(0,6), self.choice_COM_list):
@@ -81,7 +83,8 @@ class DialogExoSetup(BRIDGE_GUI.Dialog_ExoSetup):
             except:
                 choice.SetSelection(0)
 
-
+        end = time.time()
+        print end - start
 
         for i, Jmin, Jmax, Joffset, Jratio in zip(range(0,5), self.Jmin_entry_list, self.Jmax_entry_list, self.Joffset_entry_list, self.Jratio_entry_list):
             Jmin.SetValue(str(self.Conf.Exo.Jmin[i]))
@@ -89,6 +92,8 @@ class DialogExoSetup(BRIDGE_GUI.Dialog_ExoSetup):
             Joffset.SetValue(str(self.Conf.Exo.Joffset[i]))
             Jratio.SetValue(str(self.Conf.Exo.Jratio[i]))
 
+        end = time.time()
+        print end - start
 
     def ok_command(self,event):
 
@@ -203,11 +208,6 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
 
             self.ft_lbl.SetValue(str(self.Conf.Patient.FixationTime))
 
-            try:
-                self.input_choice.SetSelection(self.Bridge.InputList.index(self.Conf.Patient.Input))
-            except:
-                self.input_choice.SetSelection(0)
-
         else:
             for Jmin, Jmax, Jdef, Jrest in zip(self.Jmin_entry_list, self.Jmax_entry_list, self.Jdef_entry_list, self.Jrest_entry_list):
                 Jmin.SetValue('0')
@@ -219,9 +219,6 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
                 l.SetValue('0')
 
             self.ft_lbl.SetValue('0')
-
-
-            self.input_choice.SetSelection(0)
 
     def ok_command(self,event):
         
@@ -242,8 +239,6 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
         self.Conf.Patient.Name      = unicodedata.normalize('NFKD',self.patientName_entry.GetValue()).encode("ascii","ignore")
 
         " Save patient input "
-        self.Conf.Patient.Input     = self.Bridge.InputList[self.input_choice.GetSelection()]
-
         self.Conf.Patient.Loaded    = True
 
        
@@ -278,11 +273,6 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
 
             " get patient name "
             Patient.Name                = unicodedata.normalize('NFKD',self.patientName_entry.GetValue()).encode("ascii","ignore")
-
-
-            " Save patient input "
-            Patient.Input               = self.Bridge.InputList[self.input_choice.GetSelection()]
-            print Patient.Input
 
 
             " Save nre patient file"
@@ -322,10 +312,6 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
                 self.l3_lbl.SetValue(str(Patient.l3))
 
                 self.ft_lbl.SetValue(str(Patient.FixationTime))
-                self.input_choice.SetSelection(self.Bridge.InputList.index(Patient.Input))
-
-                self.ft_lbl.SetValue(str(Patient.FixationTime))
-
 
             except Exception, e:
                 print 'Error ' + str(e)

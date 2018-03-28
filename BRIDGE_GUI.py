@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 ###########################################################################
 ## Python code generated with wxFormBuilder (version Jun 17 2015)
@@ -1669,7 +1669,7 @@ class Dialog_ExoSetup ( wx.Dialog ):
 class Dialog_PatientSetup ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Patient Setup", pos = wx.DefaultPosition, size = wx.Size( 385,472 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BridgEmpatia - Patient Setup", pos = wx.DefaultPosition, size = wx.Size( 385,472 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
@@ -1682,7 +1682,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		bSizer90 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_staticText150 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"PATIENT", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.m_staticText150 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Patient Name", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText150.Wrap( -1 )
 		self.m_staticText150.SetMinSize( wx.Size( 100,-1 ) )
 		
@@ -1695,17 +1695,6 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		bSizer95.Add( bSizer90, 0, wx.EXPAND, 5 )
 		
 		bSizer902 = wx.BoxSizer( wx.HORIZONTAL )
-		
-		self.m_staticText1502 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"INPUT", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
-		self.m_staticText1502.Wrap( -1 )
-		self.m_staticText1502.SetMinSize( wx.Size( 100,-1 ) )
-		
-		bSizer902.Add( self.m_staticText1502, 1, wx.ALIGN_CENTER_VERTICAL, 5 )
-		
-		input_choiceChoices = [ u"Joystick", u"Vision", u"Voice" ]
-		self.input_choice = wx.Choice( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, input_choiceChoices, 0 )
-		self.input_choice.SetSelection( 0 )
-		bSizer902.Add( self.input_choice, 1, wx.ALL, 5 )
 		
 		
 		bSizer95.Add( bSizer902, 1, wx.EXPAND, 5 )

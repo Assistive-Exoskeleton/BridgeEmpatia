@@ -7,6 +7,7 @@ import math
 from BridgeConf import *
 import winsound     # Audio Feedback
 import subprocess
+from BridgeDialog import *
 
 import wx
 from wx.lib.pubsub import setuparg1
@@ -27,7 +28,6 @@ class Thread_InputClass(threading.Thread):
 
         self.PyJoystick         = None
 
-        " fermo, riposo, memorizza, dormi"
         self.VocalCmd           = None
 
 
@@ -67,13 +67,12 @@ class Thread_InputClass(threading.Thread):
 
         print '* Input Thread Run'
 
-        self.Bridge.Control.Input = self.Bridge.Patient.Input
-
         print 'Input: ' + self.Bridge.Control.Input
 
         " Human-Machine Interfaces Initialization"
 
         for i in range(len(self.Bridge.InputList)):  # InputList is defined a priori in Conf.ini (HMIs to be used)
+
             if self.Bridge.InputList[i] == 'Joystick':
 
                 try:
@@ -133,21 +132,32 @@ class Thread_InputClass(threading.Thread):
             if self.Bridge.Control.Input == "Joystick":
                 
                 events = pygame.event.get()
-                self.Bridge.Joystick.Mode = self.PyJoystick.get_button(1)
+                #
+                #
+                # self.Bridge.Joystick.Mode = self.PyJoystick.get_button(1)
                 " If a joystick event occurred "
                 for event in events:
                     if event.type == pygame.QUIT:
                         self.terminate()
 
+                    elif event.type == pygame.JOYBUTTONUP:
+                        pass
                     elif event.type == pygame.JOYBUTTONDOWN:
-                        self.Bridge.Joystick.Mode                 = self.PyJoystick.get_button(1)
+
+                        print 'Button'
+                        if self.Bridge.Joystick.Mode == 0:
+                            self.Bridge.Joystick.Mode = 1
+                            winsound.Beep(440, 500)
+                        else:
+                            self.Bridge.Joystick.Mode = 0
+                            winsound.Beep(880, 500)
 
                         self.Bridge.Joystick.SavePosition         = self.PyJoystick.get_button(2)
                         self.Bridge.Joystick.GotoSavedPosition    = self.PyJoystick.get_button(3)
                         self.Bridge.Joystick.Alarm                = self.PyJoystick.get_button(4)
 
                     elif event.type == pygame.JOYAXISMOTION:
-                        self.Bridge.Joystick.Mode = self.PyJoystick.get_button(1)
+                        #self.Bridge.Joystick.Mode = self.PyJoystick.get_button(1)
                         for i in range (0,2):
                             axis = (self.PyJoystick.get_axis(i) - self.Bridge.Joystick.AxisOffset[i]) * self.Bridge.Joystick.Gain
 
