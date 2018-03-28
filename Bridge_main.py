@@ -150,6 +150,14 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         for item in self.button_list:
             item.Disable()
 
+        input_choiceChoices = self.Bridge.InputList
+        print input_choiceChoices
+        self.input_choice.Clear()
+        self.input_choice.AppendItems(input_choiceChoices)
+        self.input_choice.SetSelection(0)
+
+
+
         Publisher.subscribe(self.UpdateJointsInfo, "UpdateJointsInfo")
         Publisher.subscribe(self.ShowDonningDialog, "ShowDonningDialog")
         Publisher.subscribe(self.UpdateControlInfo, "UpdateControlInfo")
@@ -224,7 +232,7 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
     def UpdateInputInfo (self, msg):
 
-        self.inputDescription_lbl.SetLabel(str(self.Conf.Patient.Input))
+        self.inputDescription_lbl.SetLabel(str(self.Bridge.Control.Input))
 
         if not self.Bridge.Joystick.Mode:
             self.JoystickModeA_lbl.SetBackgroundColour((57,232,149))
@@ -245,7 +253,7 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
             self.JoystickRecallPos_lbl.SetBackgroundColour((242,255,242))
 
         " Force win refresh (background issue) "
-        self.Refresh()
+        # self.Refresh()
 
     def UpdateInputValues (self, msg):
         self.P0_X_lbl.SetLabel("%.2f" % self.Coord.p0[0])
@@ -353,7 +361,7 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
     	        	self.Bridge.Joints[i].SetRange(self.Bridge.Patient.Jmin[i], self.Bridge.Patient.Jmax[i])
 
             " Update input description "
-            self.inputDescription_lbl.SetLabel(str(self.Conf.Patient.Input))
+            self.inputDescription_lbl.SetLabel(str(self.Bridge.Control.Input))
 
             self.statusbar.SetStatusText('Patient: Loaded', 2)
 
@@ -378,54 +386,11 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         else:
             self.Conf.Serial.Error = False
 
-
-
         " Init Joints and threads "
         if not self.BridgeInitialization():
-            " If BridgeInitialization() fails, return with error dialog"
             dialog = DialogError(self, "Error: Bridge initialization failed.")
             dialog.ShowModal()
             return
-
-        " Init Human-Machine Interfaces"
-
-        for i in range(len(self.Bridge.InputList)):
-            if self.Bridge.InputList[i] == 'Joystick':
-
-                try:
-                    print '+ Joystick Interface'
-                    " Init pygame "
-                    pygame.init()
-
-                    " Count available joysticks "
-                    if pygame.joystick.get_count() == 0:
-                        print '# Warning: Joystick missing'
-                        dialog = DialogError(self, "Joystick missing")
-                        dialog.ShowModal()
-                        return
-
-                    " Init Joystick "
-                    pygame.joystick.init()
-                    pygame.joystick.Joystick(0)
-
-
-                except Exception, e:
-
-                    print '# Error: Pygame initialization failed | ' + str(e)
-                    dialog = DialogError(self, "Error: Pygame initialization failed")
-                    dialog.ShowModal()
-                    return
-
-            elif self.Bridge.InputList[i] == 'Vocal':
-                print '+ Vocal Interface'
-            elif self.Bridge.InputList[i] == 'Visual':
-                print '+ Visual Interface'
-            else:
-                print '# Error: Not implemented interface: ' + self.Bridge.InputList[i]
-                dialog = DialogError(self, "Error: Not implemented interface")
-                dialog.ShowModal()
-
-
 
         if not __debug__:
 
@@ -690,14 +655,15 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
 
     def stop_command (self, event):
 
-        if self.Bridge.Control.Input== 'Joystick':
+        if self.Bridge.Control.Input == 'Joystick':
+            print '+ Joystick Button'
             if self.Bridge.Joystick.Mode == 0:
                 self.Bridge.Joystick.Mode = 1
             else:
                 self.Bridge.Joystick.Mode = 0
 
-        elif self.Bridge.Control.Input== 'Vocal':
-
+        elif self.Bridge.Control.Input == 'Vocal':
+            print '+ Vocal Button'
             if self.Bridge.Control.Listen == 0:
                 self.Bridge.Control.Listen = 1
 
@@ -719,6 +685,15 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         #if not self.Conf.Patient.Loaded:
         dialog = DialogJoint(self, int(widget.GetName()), self.Bridge.Joints[int(widget.GetName())], self.Bridge.Status)
         dialog.ShowModal()
+
+    def set_control_interface (self,event):
+
+        try:
+            self.Bridge.Control.Input = self.Bridge.InputList[self.input_choice.GetSelection()]
+            self.inputDescription_lbl.SetLabel(str(self.Bridge.Control.Input))
+        except Exception, e:
+            print "#Error: Set Control Interface failed" + e
+            return
 
 
 # STDOUTPUT REDIRECT

@@ -54,8 +54,8 @@ class Thread_InputClass(threading.Thread):
         self.NumVarMem                  = 0
         self.vm                         = 4*[0]
 
-        self.Step_Param                 = [1, 5, 20]
-        self.Speed_Param                = []
+        self.Step_Param                  = [1, 5, 20]
+        self.Speed_Param                 = []
 
         " Dizionari "
         self.instr_dict    = {'fer':'fermo', 'rip':'riposo', 'mem':'memorizza', 'dor':'dormi', 'ter':'termina'}
@@ -65,48 +65,67 @@ class Thread_InputClass(threading.Thread):
 
     def run(self):
 
-        print '+ InputThread running.'
+        print '* Input Thread Run'
 
         self.Bridge.Control.Input = self.Bridge.Patient.Input
 
         print 'Input: ' + self.Bridge.Control.Input
 
+        " Human-Machine Interfaces Initialization"
 
+        for i in range(len(self.Bridge.InputList)):  # InputList is defined a priori in Conf.ini (HMIs to be used)
+            if self.Bridge.InputList[i] == 'Joystick':
 
-        if self.Bridge.Control.Input == "Joystick":
+                try:
+                    print '+ Joystick Interface'
+                    " Init pygame "
+                    pygame.init()
 
-            try:
-                self.PyJoystick = pygame.joystick.Joystick(0)
-                self.PyJoystick.init()
-                " Update input info in main window "
-                wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
+                    " Count available joysticks "
+                    if pygame.joystick.get_count() == 0:
+                        print '# Warning: Joystick missing'
+                        dialog = DialogError(self, "Joystick missing")
+                        dialog.ShowModal()
+                        return
 
+                    " Init Joystick "
+                    pygame.display.init()
+                    pygame.joystick.init()
+                    self.PyJoystick = pygame.joystick.Joystick(0)
+                    self.PyJoystick.init()
+                    " Update input info in main window "
+                    wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
 
-            except Exception, e:
-                print '# ERROR: Init Joystick Failed ' + str(e)
-                " Update input info in main window "
-                return False
+                except Exception, e:
 
-        elif self.Bridge.Control.Input == "Vocal":
+                    print '# Error: Pygame initialization failed | ' + str(e)
+                    dialog = DialogError(self, "Error: Pygame initialization failed")
+                    dialog.ShowModal()
+                    return False
 
-            " Introduzione controllo vocale "
-            try:
-                # winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
-                # au_file = audio_file+'Jarvis.wav'
-                # return_code = subprocess.call(["afplay", au_file])
-                # self.Bip()
-                " Update input info in main window "
-                wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
+            elif self.Bridge.InputList[i] == 'Vocal':
+                print '+ Vocal Interface'
+                " Introduzione controllo vocale "
+                try:
+                    # winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
+                    # au_file = audio_file+'Jarvis.wav'
+                    # return_code = subprocess.call(["afplay", au_file])
+                    # self.Bip()
+                    " Update input info in main window "
+                    wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
 
-            except Exception, e:
-                print '# ERROR: Init Vocal failed' + str(e)
-                " Update input info in main window "
-                return False
+                except Exception, e:
+                    print '# ERROR: Init Vocal failed' + str(e)
+                    " Update input info in main window "
+                    return False
 
-        else:
-            print '# ERROR: Input Init failed'
+            elif self.Bridge.InputList[i] == 'Visual':
+                print '+ Visual Interface'
+            else:
+                print '# Error: Not implemented interface: ' + self.Bridge.InputList[i]
+                dialog = DialogError(self, "Error: Not implemented interface")
+                dialog.ShowModal()
 
-        
         self.Running = True
 
         while self.Running:

@@ -177,6 +177,7 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
 
         self.Conf                   = Conf
         self.Filename               = None
+        self.Bridge                 = Bridge
 
         self.J1min_entry.Name       = 'AA'
         self.Jmin_entry_list        = [self.J1min_entry, self.J2min_entry, self.J3min_entry, self.J4min_entry, self.J5min_entry]
@@ -185,8 +186,6 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
         self.Jrest_entry_list       = [self.J1rest_entry, self.J2rest_entry, self.J3rest_entry, self.J4rest_entry, self.J5rest_entry]
 
         self.l_entry_list           = [self.l1_lbl, self.l2_lbl, self.l3_lbl]
-
-        self.inputList              = ["Joystick", "Visual", "Vocal"]
 
         if self.Conf.Patient.Loaded:
 
@@ -205,7 +204,7 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
             self.ft_lbl.SetValue(str(self.Conf.Patient.FixationTime))
 
             try:
-                self.input_choice.SetSelection(self.inputList.index(self.Conf.Patient.Input))
+                self.input_choice.SetSelection(self.Bridge.InputList.index(self.Conf.Patient.Input))
             except:
                 self.input_choice.SetSelection(0)
 
@@ -228,10 +227,10 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
         
         for isig, Jmin, Jmax, Jdef, Jrest in zip(range(0,5), self.Jmin_entry_list, self.Jmax_entry_list, self.Jdef_entry_list, self.Jrest_entry_list):
             " Remove accents and get values "
-            self.Conf.Patient.Jmin[isig]            = int(unicodedata.normalize('NFKD',Jmin.GetValue()).encode("ascii","ignore"))
-            self.Conf.Patient.Jmax[isig]            = int(unicodedata.normalize('NFKD',Jmax.GetValue()).encode("ascii","ignore"))
-            self.Conf.Patient.Jdef[isig]            = int(unicodedata.normalize('NFKD',Jdef.GetValue()).encode("ascii","ignore"))
-            self.Conf.Patient.Jrest[isig]           = int(unicodedata.normalize('NFKD',Jrest.GetValue()).encode("ascii","ignore"))
+            self.Conf.Patient.Jmin[isig]            = float(unicodedata.normalize('NFKD',Jmin.GetValue()).encode("ascii","ignore"))
+            self.Conf.Patient.Jmax[isig]            = float(unicodedata.normalize('NFKD',Jmax.GetValue()).encode("ascii","ignore"))
+            self.Conf.Patient.Jdef[isig]            = float(unicodedata.normalize('NFKD',Jdef.GetValue()).encode("ascii","ignore"))
+            self.Conf.Patient.Jrest[isig]           = float(unicodedata.normalize('NFKD',Jrest.GetValue()).encode("ascii","ignore"))
 
         self.Conf.Patient.l1            =  float(unicodedata.normalize('NFKD',self.l1_lbl.GetValue()).encode("ascii","ignore"))
         self.Conf.Patient.l2            =  float(unicodedata.normalize('NFKD',self.l2_lbl.GetValue()).encode("ascii","ignore"))
@@ -243,7 +242,7 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
         self.Conf.Patient.Name      = unicodedata.normalize('NFKD',self.patientName_entry.GetValue()).encode("ascii","ignore")
 
         " Save patient input "
-        self.Conf.Patient.Input     = self.inputList[self.input_choice.GetSelection()]
+        self.Conf.Patient.Input     = self.Bridge.InputList[self.input_choice.GetSelection()]
 
         self.Conf.Patient.Loaded    = True
 
@@ -282,7 +281,7 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
 
 
             " Save patient input "
-            Patient.Input               = self.inputList[self.input_choice.GetSelection()]
+            Patient.Input               = self.Bridge.InputList[self.input_choice.GetSelection()]
             print Patient.Input
 
 
@@ -323,7 +322,7 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
                 self.l3_lbl.SetValue(str(Patient.l3))
 
                 self.ft_lbl.SetValue(str(Patient.FixationTime))
-                self.input_choice.SetSelection(self.inputList.index(Patient.Input))
+                self.input_choice.SetSelection(self.Bridge.InputList.index(Patient.Input))
 
                 self.ft_lbl.SetValue(str(Patient.FixationTime))
 

@@ -28,7 +28,8 @@ class BridgeClass:
         self.Patient                = PatientClass()
         self.Joystick               = JoystickClass()
         self.Status                 = IDLE
-        self.InputList = ["Vocal", "Visual", "Joystick"]
+        self.InputList = ["Joystick", "Vocal", "Visual"]
+
 
 class ControlClass:
     def __init__(self):
@@ -40,7 +41,7 @@ class ControlClass:
 
         # TODO: Tuning Parameters "
         self.ThreadPeriod           = 0.5
-        self.Time                   = 0.5
+        self.Time                   = 0.3
         self.MaxDegDispl            = 5
         " Massimo spostamento 3D [m]"
         self.S                      = 0.02
@@ -110,7 +111,7 @@ class JoystickClass:
         self.Alarm              = 0
         #TODO: INIT JOYSTICK Dove va?
         self.Gain               = 1.2
-        self.AxisOffset         = [-0.273468017578 , -0.257843017578]
+        self.AxisOffset         = [-0.273468017578, -0.257843017578]
 
 
 class SerialClass:

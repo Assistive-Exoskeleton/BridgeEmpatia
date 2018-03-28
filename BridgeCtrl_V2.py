@@ -45,11 +45,12 @@ class Thread_ControlClass(threading.Thread):
 
     def run(self):
 
-        print 'Control Thread Run'
+        print '* Control Thread Run'
 
         self.Running = True
 
         while self.Running:
+
 
 
             " ############# "
