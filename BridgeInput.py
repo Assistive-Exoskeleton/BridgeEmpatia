@@ -33,7 +33,7 @@ class Thread_InputClass(threading.Thread):
 
         " Variabili per il riconoscimento vocale "
         self.r                          = sr.Recognizer()
-        # self.r.energy_threshold         = 4000
+        #self.r.energy_threshold         = 4000
         self.r.dynamic_energy_threshold = False
 
 
@@ -105,11 +105,14 @@ class Thread_InputClass(threading.Thread):
             elif self.Bridge.InputList[i] == 'Vocal':
                 print '+ Vocal Interface'
                 " Introduzione controllo vocale "
+
                 try:
+                    with sr.Microphone() as source:
+                        self.r.adjust_for_ambient_noise(source)
                     # winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
                     # au_file = audio_file+'Jarvis.wav'
                     # return_code = subprocess.call(["afplay", au_file])
-                    # self.Bip()
+                    self.Bip()
                     " Update input info in main window "
                     wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
 
@@ -130,7 +133,9 @@ class Thread_InputClass(threading.Thread):
         while self.Running:
 
             if self.Bridge.Control.Input == "Joystick":
-                
+
+                self.Bridge.Control.FIRST_RUN = 1
+                self.VocalStatus = self.VOCAL_IDLE
                 events = pygame.event.get()
                 #
                 #
@@ -199,13 +204,14 @@ class Thread_InputClass(threading.Thread):
                 if self.Bridge.Control.FIRST_RUN:
                     # TODO: SISTEMARE VOCAL
                     " Introduzione controllo vocale "
-                    # winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
+                    winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
                     # au_file = audio_file+'Jarvis.wav'
                     # return_code = subprocess.call(["afplay", au_file])
                     self.Bip()
                     self.Bridge.Control.FIRST_RUN = False
                 else:
                     " Get command "
+                    self.Bridge.Control.Listen = 1
                     if self.Bridge.Control.Listen:
 
                         self.Bridge.Control.Listen = 0
@@ -231,7 +237,7 @@ class Thread_InputClass(threading.Thread):
                             self.Bip()
 
                         elif self.VocalStatus == self.VOCAL_IDLE:
-                            if jarvis_cmd == 'jarvis':
+                            if 'jarvis' in jarvis_cmd:
 
                                 winsound.PlaySound(self.AudioPath + 'ConfermaAttivazione.wav', winsound.SND_FILENAME)
                                 # au_file = audio_file + 'ConfermaAttivazione.wav'
@@ -404,7 +410,7 @@ class Thread_InputClass(threading.Thread):
        
         else :
             print '*** Istruzione non valida ***'
-            winsound.PlaySound('IstruzioneNonValida.wav', winsound.SND_FILENAME)
+            #winsound.PlaySound('IstruzioneNonValida.wav', winsound.SND_FILENAME)
             # au_file = audio_file+'IstruzioneNonValida.wav'
             # return_code = subprocess.call(["afplay", au_file])
             self.Bip()
@@ -417,9 +423,9 @@ class Thread_InputClass(threading.Thread):
 
         with sr.Microphone() as source:
             try:
-                # cmd = self.r.listen(source, timeout = 2)
+                cmd = self.r.listen(source, phrase_time_limit = 2)
                 print '+ Microphone Record called.'
-                cmd = self.r.record(source, duration=2)
+                #cmd = self.r.record(source, duration=2)
                 self.Bridge.Control.Status = POS_CTRL
 
 

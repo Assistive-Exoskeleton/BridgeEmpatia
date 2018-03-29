@@ -37,7 +37,7 @@ class ControlClass:
         self.Status                 = IDLE
         self.Input                  = "None"
         self.Listen = 0
-        self.FIRST_RUN = False
+        self.FIRST_RUN = True
 
         # TODO: Tuning Parameters "
         self.ThreadPeriod           = 0.5
@@ -105,7 +105,7 @@ class BridgeCoordClass:
 class JoystickClass:
     def __init__(self):
         " 0: Normale - 1: Advanced "
-        self.Mode               = 1
+        self.Mode               = 0
         self.LastButtonStatus   = 0
         self.SavePosition       = 0
         self.GotoSavedPosition  = 0
