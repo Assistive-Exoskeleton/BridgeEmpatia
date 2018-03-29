@@ -98,8 +98,8 @@ class Thread_InputClass(threading.Thread):
                 except Exception, e:
 
                     print '# Error: Pygame initialization failed | ' + str(e)
-                    dialog = DialogError(self, "Error: Pygame initialization failed")
-                    dialog.ShowModal()
+                    #dialog = DialogError(self, "Error: Pygame initialization failed")
+                    #dialog.ShowModal()
                     return False
 
             elif self.Bridge.InputList[i] == 'Vocal':
@@ -225,11 +225,11 @@ class Thread_InputClass(threading.Thread):
                         " VOCAL STATE MACHINE "
                         " ################### "
 
-                        if jarvis_cmd[0:4] == 'aiut':
+                        if 'aiuto' in jarvis_cmd:
                             print '*** ALLARME!'
                             self.VocalStatus = self.VOCAL_HELP
 
-                        elif jarvis_cmd == 'termina':
+                        elif 'termina' in jarvis_cmd:
                             self.VocalStatus = self.VOCAL_STOP_CONFERMATION
                             winsound.PlaySound(self.AudioPath + 'ConfermaSpegnimento.wav', winsound.SND_FILENAME)
                             # au_file = audio_file+'ConfermaSpegnimento.wav'
@@ -246,7 +246,7 @@ class Thread_InputClass(threading.Thread):
 
                                 self.VocalStatus = self.VOCAL_RUNNING_CONFERMATION
 
-                            elif jarvis_cmd == 'dormi':
+                            elif 'dormi' in jarvis_cmd:
                                 self.VocalStatus = self.VOCAL_IDLE
 
                         elif self.VocalStatus == self.VOCAL_RUNNING_CONFERMATION:
@@ -350,7 +350,7 @@ class Thread_InputClass(threading.Thread):
 
             time.sleep(0.1)
 
-        print 'Input Thread Out'
+        print '- Input Thread Out'
 
     " Funzione di riconoscimento dei comandi che può essere personalizzata -> custumizzazione "
 
