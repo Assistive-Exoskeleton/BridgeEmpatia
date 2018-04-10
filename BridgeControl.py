@@ -159,8 +159,9 @@ class Thread_ControlClass(threading.Thread):
                 #TODO check self.p0_check - da valutare "
                 if self.Bridge.Control.Input == 'Vocal':
 
-                    if self.Bridge.Control.VocalStepsCnt == self.Bridge.Control.VocalSteps:
-                        self.Coord.p0= [0]*4
+                    if self.Bridge.Control.VocalStepsCnt >= self.Bridge.Control.VocalSteps:
+                        self.Coord.p0 = [0]*4
+                        # self.Bridge.Control.VocalStepsCnt = 0
                     else:
                         self.Bridge.Control.VocalStepsCnt = self.Bridge.Control.VocalStepsCnt+1
 

@@ -4,10 +4,13 @@ import threading
 import time
 import pygame
 import math
-from BridgeConf import *
+
 import winsound     # Audio Feedback
 import subprocess
 from BridgeDialog import *
+from BridgeConf import *
+import BridgeGUI
+import BridgeDialog
 
 import wx
 from wx.lib.pubsub import setuparg1
@@ -98,8 +101,8 @@ class Thread_InputClass(threading.Thread):
                 except Exception, e:
 
                     print '# Error: Pygame initialization failed | ' + str(e)
-                    #dialog = DialogError(self, "Error: Pygame initialization failed")
-                    #dialog.ShowModal()
+                    # dialog = DialogError(self, "Error: Pygame initialization failed")
+                    # dialog.ShowModal()
                     return False
 
             elif self.Bridge.InputList[i] == 'Vocal':
@@ -460,5 +463,53 @@ class Thread_InputClass(threading.Thread):
     def terminate(self):
         " Exit the thread "
         self.Running = False
+
+class Thread_JoystickCalibrationClass(threading.Thread):
+
+    def __init__(self, Name, Bridge, Conf, direction):
+
+        threading.Thread.__init__(self)
+        self.Running = False
+        self.Bridge = Bridge
+        self.Conf   = Conf
+        self.direction= direction
+
+
+    def run(self):
+
+        self.Running = True
+        if self.direction <= 1:
+            i=0
+        else:
+            i=1
+        self.Bridge.Patient.JoystickCalibration[self.direction]= 0
+
+        try:
+            self.PyJoystick = pygame.joystick.Joystick(0)
+            self.PyJoystick.init()
+
+        except Exception, e:
+
+            print '# ERROR: joystick failure | ' + str(e)
+            return False
+
+        while self.Running:
+
+            axis = (self.PyJoystick.get_axis(i) - self.Bridge.Joystick.AxisOffset[i])
+
+            if abs(axis)>self.Bridge.Patient.JoystickCalibration[self.direction]:
+
+                self.Bridge.Patient.JoystickCalibration[self.direction]= abs(axis)
+
+        print self.Bridge.Patient.JoystickCalibration[self.direction]
+
+        #self.Conf.SavePatient(self.Bridge.Patient.Filename, self.Bridge.Patient)
+
+    def terminate(self):
+
+        self.Running = False
+
+
+
 
 

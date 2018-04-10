@@ -5,7 +5,7 @@
 import os
 import sys
 
-import BRIDGE_GUI
+import BridgeGUI
 import wx
 from wx.lib.wordwrap import wordwrap
 from wx.lib.pubsub  import setuparg1 #evita problemi con py2exe
@@ -15,6 +15,7 @@ import unicodedata
 
 from BridgeConf     import *
 from BridgeJoint    import *
+from BridgeInput    import *
 
 
 " Search available Serial Ports "
@@ -35,11 +36,9 @@ def availableSerialPort():
 
 
 " Dialog exo setup "
-class DialogExoSetup(BRIDGE_GUI.Dialog_ExoSetup):
+class DialogExoSetup(BridgeGUI.Dialog_ExoSetup):
     def __init__(self,parent,Conf, Bridge):
-        BRIDGE_GUI.Dialog_ExoSetup.__init__(self,parent)
-
-
+        BridgeGUI.Dialog_ExoSetup.__init__(self, parent)
 
         self.Conf   = Conf
         self.Bridge = Bridge
@@ -49,8 +48,6 @@ class DialogExoSetup(BRIDGE_GUI.Dialog_ExoSetup):
         self.Jmax_entry_list        = [self.J1max_entry, self.J2max_entry, self.J3max_entry, self.J4max_entry, self.J5max_entry]
         self.Joffset_entry_list     = [self.J1offset_entry, self.J2offset_entry, self.J3offset_entry, self.J4offset_entry, self.J5offset_entry]
         self.Jratio_entry_list      = [self.J1ratio_entry, self.J2ratio_entry, self.J3ratio_entry, self.J4ratio_entry, self.J5ratio_entry]
-
-
 
         " Motor plot choice "
         self.choice_COM_list        = [self.choice_COM_M1, self.choice_COM_M2, self.choice_COM_M3, self.choice_COM_M4, self.choice_COM_M5]
@@ -62,11 +59,8 @@ class DialogExoSetup(BRIDGE_GUI.Dialog_ExoSetup):
             " Set widget name - Index number "
             but.Name = str(i)
 
-        start = time.time()
-        # Get available serial port
+        " Get available serial port "
         self.portList = availableSerialPort()
-        end = time.time()
-        print end - start
 
         if len(self.portList) < 5:
             self.error_lbl.SetLabel("# ERROR: not enough serial COM (%d found)" % len(self.portList))
@@ -83,17 +77,11 @@ class DialogExoSetup(BRIDGE_GUI.Dialog_ExoSetup):
             except:
                 choice.SetSelection(0)
 
-        end = time.time()
-        print end - start
-
         for i, Jmin, Jmax, Joffset, Jratio in zip(range(0,5), self.Jmin_entry_list, self.Jmax_entry_list, self.Joffset_entry_list, self.Jratio_entry_list):
             Jmin.SetValue(str(self.Conf.Exo.Jmin[i]))
             Jmax.SetValue(str(self.Conf.Exo.Jmax[i]))
             Joffset.SetValue(str(self.Conf.Exo.Joffset[i]))
             Jratio.SetValue(str(self.Conf.Exo.Jratio[i]))
-
-        end = time.time()
-        print end - start
 
     def ok_command(self,event):
 
@@ -176,9 +164,9 @@ class DialogExoSetup(BRIDGE_GUI.Dialog_ExoSetup):
 
 
 " Dialog patient setup "
-class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
+class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
     def __init__(self,parent, Conf, Bridge):
-        BRIDGE_GUI.Dialog_PatientSetup.__init__(self, parent)
+        BridgeGUI.Dialog_PatientSetup.__init__(self, parent)
 
         self.Conf                   = Conf
         self.Filename               = None
@@ -328,28 +316,88 @@ class DialogPatientSetup(BRIDGE_GUI.Dialog_PatientSetup):
         '''
         pass
 
+class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
+
+    def __init__(self,parent, Conf, Bridge):
+
+        BridgeGUI.Dialog_JoystickCalibration.__init__(self, parent)
+
+        self.Conf = Conf
+        self.Bridge = Bridge
+
+        self.calib_buttlist= [self.calib_butt1,self.calib_butt2,self.calib_butt3,self.calib_butt4]
+
+        for i, but in zip(range(0, len(self.calib_buttlist)), self.calib_buttlist):
+            " Set widget name - Index number "
+            but.Name = str(i)
+
+
+
+    def joystick_calibration_command (self,event):
+
+        widget = event.GetEventObject()
+        direction=int(widget.GetName())
+
+        if self.Bridge.Control.Input== 'Joystick':
+
+            if direction==0:
+                self.dialog= DialogAlert(self, 'Please, push the joystick to the right as much as you can')
+            elif direction==1:
+                self.dialog= DialogAlert(self, 'Please, push the joystick to the left as much as you can')
+            elif direction==2:
+                self.dialog= DialogAlert(self, 'Please, push the joystick forward as much as you can')
+            else:
+                self.dialog= DialogAlert(self, 'Please, push the joystick backward as much as you can')
+
+            self.Bridge.CalibrationThread = Thread_JoystickCalibrationClass("CalibrationThread",self.Bridge, self.Conf, direction)
+            self.Bridge.CalibrationThread.start()
+            self.timer = wx.Timer(self)
+            self.Bind(wx.EVT_TIMER, self.end_calibration, self.timer)
+            self.timer.Start(self.Bridge.Joystick.CalibrationTmr)
+            self.dialog.ShowModal()
+        else:
+
+            dialog= DialogError (self, 'Please, select the joystick as control modality')
+            dialog.ShowModal()
+
+    def end_calibration(self,msg):
+
+        self.Bridge.CalibrationThread.terminate()
+        self.dialog.Destroy()
+        self.timer.Stop()
+
+
+
 " ############ "
 " Dialog Error "
 " ############ "
-class DialogError(BRIDGE_GUI.Dialog_Error):
-    def __init__(self, parent, error, title=None):
-        BRIDGE_GUI.Dialog_Error.__init__(self,parent)
-        if title != None:
-            self.SetTitle(title)
-
+class DialogError(BridgeGUI.Dialog_Error):
+    def __init__(self, parent, error):
+        BridgeGUI.Dialog_Error.__init__(self, parent)
         self.error_lbl.SetLabel(error)
-
 
     def cancel_command(self,event):
         self.Destroy()
 
+" ############ "
+" Dialog Alert "
+" ############ "
+
+class DialogAlert(BridgeGUI.Dialog_Alert):
+
+    def __init__(self, parent, message):
+        BridgeGUI.Dialog_Alert.__init__(self, parent)
+        self.alert_lbl.SetLabel(message)
+
+    def cancel_command(self, event):
+        self.Destroy()
 
 " ############ "
 " Dialog Joint "
 " ############ "
-class DialogJoint (BRIDGE_GUI.Dialog_Joint):
+class DialogJoint(BridgeGUI.Dialog_Joint):
     def __init__(self, parent, Num, Joint, Status):
-        BRIDGE_GUI.Dialog_Joint.__init__(self,parent)
+        BridgeGUI.Dialog_Joint.__init__(self, parent)
 
         self.Joint  = Joint
         self.Status = Status
@@ -400,10 +448,11 @@ class DialogJoint (BRIDGE_GUI.Dialog_Joint):
 " ############## "
 " Dialog Donning "
 " ############## "
-class DialogDonning (BRIDGE_GUI.Dialog_Donning):
+class DialogDonning (BridgeGUI.Dialog_Donning):
     def __init__(self, parent):
-        BRIDGE_GUI.Dialog_Donning.__init__(self,parent)
+        BridgeGUI.Dialog_Donning.__init__(self, parent)
 
     def ok_command (self,event):
         self.EndModal(wx.ID_OK)
         self.Destroy()
+

@@ -10,11 +10,11 @@ import pygame
 import numpy
 import math
 
-import BRIDGE_GUI
+import BridgeGUI
 
 from BridgeConf        import *
 from BridgeDialog      import *
-from BridgeCtrl_V2     import *
+from BridgeControl     import *
 from BridgeJoint       import *
 from BridgeInput       import *
 
@@ -95,19 +95,19 @@ class CreatePlot3DExo(wx.Panel):
 " # TERMINAL CLASS # "
 " ################## "
 
-class ChildFrame(BRIDGE_GUI.BridgeTerminal):
+class ChildFrame(BridgeGUI.BridgeTerminal):
     def __init__(self, parent):
-        BRIDGE_GUI.BridgeTerminal.__init__(self, parent)
+        BridgeGUI.BridgeTerminal.__init__(self, parent)
 
 
 " ############# "
 " # GUI CLASS # "
 " ############# "
 
-class MainWindow(BRIDGE_GUI.BridgeWin):
+class MainWindow(BridgeGUI.BridgeWin):
     def __init__(self, parent):
 
-        BRIDGE_GUI.BridgeWin.__init__(self, parent)
+        BridgeGUI.BridgeWin.__init__(self, parent)
 
         # Define bridge configurations
         self.Bridge = BridgeClass()
@@ -336,6 +336,12 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
         if dialog.ShowModal() == wx.ID_OK:
             self.Conf.Serial.Error = False
 
+    def exo_setup_command (self, event):
+        dialog = DialogExoSetup(self, self.Conf, self.Bridge)
+
+        if dialog.ShowModal() == wx.ID_OK:
+            self.Conf.Serial.Error = False
+
     def patient_setup_command (self, event):
         dialog = DialogPatientSetup(self, self.Conf, self.Bridge)
 
@@ -355,6 +361,11 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
             self.inputDescription_lbl.SetLabel(str(self.Bridge.Control.Input))
 
             self.statusbar.SetStatusText('Patient: Loaded', 2)
+
+    def joystick_setup_command( self, event ):
+
+    	dialog= DialogJoystickCalibration(self, self.Conf, self.Bridge)
+    	dialog.ShowModal()
 
     " ################## "
     " #### COMMANDS #### "
@@ -681,9 +692,17 @@ class MainWindow(BRIDGE_GUI.BridgeWin):
             self.Bridge.Control.Input = self.Bridge.InputList[self.input_choice.GetSelection()]
             self.inputDescription_lbl.SetLabel(str(self.Bridge.Control.Input))
         except Exception, e:
-            print "#Error: Set Control Interface failed" + e
+            print '#Error: Set Control Interface failed |' + str(e)
             return
 
+    def set_displacement(self, event):
+
+        try:
+            self.Bridge.Control.VocalSteps = self.displacement_entry.GetValue()
+            print self.Bridge.Control.VocalSteps
+        except Exception, e:
+            print '#Error: Set Displacement failed |' + str(e)
+            return
 
 # STDOUTPUT REDIRECT
 class RedirectText(object):

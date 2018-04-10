@@ -35,7 +35,7 @@ class ControlClass:
     def __init__(self):
 
         self.Status                 = IDLE
-        self.Input                  = "None"
+        self.Input                  = "Joystick"
         self.Listen = 0
         self.FIRST_RUN = True
 
@@ -111,8 +111,9 @@ class JoystickClass:
         self.GotoSavedPosition  = 0
         self.Alarm              = 0
         #TODO: INIT JOYSTICK Dove va?
-        self.Gain               = 1.2
+        self.Gain               = 1.0
         self.AxisOffset         = [-0.273468017578, -0.257843017578]
+        self.CalibrationTmr     = 5000
 
 
 
@@ -142,6 +143,7 @@ class PatientClass:
         self.Loaded         = False
         self.Filename       = ''
         self.Input          = ''
+        self.JoystickCalibration = [0]*4
 
 
 class ExoClass:

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
 
 ###########################################################################
 ## Python code generated with wxFormBuilder (version Jun 17 2015)
@@ -40,22 +40,28 @@ class BridgeWin ( wx.Frame ):
 		
 		self.m_menubar1.Append( self.m_menu1, u"File" ) 
 		
-		self.m_menu2 = wx.Menu()
-		self.m_menuItem6 = wx.MenuItem( self.m_menu2, wx.ID_ANY, u"Exo preferences"+ u"\t" + u"Ctrl+P", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_menuItem6.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_TIP, wx.ART_MENU ) )
-		self.m_menu2.AppendItem( self.m_menuItem6 )
+		self.Tools = wx.Menu()
+		self.m_preferences = wx.MenuItem( self.Tools, wx.ID_ANY, u"Preferences"+ u"\t" + u"Ctrl+P", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_preferences.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_TIP, wx.ART_TOOLBAR ) )
+		self.Tools.AppendItem( self.m_preferences )
 		
-		self.m_menuItem31 = wx.MenuItem( self.m_menu2, wx.ID_ANY, u"Setup Patient"+ u"\t" + u"Ctrl+O", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_menuItem31.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_REPORT_VIEW, wx.ART_MENU ) )
-		self.m_menu2.AppendItem( self.m_menuItem31 )
+		self.m_patient = wx.MenuItem( self.Tools, wx.ID_ANY, u"Patient"+ u"\t" + u"Ctrl+O", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_patient.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_REPORT_VIEW, wx.ART_TOOLBAR ) )
+		self.Tools.AppendItem( self.m_patient )
 		
-		self.m_menubar1.Append( self.m_menu2, u"Tools" ) 
+		self.m_joystick_calibration = wx.MenuItem( self.Tools, wx.ID_ANY, u"Joystick Calibration", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_joystick_calibration.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_GO_FORWARD, wx.ART_TOOLBAR ) )
+		self.Tools.AppendItem( self.m_joystick_calibration )
+		
+		self.m_menubar1.Append( self.Tools, u"Tools" ) 
 		
 		self.SetMenuBar( self.m_menubar1 )
 		
 		bSizer2 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer93 = wx.BoxSizer( wx.VERTICAL )
+		
 		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		bSizer6 = wx.BoxSizer( wx.VERTICAL )
@@ -86,7 +92,7 @@ class BridgeWin ( wx.Frame ):
 		
 		bSizer2411111.Add( self.m_staticText911111, 1, wx.ALL, 5 )
 		
-		self.P0_X_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"xx", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.P0_X_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"- -", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.P0_X_lbl.Wrap( -1 )
 		self.P0_X_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		
@@ -105,7 +111,7 @@ class BridgeWin ( wx.Frame ):
 		
 		bSizer24111111.Add( self.m_staticText9111111, 1, wx.ALL, 5 )
 		
-		self.P0_Y_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"xx", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.P0_Y_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"- -", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.P0_Y_lbl.Wrap( -1 )
 		self.P0_Y_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		
@@ -124,7 +130,7 @@ class BridgeWin ( wx.Frame ):
 		
 		bSizer24111112.Add( self.m_staticText9111112, 1, wx.ALL, 5 )
 		
-		self.P0_Z_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"xx", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.P0_Z_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"- -", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.P0_Z_lbl.Wrap( -1 )
 		self.P0_Z_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		
@@ -143,7 +149,7 @@ class BridgeWin ( wx.Frame ):
 		
 		bSizer24111113.Add( self.m_staticText9111113, 1, wx.ALL, 5 )
 		
-		self.P0_PS_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"xx", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.P0_PS_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"- -", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.P0_PS_lbl.Wrap( -1 )
 		self.P0_PS_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		
@@ -216,75 +222,80 @@ class BridgeWin ( wx.Frame ):
 		bSizer6.Add( bSizer2311112, 0, wx.EXPAND, 5 )
 		
 		
-		bSizer4.Add( bSizer6, 0, 0, 5 )
+		bSizer4.Add( bSizer6, 0, wx.EXPAND, 5 )
 		
 		self.m_staticline22 = wx.StaticLine( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
 		bSizer4.Add( self.m_staticline22, 0, wx.EXPAND |wx.ALL, 5 )
 		
+		bSizer96 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer96.SetMinSize( wx.Size( 312,-1 ) ) 
+		self.m_tab_settings = wx.Notebook( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		self.m_control_settings = wx.Panel( self.m_tab_settings, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		bSizer23111121 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText6111121 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Control", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.m_staticText6111121 = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Control Settings", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText6111121.Wrap( -1 )
 		self.m_staticText6111121.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
 		self.m_staticText6111121.SetBackgroundColour( wx.Colour( 132, 193, 255 ) )
-		self.m_staticText6111121.SetMinSize( wx.Size( 301,20 ) )
+		self.m_staticText6111121.SetMinSize( wx.Size( -1,20 ) )
 		
-		bSizer23111121.Add( self.m_staticText6111121, 0, wx.ALL, 5 )
+		bSizer23111121.Add( self.m_staticText6111121, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		bSizer721 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		bSizer73 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText1441 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"State Machine", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.m_staticText1441 = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"State Machine", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.m_staticText1441.Wrap( -1 )
 		self.m_staticText1441.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		self.m_staticText1441.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
 		
 		bSizer73.Add( self.m_staticText1441, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.ctrlIDLE_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"IDLE", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.ctrlIDLE_lbl = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"IDLE", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.ctrlIDLE_lbl.Wrap( -1 )
 		self.ctrlIDLE_lbl.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		self.ctrlIDLE_lbl.SetBackgroundColour( wx.Colour( 242, 255, 242 ) )
 		
 		bSizer73.Add( self.ctrlIDLE_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.ctrlINIT_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"INITIALIZATION", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.ctrlINIT_lbl = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"INITIALIZATION", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.ctrlINIT_lbl.Wrap( -1 )
 		self.ctrlINIT_lbl.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		self.ctrlINIT_lbl.SetBackgroundColour( wx.Colour( 242, 255, 242 ) )
 		
 		bSizer73.Add( self.ctrlINIT_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.ctrlDONNING_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"DONNING", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.ctrlDONNING_lbl = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"DONNING", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.ctrlDONNING_lbl.Wrap( -1 )
 		self.ctrlDONNING_lbl.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		self.ctrlDONNING_lbl.SetBackgroundColour( wx.Colour( 242, 255, 242 ) )
 		
 		bSizer73.Add( self.ctrlDONNING_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.ctrlRESTPOS_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"REST POSITION", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.ctrlRESTPOS_lbl = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"REST POSITION", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.ctrlRESTPOS_lbl.Wrap( -1 )
 		self.ctrlRESTPOS_lbl.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		self.ctrlRESTPOS_lbl.SetBackgroundColour( wx.Colour( 242, 255, 242 ) )
 		
 		bSizer73.Add( self.ctrlRESTPOS_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.ctrlREADY_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"READY", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.ctrlREADY_lbl = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"READY", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.ctrlREADY_lbl.Wrap( -1 )
 		self.ctrlREADY_lbl.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		self.ctrlREADY_lbl.SetBackgroundColour( wx.Colour( 242, 255, 242 ) )
 		
 		bSizer73.Add( self.ctrlREADY_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.ctrlRUNNING_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"RUNNING", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.ctrlRUNNING_lbl = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"RUNNING", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.ctrlRUNNING_lbl.Wrap( -1 )
 		self.ctrlRUNNING_lbl.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		self.ctrlRUNNING_lbl.SetBackgroundColour( wx.Colour( 242, 255, 242 ) )
 		
 		bSizer73.Add( self.ctrlRUNNING_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.ctrlSTOP_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"STOP", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.ctrlSTOP_lbl = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"STOP", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.ctrlSTOP_lbl.Wrap( -1 )
 		self.ctrlSTOP_lbl.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		self.ctrlSTOP_lbl.SetBackgroundColour( wx.Colour( 255, 232, 232 ) )
@@ -292,33 +303,58 @@ class BridgeWin ( wx.Frame ):
 		bSizer73.Add( self.ctrlSTOP_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		
-		bSizer721.Add( bSizer73, 1, wx.EXPAND, 5 )
+		bSizer721.Add( bSizer73, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		bSizer74 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText144 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Control Interface", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
-		self.m_staticText144.Wrap( -1 )
-		self.m_staticText144.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
-		self.m_staticText144.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
+		bSizer107 = wx.BoxSizer( wx.VERTICAL )
 		
-		bSizer74.Add( self.m_staticText144, 0, wx.ALL|wx.EXPAND, 5 )
+		self.m_control_interface = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Control Interface", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.m_control_interface.Wrap( -1 )
+		self.m_control_interface.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_control_interface.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
+		
+		bSizer107.Add( self.m_control_interface, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		input_choiceChoices = [ u"None" ]
-		self.input_choice = wx.Choice( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, input_choiceChoices, 0 )
+		self.input_choice = wx.Choice( self.m_control_settings, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, input_choiceChoices, 0 )
 		self.input_choice.SetSelection( 0 )
 		self.input_choice.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
 		
-		bSizer74.Add( self.input_choice, 0, wx.ALL|wx.EXPAND, 5 )
+		bSizer107.Add( self.input_choice, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.m_staticText1442 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Displacement", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
-		self.m_staticText1442.Wrap( -1 )
-		self.m_staticText1442.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
-		self.m_staticText1442.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
 		
-		bSizer74.Add( self.m_staticText1442, 0, wx.ALL|wx.EXPAND, 5 )
+		bSizer74.Add( bSizer107, 0, wx.EXPAND, 5 )
 		
-		self.m_slider1 = wx.Slider( self.m_panel1, wx.ID_ANY, 50, 0, 100, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL )
-		bSizer74.Add( self.m_slider1, 0, wx.ALL|wx.EXPAND, 5 )
+		bSizer106 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_vocal_displacement = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Displacement", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.m_vocal_displacement.Wrap( -1 )
+		self.m_vocal_displacement.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_vocal_displacement.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
+		
+		bSizer106.Add( self.m_vocal_displacement, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		self.displacement_entry = wx.Slider( self.m_control_settings, wx.ID_ANY, 10, 1, 20, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL )
+		bSizer106.Add( self.displacement_entry, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		bSizer74.Add( bSizer106, 0, wx.EXPAND, 5 )
+		
+		bSizer1061 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_speed_gain = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Speed Gain", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.m_speed_gain.Wrap( -1 )
+		self.m_speed_gain.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_speed_gain.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
+		
+		bSizer1061.Add( self.m_speed_gain, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		self.speed_gain_entry = wx.Slider( self.m_control_settings, wx.ID_ANY, 50, 1, 100, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL )
+		bSizer1061.Add( self.speed_gain_entry, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		bSizer74.Add( bSizer1061, 1, wx.EXPAND, 5 )
 		
 		
 		bSizer721.Add( bSizer74, 1, wx.EXPAND, 5 )
@@ -327,25 +363,194 @@ class BridgeWin ( wx.Frame ):
 		bSizer23111121.Add( bSizer721, 1, wx.EXPAND, 5 )
 		
 		
-		bSizer4.Add( bSizer23111121, 0, wx.EXPAND, 5 )
+		self.m_control_settings.SetSizer( bSizer23111121 )
+		self.m_control_settings.Layout()
+		bSizer23111121.Fit( self.m_control_settings )
+		self.m_tab_settings.AddPage( self.m_control_settings, u"Control", True )
+		self.m_advanced_settings = wx.Panel( self.m_tab_settings, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer231111211 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText61111211 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"Advanced Settings", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.m_staticText61111211.Wrap( -1 )
+		self.m_staticText61111211.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText61111211.SetBackgroundColour( wx.Colour( 132, 193, 255 ) )
+		self.m_staticText61111211.SetMinSize( wx.Size( -1,20 ) )
+		
+		bSizer231111211.Add( self.m_staticText61111211, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		bSizer7211 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		bSizer731 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText14411 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"IK Parameters", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.m_staticText14411.Wrap( -1 )
+		self.m_staticText14411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText14411.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
+		
+		bSizer731.Add( self.m_staticText14411, 0, wx.EXPAND|wx.ALL, 5 )
+		
+		bSizerParameter1 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.Parameter = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"Tollerance", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.Parameter.Wrap( -1 )
+		self.Parameter.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNTEXT ) )
+		self.Parameter.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
+		
+		bSizerParameter1.Add( self.Parameter, 1, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		self.m_tollerance_entry = wx.TextCtrl( self.m_advanced_settings, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.SIMPLE_BORDER )
+		self.m_tollerance_entry.SetMaxSize( wx.Size( 70,-1 ) )
+		
+		bSizerParameter1.Add( self.m_tollerance_entry, 0, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		
+		bSizer731.Add( bSizerParameter1, 0, wx.EXPAND, 5 )
+		
+		bSizerParameter11 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.Parameter1 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"Epsilon", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.Parameter1.Wrap( -1 )
+		self.Parameter1.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNTEXT ) )
+		self.Parameter1.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
+		
+		bSizerParameter11.Add( self.Parameter1, 1, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		self.m_epsilon_entry = wx.TextCtrl( self.m_advanced_settings, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.SIMPLE_BORDER )
+		self.m_epsilon_entry.SetMaxSize( wx.Size( 70,-1 ) )
+		
+		bSizerParameter11.Add( self.m_epsilon_entry, 0, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		
+		bSizer731.Add( bSizerParameter11, 0, wx.EXPAND, 5 )
+		
+		bSizerParameter12 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.Parameter2 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"Wq0s", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.Parameter2.Wrap( -1 )
+		self.Parameter2.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNTEXT ) )
+		self.Parameter2.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
+		
+		bSizerParameter12.Add( self.Parameter2, 1, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		self.m_wq0s_entry = wx.TextCtrl( self.m_advanced_settings, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.SIMPLE_BORDER )
+		self.m_wq0s_entry.SetMaxSize( wx.Size( 70,-1 ) )
+		
+		bSizerParameter12.Add( self.m_wq0s_entry, 0, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		
+		bSizer731.Add( bSizerParameter12, 0, wx.EXPAND, 5 )
+		
+		bSizerParameter13 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.Parameter3 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"Dol", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.Parameter3.Wrap( -1 )
+		self.Parameter3.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNTEXT ) )
+		self.Parameter3.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
+		
+		bSizerParameter13.Add( self.Parameter3, 1, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		self.m_dol_entry = wx.TextCtrl( self.m_advanced_settings, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.SIMPLE_BORDER )
+		self.m_dol_entry.SetMaxSize( wx.Size( 70,-1 ) )
+		
+		bSizerParameter13.Add( self.m_dol_entry, 0, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		
+		bSizer731.Add( bSizerParameter13, 0, wx.EXPAND, 5 )
+		
+		bSizerParameter14 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.Parameter4 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"Du", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.Parameter4.Wrap( -1 )
+		self.Parameter4.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNTEXT ) )
+		self.Parameter4.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
+		
+		bSizerParameter14.Add( self.Parameter4, 1, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		self.m_du_entry = wx.TextCtrl( self.m_advanced_settings, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.SIMPLE_BORDER )
+		self.m_du_entry.SetMaxSize( wx.Size( 70,-1 ) )
+		
+		bSizerParameter14.Add( self.m_du_entry, 0, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		
+		bSizer731.Add( bSizerParameter14, 0, wx.EXPAND, 5 )
+		
+		bSizerParameter15 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.Parameter5 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"IterMax", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.Parameter5.Wrap( -1 )
+		self.Parameter5.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNTEXT ) )
+		self.Parameter5.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNHIGHLIGHT ) )
+		
+		bSizerParameter15.Add( self.Parameter5, 1, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		self.m_itermax_entry = wx.TextCtrl( self.m_advanced_settings, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.SIMPLE_BORDER )
+		self.m_itermax_entry.SetMaxSize( wx.Size( 70,-1 ) )
+		
+		bSizerParameter15.Add( self.m_itermax_entry, 0, wx.ALIGN_CENTER_VERTICAL|wx.TOP|wx.RIGHT|wx.LEFT, 5 )
+		
+		
+		bSizer731.Add( bSizerParameter15, 0, wx.EXPAND, 5 )
+		
+		bSizer111 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		bSizer111.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_button_save_ik_parameters = wx.Button( self.m_advanced_settings, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer111.Add( self.m_button_save_ik_parameters, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
+		
+		
+		bSizer731.Add( bSizer111, 1, wx.EXPAND, 5 )
+		
+		
+		bSizer7211.Add( bSizer731, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		bSizer741 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText1443 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"Advanced", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.m_staticText1443.Wrap( -1 )
+		self.m_staticText1443.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1443.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
+		
+		bSizer741.Add( self.m_staticText1443, 0, wx.EXPAND|wx.ALL, 5 )
+		
+		
+		bSizer7211.Add( bSizer741, 1, wx.EXPAND, 5 )
+		
+		
+		bSizer231111211.Add( bSizer7211, 1, wx.EXPAND, 5 )
+		
+		
+		self.m_advanced_settings.SetSizer( bSizer231111211 )
+		self.m_advanced_settings.Layout()
+		bSizer231111211.Fit( self.m_advanced_settings )
+		self.m_tab_settings.AddPage( self.m_advanced_settings, u"Advanced", False )
+		
+		bSizer96.Add( self.m_tab_settings, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
+		
+		
+		bSizer4.Add( bSizer96, 0, wx.EXPAND, 5 )
 		
 		self.m_staticline221 = wx.StaticLine( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_VERTICAL )
-		bSizer4.Add( self.m_staticline221, 0, wx.EXPAND |wx.ALL, 5 )
+		bSizer4.Add( self.m_staticline221, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		bSizer221 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.exo3d_container = wx.Panel( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
 		self.exo3d_container.SetMinSize( wx.Size( -1,300 ) )
 		
-		bSizer221.Add( self.exo3d_container, 1, wx.ALL|wx.EXPAND, 5 )
+		bSizer221.Add( self.exo3d_container, 1, wx.EXPAND|wx.ALL, 5 )
 		
 		
 		bSizer4.Add( bSizer221, 1, wx.EXPAND, 5 )
 		
 		
-		self.m_panel1.SetSizer( bSizer4 )
+		bSizer93.Add( bSizer4, 1, wx.EXPAND, 5 )
+		
+		
+		self.m_panel1.SetSizer( bSizer93 )
 		self.m_panel1.Layout()
-		bSizer4.Fit( self.m_panel1 )
+		bSizer93.Fit( self.m_panel1 )
 		bSizer2.Add( self.m_panel1, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		bSizer21 = wx.BoxSizer( wx.VERTICAL )
@@ -1072,10 +1277,13 @@ class BridgeWin ( wx.Frame ):
 		# Connect Events
 		self.Bind( wx.EVT_MENU, self.connect_command, id = self.m_menuItem1.GetId() )
 		self.Bind( wx.EVT_MENU, self.exit, id = self.m_menuItem2.GetId() )
-		self.Bind( wx.EVT_MENU, self.exo_setup_command, id = self.m_menuItem6.GetId() )
-		self.Bind( wx.EVT_MENU, self.patient_setup_command, id = self.m_menuItem31.GetId() )
+		self.Bind( wx.EVT_MENU, self.exo_setup_command, id = self.m_preferences.GetId() )
+		self.Bind( wx.EVT_MENU, self.patient_setup_command, id = self.m_patient.GetId() )
+		self.Bind( wx.EVT_MENU, self.joystick_setup_command, id = self.m_joystick_calibration.GetId() )
 		self.input_choice.Bind( wx.EVT_CHOICE, self.set_control_interface )
-		self.m_slider1.Bind( wx.EVT_SCROLL, self.set_displacement )
+		self.displacement_entry.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.set_displacement )
+		self.speed_gain_entry.Bind( wx.EVT_SCROLL, self.set_speed_gain )
+		self.m_button_save_ik_parameters.Bind( wx.EVT_BUTTON, self.save_ik_parameters )
 		self.connect_butt.Bind( wx.EVT_BUTTON, self.connect_command )
 		self.disconnect_butt.Bind( wx.EVT_BUTTON, self.disconnect_command )
 		self.init_butt.Bind( wx.EVT_BUTTON, self.initialize_system_command )
@@ -1102,10 +1310,19 @@ class BridgeWin ( wx.Frame ):
 	def patient_setup_command( self, event ):
 		event.Skip()
 	
+	def joystick_setup_command( self, event ):
+		event.Skip()
+	
 	def set_control_interface( self, event ):
 		event.Skip()
 	
 	def set_displacement( self, event ):
+		event.Skip()
+	
+	def set_speed_gain( self, event ):
+		event.Skip()
+	
+	def save_ik_parameters( self, event ):
 		event.Skip()
 	
 	
@@ -2047,13 +2264,71 @@ class Dialog_PatientSetup ( wx.Dialog ):
 	
 
 ###########################################################################
+## Class Dialog_Alert
+###########################################################################
+
+class Dialog_Alert ( wx.Dialog ):
+	
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Alert", pos = wx.DefaultPosition, size = wx.Size( 400,160 ), style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer71 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_panel6 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer72 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.alert_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.alert_lbl.Wrap( -1 )
+		self.alert_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.alert_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
+		
+		bSizer72.Add( self.alert_lbl, 1, wx.ALL|wx.EXPAND, 5 )
+		
+		bSizer73 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer73.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.cancel_butt = wx.Button( self.m_panel6, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer73.Add( self.cancel_butt, 0, wx.ALL, 5 )
+		
+		
+		bSizer72.Add( bSizer73, 0, wx.EXPAND, 5 )
+		
+		
+		self.m_panel6.SetSizer( bSizer72 )
+		self.m_panel6.Layout()
+		bSizer72.Fit( self.m_panel6 )
+		bSizer71.Add( self.m_panel6, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.SetSizer( bSizer71 )
+		self.Layout()
+		
+		self.Centre( wx.BOTH )
+		
+		# Connect Events
+		self.cancel_butt.Bind( wx.EVT_BUTTON, self.cancel_command )
+	
+	def __del__( self ):
+		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def cancel_command( self, event ):
+		event.Skip()
+	
+
+###########################################################################
 ## Class Dialog_Error
 ###########################################################################
 
 class Dialog_Error ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Error", pos = wx.DefaultPosition, size = wx.Size( 388,156 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Error", pos = wx.DefaultPosition, size = wx.Size( 400,160 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
@@ -2253,5 +2528,179 @@ class Dialog_Joint ( wx.Dialog ):
 	
 	def cancel_command( self, event ):
 		event.Skip()
+	
+
+###########################################################################
+## Class Dialog_JoystickCalibration
+###########################################################################
+
+class Dialog_JoystickCalibration ( wx.Dialog ):
+	
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Joystick Calibration", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer11 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer12 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText8 = wx.StaticText( self, wx.ID_ANY, u"Right:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText8.Wrap( -1 )
+		self.m_staticText8.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
+		bSizer12.Add( self.m_staticText8, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		
+		bSizer12.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_JoystickCalibrationRight = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_JoystickCalibrationRight.Wrap( -1 )
+		self.m_JoystickCalibrationRight.SetMinSize( wx.Size( 100,-1 ) )
+		
+		bSizer12.Add( self.m_JoystickCalibrationRight, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.JoystickCalibrationRight_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibrationRight_lbl.Wrap( -1 )
+		self.JoystickCalibrationRight_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibrationRight_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
+		
+		bSizer12.Add( self.JoystickCalibrationRight_lbl, 0, wx.ALL, 5 )
+		
+		self.calib_butt1 = wx.Button( self, wx.ID_ANY, u"Calibrate", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		bSizer12.Add( self.calib_butt1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		bSizer11.Add( bSizer12, 0, wx.EXPAND, 5 )
+		
+		bSizer121 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText81 = wx.StaticText( self, wx.ID_ANY, u"Left:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText81.Wrap( -1 )
+		self.m_staticText81.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
+		bSizer121.Add( self.m_staticText81, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		
+		bSizer121.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_JoystickCalibrationLeft = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_JoystickCalibrationLeft.Wrap( -1 )
+		self.m_JoystickCalibrationLeft.SetMinSize( wx.Size( 100,-1 ) )
+		
+		bSizer121.Add( self.m_JoystickCalibrationLeft, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.JoystickCalibrationLeft_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibrationLeft_lbl.Wrap( -1 )
+		self.JoystickCalibrationLeft_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibrationLeft_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
+		
+		bSizer121.Add( self.JoystickCalibrationLeft_lbl, 0, wx.ALL, 5 )
+		
+		self.calib_butt2 = wx.Button( self, wx.ID_ANY, u"Calibrate", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		bSizer121.Add( self.calib_butt2, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		bSizer11.Add( bSizer121, 1, wx.EXPAND, 5 )
+		
+		bSizer122 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText82 = wx.StaticText( self, wx.ID_ANY, u"Right:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText82.Wrap( -1 )
+		self.m_staticText82.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
+		bSizer122.Add( self.m_staticText82, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		
+		bSizer122.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_JoystickCalibrationForward = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_JoystickCalibrationForward.Wrap( -1 )
+		self.m_JoystickCalibrationForward.SetMinSize( wx.Size( 100,-1 ) )
+		
+		bSizer122.Add( self.m_JoystickCalibrationForward, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.JoystickCalibrationForward_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibrationForward_lbl.Wrap( -1 )
+		self.JoystickCalibrationForward_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibrationForward_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
+		
+		bSizer122.Add( self.JoystickCalibrationForward_lbl, 0, wx.ALL, 5 )
+		
+		self.calib_butt3 = wx.Button( self, wx.ID_ANY, u"Calibrate", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		bSizer122.Add( self.calib_butt3, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		bSizer11.Add( bSizer122, 1, wx.EXPAND, 5 )
+		
+		bSizer123 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText83 = wx.StaticText( self, wx.ID_ANY, u"Right:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText83.Wrap( -1 )
+		self.m_staticText83.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
+		bSizer123.Add( self.m_staticText83, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		
+		bSizer123.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_JoystickCalibrationBackward = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_JoystickCalibrationBackward.Wrap( -1 )
+		self.m_JoystickCalibrationBackward.SetMinSize( wx.Size( 100,-1 ) )
+		
+		bSizer123.Add( self.m_JoystickCalibrationBackward, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.JoystickCalibrationBackward_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibrationBackward_lbl.Wrap( -1 )
+		self.JoystickCalibrationBackward_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibrationBackward_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
+		
+		bSizer123.Add( self.JoystickCalibrationBackward_lbl, 0, wx.ALL, 5 )
+		
+		self.calib_butt4 = wx.Button( self, wx.ID_ANY, u"Calibrate", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		bSizer123.Add( self.calib_butt4, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		bSizer11.Add( bSizer123, 1, wx.EXPAND, 5 )
+		
+		self.m_staticline14 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer11.Add( self.m_staticline14, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer171 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.error_lbl = wx.StaticText( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.error_lbl.Wrap( -1 )
+		self.error_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.error_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
+		self.error_lbl.SetMinSize( wx.Size( 40,-1 ) )
+		
+		bSizer171.Add( self.error_lbl, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		
+		bSizer11.Add( bSizer171, 0, wx.EXPAND, 5 )
+		
+		
+		self.SetSizer( bSizer11 )
+		self.Layout()
+		bSizer11.Fit( self )
+		
+		self.Centre( wx.BOTH )
+		
+		# Connect Events
+		self.calib_butt1.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
+		self.calib_butt2.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
+		self.calib_butt3.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
+		self.calib_butt4.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
+	
+	def __del__( self ):
+		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def joystick_calibration_command( self, event ):
+		event.Skip()
+	
+	
+	
 	
 
