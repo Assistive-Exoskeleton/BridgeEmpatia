@@ -12,12 +12,15 @@ import datetime
 import winsound # per audio feedback
 
 import wx
-from wx.lib.pubsub import setuparg1
+from wx.lib.wordwrap import wordwrap
+#from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
+from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub as Publisher
 
 from BridgeConf import *
 from BridgeJoint import *
 
+'''
 global file_EndEff0
 file_EndEff0 = []
 global file_EndEff_des
@@ -30,6 +33,7 @@ global file_p0
 file_p0_ = []
 global file_elbow
 file_elbow = []
+'''
 
 class Thread_ControlClass(threading.Thread):
     def __init__(self, Name, Bridge, Coord, Conf, CheckWs=False):
@@ -76,7 +80,7 @@ class Thread_ControlClass(threading.Thread):
                     time.sleep(0.5)
 
                 " Update graphics in main window "
-                wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo", None)
+                wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
                 
                 " Initialize all the remaining joints - Start init threads "
                 
@@ -95,7 +99,7 @@ class Thread_ControlClass(threading.Thread):
                         break
 
                     " Update graphics in main window "
-                    wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo", None)
+                    wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
                     time.sleep(0.5)
 
@@ -106,7 +110,7 @@ class Thread_ControlClass(threading.Thread):
                 time.sleep(0.1)
 
                 " Update graphics in main window "
-                wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo", None)
+                wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
                 " Call donning dialog "
                 wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", None)
@@ -144,7 +148,7 @@ class Thread_ControlClass(threading.Thread):
                     
                 self.Bridge.Status = READY
                 wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", None)
-                wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo", None)
+                wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
 
             elif self.Bridge.Status == READY:
@@ -177,7 +181,7 @@ class Thread_ControlClass(threading.Thread):
                     self.MartaCtrl()
 
                     " Update graphics in main window "
-                    wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo", None)
+                    wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
 
                 elapsed_time = time.clock() - t0
@@ -189,7 +193,7 @@ class Thread_ControlClass(threading.Thread):
                 else:
                     time.sleep(self.Bridge.Control.ThreadPeriod - elapsed_time)
 
-        print 'Control Thread Out'
+        print '- Control Thread Out'
 
     " ##################################################################################### "
 
@@ -248,8 +252,8 @@ class Thread_ControlClass(threading.Thread):
 
         " Calculate EndEff_des (only for step-by-step control) "
         # if not self.Coord.GoToSavedPosMainTrigger:
-        self.Coord.EndEff_des[0] = self.Coord.EndEff_current[0] + self.Coord.p0[1]*self.Bridge.Control.S*self.Bridge.Control.Time # x attuale + p0*v_max*tempo loop controllo [m]
-        self.Coord.EndEff_des[1] = self.Coord.EndEff_current[1] + self.Coord.p0[0]*self.Bridge.Control.S*self.Bridge.Control.Time # y attuale + p0*v_max*tempo loop controllo [m]
+        self.Coord.EndEff_des[0] = self.Coord.EndEff_current[0] + self.Coord.p0[0]*self.Bridge.Control.S*self.Bridge.Control.Time # x attuale + p0*v_max*tempo loop controllo [m]
+        self.Coord.EndEff_des[1] = self.Coord.EndEff_current[1] + self.Coord.p0[1]*self.Bridge.Control.S*self.Bridge.Control.Time # y attuale + p0*v_max*tempo loop controllo [m]
         self.Coord.EndEff_des[2] = self.Coord.EndEff_current[2] + self.Coord.p0[2]*self.Bridge.Control.S*self.Bridge.Control.Time # z attuale + p0*v_max*tempo loop controllo [m]
         # self.Coord.EndEff_des[3] = self.Coord.EndEff_current[3] + self.Coord.p0[3]*self.Bridge.Control.MaxDegDispl        # PS pesata per input [°]
 
@@ -274,9 +278,8 @@ class Thread_ControlClass(threading.Thread):
         if self.WS_is_gay and (abs(self.Coord.p0[0]) > 0 or abs(self.Coord.p0[1]) > 0 or abs(self.Coord.p0[2]) > 0 or abs(self.Coord.p0[3]) > 0):
             
             dp = self.Coord.EndEff_des[0:3]-self.temp_EndEff_current[0:3]
-            # print 'dp: ', dp
 
-            while (abs(dp[0]) > 1e-7+self.Bridge.Control.Tollerance*abs(self.Coord.p0[1]) or abs(dp[1]) > 1e-7+self.Bridge.Control.Tollerance*abs(self.Coord.p0[0]) or abs(dp[2]) > 1e-7+self.Bridge.Control.Tollerance*abs(self.Coord.p0[2])) and exit == False:
+            while (abs(dp[0]) > 1e-7 + self.Bridge.Control.Tollerance*abs(self.Coord.p0[1]) or abs(dp[1]) > 1e-7+self.Bridge.Control.Tollerance*abs(self.Coord.p0[0]) or abs(dp[2]) > 1e-7 + self.Bridge.Control.Tollerance*abs(self.Coord.p0[2])) and exit == False:
 
                 # 3 Giunti
                 '''

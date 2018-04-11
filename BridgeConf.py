@@ -106,7 +106,7 @@ class JoystickClass:
     def __init__(self):
         " 0: Normale - 1: Advanced "
         self.Mode               = 0
-        self.LastButtonStatus   = 0
+        self.Initialized        = False
         self.SavePosition       = 0
         self.GotoSavedPosition  = 0
         self.Alarm              = 0
@@ -143,7 +143,7 @@ class PatientClass:
         self.Loaded         = False
         self.Filename       = ''
         self.Input          = ''
-        self.JoystickCalibration = [0]*4
+        self.JoystickCalibration = [1.0]*4
 
 
 class ExoClass:

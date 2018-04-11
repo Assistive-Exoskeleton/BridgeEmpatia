@@ -1279,7 +1279,7 @@ class BridgeWin ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.exit, id = self.m_menuItem2.GetId() )
 		self.Bind( wx.EVT_MENU, self.exo_setup_command, id = self.m_preferences.GetId() )
 		self.Bind( wx.EVT_MENU, self.patient_setup_command, id = self.m_patient.GetId() )
-		self.Bind( wx.EVT_MENU, self.joystick_setup_command, id = self.m_joystick_calibration.GetId() )
+		self.Bind( wx.EVT_MENU, self.joystick_calibration_command, id = self.m_joystick_calibration.GetId() )
 		self.input_choice.Bind( wx.EVT_CHOICE, self.set_control_interface )
 		self.displacement_entry.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.set_displacement )
 		self.speed_gain_entry.Bind( wx.EVT_SCROLL, self.set_speed_gain )
@@ -1310,7 +1310,7 @@ class BridgeWin ( wx.Frame ):
 	def patient_setup_command( self, event ):
 		event.Skip()
 	
-	def joystick_setup_command( self, event ):
+	def joystick_calibration_command( self, event ):
 		event.Skip()
 	
 	def set_control_interface( self, event ):
@@ -1423,10 +1423,13 @@ class Dialog_ExoSetup ( wx.Dialog ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Exo setup", pos = wx.DefaultPosition, size = wx.Size( 396,549 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+		self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
 		bSizer10 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_panel4 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.m_panel4.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
+		
 		bSizer11 = wx.BoxSizer( wx.VERTICAL )
 		
 		bSizer12 = wx.BoxSizer( wx.HORIZONTAL )
@@ -2147,7 +2150,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		bSizer991.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.m_staticText16311 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Fixation time", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText16311 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Visual Control: Fixation Time", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText16311.Wrap( -1 )
 		bSizer991.Add( self.m_staticText16311, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2159,6 +2162,24 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		
 		bSizer95.Add( bSizer991, 1, wx.EXPAND, 5 )
+		
+		bSizer118 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer118.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText179 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joystick Control:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText179.Wrap( -1 )
+		bSizer118.Add( self.m_staticText179, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.joystick_calibration_butt = wx.Button( self.m_panel6, wx.ID_ANY, u"Calibration", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer118.Add( self.joystick_calibration_butt, 0, wx.ALL, 5 )
+		
+		
+		bSizer118.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer95.Add( bSizer118, 1, wx.EXPAND, 5 )
 		
 		
 		bSizer95.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
@@ -2223,6 +2244,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		self.J5min_entry.Bind( wx.EVT_TEXT, self.onText_command )
 		self.J5max_entry.Bind( wx.EVT_TEXT, self.onText_command )
 		self.J5def_entry.Bind( wx.EVT_TEXT, self.onText_command )
+		self.joystick_calibration_butt.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
 		self.m_button25.Bind( wx.EVT_BUTTON, self.load_command )
 		self.save_butt.Bind( wx.EVT_BUTTON, self.save_command )
 		self.ok_butt.Bind( wx.EVT_BUTTON, self.ok_command )
@@ -2249,6 +2271,9 @@ class Dialog_PatientSetup ( wx.Dialog ):
 	
 	
 	
+	
+	def joystick_calibration_command( self, event ):
+		event.Skip()
 	
 	def load_command( self, event ):
 		event.Skip()
@@ -2545,7 +2570,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer12 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_staticText8 = wx.StaticText( self, wx.ID_ANY, u"Right:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText8 = wx.StaticText( self, wx.ID_ANY, u"Forward: ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText8.Wrap( -1 )
 		self.m_staticText8.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		
@@ -2554,18 +2579,18 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer12.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.m_JoystickCalibrationRight = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_JoystickCalibrationRight.Wrap( -1 )
-		self.m_JoystickCalibrationRight.SetMinSize( wx.Size( 100,-1 ) )
+		self.JoystickCalibrationValues0_lbl = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibrationValues0_lbl.Wrap( -1 )
+		self.JoystickCalibrationValues0_lbl.SetMinSize( wx.Size( 100,-1 ) )
 		
-		bSizer12.Add( self.m_JoystickCalibrationRight, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		bSizer12.Add( self.JoystickCalibrationValues0_lbl, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.JoystickCalibrationRight_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.JoystickCalibrationRight_lbl.Wrap( -1 )
-		self.JoystickCalibrationRight_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
-		self.JoystickCalibrationRight_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
+		self.JoystickCalibration0_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibration0_lbl.Wrap( -1 )
+		self.JoystickCalibration0_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibration0_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
-		bSizer12.Add( self.JoystickCalibrationRight_lbl, 0, wx.ALL, 5 )
+		bSizer12.Add( self.JoystickCalibration0_lbl, 0, wx.ALL, 5 )
 		
 		self.calib_butt1 = wx.Button( self, wx.ID_ANY, u"Calibrate", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
 		bSizer12.Add( self.calib_butt1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -2575,7 +2600,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer121 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_staticText81 = wx.StaticText( self, wx.ID_ANY, u"Left:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText81 = wx.StaticText( self, wx.ID_ANY, u"Backward:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText81.Wrap( -1 )
 		self.m_staticText81.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		
@@ -2584,18 +2609,18 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer121.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.m_JoystickCalibrationLeft = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_JoystickCalibrationLeft.Wrap( -1 )
-		self.m_JoystickCalibrationLeft.SetMinSize( wx.Size( 100,-1 ) )
+		self.JoystickCalibrationValues1_lbl = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibrationValues1_lbl.Wrap( -1 )
+		self.JoystickCalibrationValues1_lbl.SetMinSize( wx.Size( 100,-1 ) )
 		
-		bSizer121.Add( self.m_JoystickCalibrationLeft, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		bSizer121.Add( self.JoystickCalibrationValues1_lbl, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.JoystickCalibrationLeft_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.JoystickCalibrationLeft_lbl.Wrap( -1 )
-		self.JoystickCalibrationLeft_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
-		self.JoystickCalibrationLeft_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
+		self.JoystickCalibration1_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibration1_lbl.Wrap( -1 )
+		self.JoystickCalibration1_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibration1_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
-		bSizer121.Add( self.JoystickCalibrationLeft_lbl, 0, wx.ALL, 5 )
+		bSizer121.Add( self.JoystickCalibration1_lbl, 0, wx.ALL, 5 )
 		
 		self.calib_butt2 = wx.Button( self, wx.ID_ANY, u"Calibrate", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
 		bSizer121.Add( self.calib_butt2, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -2614,18 +2639,18 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer122.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.m_JoystickCalibrationForward = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_JoystickCalibrationForward.Wrap( -1 )
-		self.m_JoystickCalibrationForward.SetMinSize( wx.Size( 100,-1 ) )
+		self.JoystickCalibrationValues2_lbl = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibrationValues2_lbl.Wrap( -1 )
+		self.JoystickCalibrationValues2_lbl.SetMinSize( wx.Size( 100,-1 ) )
 		
-		bSizer122.Add( self.m_JoystickCalibrationForward, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		bSizer122.Add( self.JoystickCalibrationValues2_lbl, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.JoystickCalibrationForward_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.JoystickCalibrationForward_lbl.Wrap( -1 )
-		self.JoystickCalibrationForward_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
-		self.JoystickCalibrationForward_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
+		self.JoystickCalibration2_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibration2_lbl.Wrap( -1 )
+		self.JoystickCalibration2_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibration2_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
-		bSizer122.Add( self.JoystickCalibrationForward_lbl, 0, wx.ALL, 5 )
+		bSizer122.Add( self.JoystickCalibration2_lbl, 0, wx.ALL, 5 )
 		
 		self.calib_butt3 = wx.Button( self, wx.ID_ANY, u"Calibrate", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
 		bSizer122.Add( self.calib_butt3, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -2635,7 +2660,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer123 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_staticText83 = wx.StaticText( self, wx.ID_ANY, u"Right:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText83 = wx.StaticText( self, wx.ID_ANY, u"Left:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText83.Wrap( -1 )
 		self.m_staticText83.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		
@@ -2644,18 +2669,18 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer123.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.m_JoystickCalibrationBackward = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_JoystickCalibrationBackward.Wrap( -1 )
-		self.m_JoystickCalibrationBackward.SetMinSize( wx.Size( 100,-1 ) )
+		self.JoystickCalibrationValues3_lbl = wx.StaticText( self, wx.ID_ANY, u"--", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibrationValues3_lbl.Wrap( -1 )
+		self.JoystickCalibrationValues3_lbl.SetMinSize( wx.Size( 100,-1 ) )
 		
-		bSizer123.Add( self.m_JoystickCalibrationBackward, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		bSizer123.Add( self.JoystickCalibrationValues3_lbl, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.JoystickCalibrationBackward_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.JoystickCalibrationBackward_lbl.Wrap( -1 )
-		self.JoystickCalibrationBackward_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
-		self.JoystickCalibrationBackward_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
+		self.JoystickCalibration3_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.JoystickCalibration3_lbl.Wrap( -1 )
+		self.JoystickCalibration3_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibration3_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
-		bSizer123.Add( self.JoystickCalibrationBackward_lbl, 0, wx.ALL, 5 )
+		bSizer123.Add( self.JoystickCalibration3_lbl, 0, wx.ALL, 5 )
 		
 		self.calib_butt4 = wx.Button( self, wx.ID_ANY, u"Calibrate", wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
 		bSizer123.Add( self.calib_butt4, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )

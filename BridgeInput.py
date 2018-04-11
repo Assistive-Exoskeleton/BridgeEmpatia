@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
 import threading
 import time
@@ -7,16 +8,23 @@ import math
 
 import winsound     # Audio Feedback
 import subprocess
-from BridgeDialog import *
+#from BridgeDialog import *
 from BridgeConf import *
+from BridgeGUI import Dialog_Error
+#from BridgeDialog import DialogError
 import BridgeGUI
-import BridgeDialog
 
 import wx
-from wx.lib.pubsub import setuparg1
+from wx.lib.wordwrap import wordwrap
+#from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
+from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub as Publisher
+
 import speech_recognition as sr
 
+" ################################ "
+" # JOYSTICK UPDATE THREAD CLASS # "
+" ################################ "
 
 class Thread_InputClass(threading.Thread):
     def __init__(self, Name, Bridge, Coord):
@@ -62,7 +70,7 @@ class Thread_InputClass(threading.Thread):
 
         " Dizionari "
         self.instr_dict    = {'fer':'fermo', 'rip':'riposo', 'mem':'memorizza', 'dor':'dormi', 'ter':'termina'}
-        self.direction_dict = {'sin':[0.5,0,0,0], 'des':[-0.5,0,0,0], 'sal':[0,0,0.5,0], 'sce':[0,0,-0.5,0], 'ava':[0,0.5,0,0], 'ind':[0,-0.5,0,0]}
+        self.direction_dict = {'sin':[0,0.5,0,0], 'des':[0,-0.5,0,0], 'sal':[0,0,0.5,0], 'sce':[0,0,-0.5,0], 'ava':[0.5,0,0,0], 'ind':[-0.5,0,0,0]}
         self.step_dict      = {'spostamento picc': self.Step_Param[0], 'spostamento medi': self.Step_Param[1], 'spostamento gran': self.Step_Param[2]}
         self.speed_dict = {'velocità picc': self.Step_Param[0], 'velocità medi': self.Step_Param[1], 'velocità gran': self.Step_Param[2]}
 
@@ -86,8 +94,7 @@ class Thread_InputClass(threading.Thread):
                     " Count available joysticks "
                     if pygame.joystick.get_count() == 0:
                         print '# Warning: Joystick missing'
-                        dialog = DialogError(self, "Joystick missing")
-                        dialog.ShowModal()
+                        wx.CallAfter(Publisher.sendMessage, "ShowDialogError", msg = "# Warning: Joystick missing")
                         return
 
                     " Init Joystick "
@@ -96,14 +103,15 @@ class Thread_InputClass(threading.Thread):
                     self.PyJoystick = pygame.joystick.Joystick(0)
                     self.PyJoystick.init()
                     " Update input info in main window "
-                    wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
+                    wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
+                    self.Bridge.Joystick.Initialized = True
 
                 except Exception, e:
 
                     print '# Error: Pygame initialization failed | ' + str(e)
-                    # dialog = DialogError(self, "Error: Pygame initialization failed")
-                    # dialog.ShowModal()
-                    return False
+                    wx.CallAfter(Publisher.sendMessage, "ShowDialogError", msg = "# Error: Pygame initialization failed")
+                    self.Bridge.Joystick.Initialized = False
+                    return
 
             elif self.Bridge.InputList[i] == 'Vocal':
                 print '+ Vocal Interface'
@@ -117,7 +125,7 @@ class Thread_InputClass(threading.Thread):
                     # return_code = subprocess.call(["afplay", au_file])
                     self.Bip()
                     " Update input info in main window "
-                    wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
+                    wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
                 except Exception, e:
                     print '# ERROR: Init Vocal failed' + str(e)
@@ -128,14 +136,13 @@ class Thread_InputClass(threading.Thread):
                 print '+ Visual Interface'
             else:
                 print '# Error: Not implemented interface: ' + self.Bridge.InputList[i]
-                dialog = DialogError(self, "Error: Not implemented interface")
-                dialog.ShowModal()
+                wx.CallAfter(Publisher.sendMessage, "ShowDialogError", msg = "# Error: Not implemented interface")
 
         self.Running = True
 
         while self.Running:
 
-            if self.Bridge.Control.Input == "Joystick":
+            if self.Bridge.Control.Input == "Joystick" and self.Bridge.Joystick.Initialized:
 
                 self.Bridge.Control.FIRST_RUN = 1
                 self.VocalStatus = self.VOCAL_IDLE
@@ -143,62 +150,79 @@ class Thread_InputClass(threading.Thread):
                 #
                 #
                 # self.Bridge.Joystick.Mode = self.PyJoystick.get_button(1)
+
                 " If a joystick event occurred "
                 for event in events:
                     if event.type == pygame.QUIT:
-                        self.terminate()
+                        self.Terminate()
 
                     elif event.type == pygame.JOYBUTTONUP:
                         pass
+
                     elif event.type == pygame.JOYBUTTONDOWN:
 
-                        print 'Button'
-                        if self.Bridge.Joystick.Mode == 0:
-                            self.Bridge.Joystick.Mode = 1
-                            winsound.Beep(440, 500)
-                        else:
-                            self.Bridge.Joystick.Mode = 0
-                            winsound.Beep(880, 500)
+                        if self.PyJoystick.get_button(0):
 
-                        self.Bridge.Joystick.SavePosition         = self.PyJoystick.get_button(2)
-                        self.Bridge.Joystick.GotoSavedPosition    = self.PyJoystick.get_button(3)
-                        self.Bridge.Joystick.Alarm                = self.PyJoystick.get_button(4)
+                            if self.Bridge.Joystick.Mode:
+                                self.Bridge.Joystick.Mode = 0
+                                print '* Change Plane Button: X-Y'
+                                winsound.Beep(880, 500)
+
+                            else:
+                                self.Bridge.Joystick.Mode = 1
+                                print '* Change Plane Button: Z'
+                                winsound.Beep(440, 500)
+
+                        #self.Bridge.Joystick.SavePosition         = self.PyJoystick.get_button(2)
+                        #self.Bridge.Joystick.GotoSavedPosition    = self.PyJoystick.get_button(3)
+                        #self.Bridge.Joystick.Alarm                = self.PyJoystick.get_button(4)
+
+                        " Update input info in main window "
+                        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
                     elif event.type == pygame.JOYAXISMOTION:
-                        #self.Bridge.Joystick.Mode = self.PyJoystick.get_button(1)
-                        for i in range (0,2):
-                            axis = (self.PyJoystick.get_axis(i) - self.Bridge.Joystick.AxisOffset[i]) * self.Bridge.Joystick.Gain
 
-                            # controllo la banda morta (troppo vicino al non spostamento del joystick)
-                            if abs(axis) < 0.1:
+                        for i in range (0,2):
+                            axis = ( - self.PyJoystick.get_axis(i) + self.Bridge.Joystick.AxisOffset[i])
+
+                            " Remove Deadband"
+                            if abs(axis) < 0.05:
                                 axis = 0.0
 
-                            if self.Bridge.Joystick.Mode == 0:
-                                if i == 0:
-                                    self.Coord.p0[i] = axis * 1.2
-                                else:
-
-                                    self.Coord.p0[i] = -axis * 1.2
-
-                                self.Coord.p0[2] = 0.0
-                                self.Coord.p0[3] = 0.0
-                            else:
-                                if i == 0:
-                                    #self.Coord.p0[3] = axis * 1.2
-                                    self.Coord.p0[3] = 0
-                                else:
-                                    self.Coord.p0[2] = -axis * 1.2
-                                    
+                            " Calibrated Joystick Acquisition " # 0:Forward 1:Backward 2:Right 3:Left
+                            if self.Bridge.Joystick.Mode: # Z axis
 
                                 self.Coord.p0[0] = 0.0
                                 self.Coord.p0[1] = 0.0
 
-                        # print self.Coord.p0
+                                if i == 1:  # Z axis
+                                    if axis > 0:
+                                        self.Coord.p0[2] = axis/self.Bridge.Patient.JoystickCalibration[0] # Forward
+                                    else:
+                                        self.Coord.p0[2] = axis/self.Bridge.Patient.JoystickCalibration[1]  # Backward
+                                else:       # Theta 5
+                                    self.Coord.p0[3] = 0
+
+                            else: # X-Y axis
+
+                                if i == 1: # X axis
+                                    if axis > 0:
+                                        self.Coord.p0[0] = axis/self.Bridge.Patient.JoystickCalibration[0]  # Forward
+                                    else:
+                                        self.Coord.p0[0] = axis/self.Bridge.Patient.JoystickCalibration[1]  # Backward
+                                else: # Y axis
+                                    if axis > 0:
+                                        self.Coord.p0[1] = -axis/self.Bridge.Patient.JoystickCalibration[2] # Left
+                                    else:
+                                        self.Coord.p0[1] = -axis/self.Bridge.Patient.JoystickCalibration[3]  # Right
+
+                                self.Coord.p0[2] = 0.0
+                                self.Coord.p0[3] = 0.0
 
 
 
                         " Update input info in main window "
-                        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
+                        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
                 pygame.event.clear()
 
@@ -330,7 +354,7 @@ class Thread_InputClass(threading.Thread):
                                 self.Bip()
 
                                 self.VocalStatus = self.VOCAL_IDLE
-                                self.terminate()
+                                self.Terminate()
 
                             elif jarvis_cmd == 'falso':
                                 print '*** CONTROLLO VOCALE ATTIVO ***'
@@ -355,7 +379,7 @@ class Thread_InputClass(threading.Thread):
 
         print '- Input Thread Out'
 
-    " Funzione di riconoscimento dei comandi che può essere personalizzata -> custumizzazione "
+    " Funzione di riconoscimento dei comandi che può essere personalizzata -> cust0mizzazione "
 
     def CommandRecognition(self, instr):
 
@@ -419,7 +443,7 @@ class Thread_InputClass(threading.Thread):
             self.Bip()
 
         " Update input info in main window "
-        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
+        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
 
     def WaitForInstructions(self):
@@ -454,15 +478,18 @@ class Thread_InputClass(threading.Thread):
                 instruction = 'Listen Failed'
                 print str(e)
 
-
     def Bip(self):
         Freq    = 700 # Set Frequency To 2500 Hertz
         Dur     = 950 # Set Duration To 1000 ms == 1 second
         winsound.Beep(Freq,Dur)
 
-    def terminate(self):
+    def Terminate(self):
         " Exit the thread "
         self.Running = False
+
+" ############################## "
+" # JOYSTICK CALIBRATION CLASS # "
+" ############################## "
 
 class Thread_JoystickCalibrationClass(threading.Thread):
 
@@ -472,44 +499,48 @@ class Thread_JoystickCalibrationClass(threading.Thread):
         self.Running = False
         self.Bridge = Bridge
         self.Conf   = Conf
-        self.direction= direction
+        self.direction= direction # 0:Forward 1:Backward 2:Right 3:Left
 
 
     def run(self):
 
         self.Running = True
+
         if self.direction <= 1:
-            i=0
-        else:
             i=1
-        self.Bridge.Patient.JoystickCalibration[self.direction]= 0
+        else:
+            i=0
+
+        self.Bridge.Patient.JoystickCalibration[self.direction] = 0
 
         try:
+
             self.PyJoystick = pygame.joystick.Joystick(0)
             self.PyJoystick.init()
 
+            while self.Running:
+
+                axis = ( - self.PyJoystick.get_axis(i) + self.Bridge.Joystick.AxisOffset[i])
+
+
+                if abs(axis) > self.Bridge.Patient.JoystickCalibration[self.direction]:
+
+                    self.Bridge.Patient.JoystickCalibration[self.direction] = abs(axis)
+                    print axis
+
+            print str(self.direction) + ': ' + str(self.Bridge.Patient.JoystickCalibration[self.direction])
+
+            #self.Conf.SavePatient(self.Bridge.Patient.Filename, self.Bridge.Patient)
+            wx.CallAfter(Publisher.sendMessage, "UpdateJoystickCalibrationInfo")
+
         except Exception, e:
 
-            print '# ERROR: joystick failure | ' + str(e)
-            return False
+            print '# ERROR: Joystick failure | ' + str(e)
+            wx.CallAfter(Publisher.sendMessage, "ShowDialogError", msg="# Error: Joystick failure")
+            self.Running = False
+            return
 
-        while self.Running:
 
-            axis = (self.PyJoystick.get_axis(i) - self.Bridge.Joystick.AxisOffset[i])
-
-            if abs(axis)>self.Bridge.Patient.JoystickCalibration[self.direction]:
-
-                self.Bridge.Patient.JoystickCalibration[self.direction]= abs(axis)
-
-        print self.Bridge.Patient.JoystickCalibration[self.direction]
-
-        #self.Conf.SavePatient(self.Bridge.Patient.Filename, self.Bridge.Patient)
-
-    def terminate(self):
+    def Terminate(self):
 
         self.Running = False
-
-
-
-
-

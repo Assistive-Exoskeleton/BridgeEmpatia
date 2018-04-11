@@ -20,7 +20,8 @@ from BridgeInput       import *
 
 import wx
 from wx.lib.wordwrap import wordwrap
-from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
+#from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
+from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub as Publisher
 
 import serial
@@ -159,14 +160,12 @@ class MainWindow(BridgeGUI.BridgeWin):
         Publisher.subscribe(self.ShowDonningDialog, "ShowDonningDialog")
         Publisher.subscribe(self.UpdateControlInfo, "UpdateControlInfo")
         Publisher.subscribe(self.UpdateInputInfo, "UpdateInputInfo")
-
+        Publisher.subscribe(self.ShowDialogError, "ShowDialogError")
         #self.UpdateControlInfo(None)
 
         " Create timer function - Update input values "
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.UpdateInputValues, self.timer)
-
-
 
 
     def update(self, event):
@@ -176,7 +175,8 @@ class MainWindow(BridgeGUI.BridgeWin):
     " ################### "
     " #### PUBLISHER #### "
     " ################### "
-    def UpdateJointsInfo (self, msg):
+
+    def UpdateJointsInfo (self):
 
         for i, Joint in zip(range(0,len(self.Bridge.Joints)), self.Bridge.Joints):
             if Joint.Homed:
@@ -185,6 +185,16 @@ class MainWindow(BridgeGUI.BridgeWin):
                 self.Jinitialized_lbl[i].SetLabel(u"○")
 
             self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
+
+    def ShowDialogError (self, msg):
+        dialog = DialogError(self, msg)
+        dialog.ShowModal()
+        return
+
+    def ShowDialogAlert (self, msg):
+        dialog = DialogAlert(self, msg)
+        dialog.ShowModal()
+        return
 
     def ShowDonningDialog (self, msg):
         if self.Bridge.Status != DONNING:
@@ -221,8 +231,9 @@ class MainWindow(BridgeGUI.BridgeWin):
         self.Refresh()
 
 
-    def UpdateInputInfo (self, msg):
+    def UpdateInputInfo (self):
 
+        " Set Input Info "
         self.inputDescription_lbl.SetLabel(str(self.Bridge.Control.Input))
 
         if not self.Bridge.Joystick.Mode:
@@ -243,10 +254,11 @@ class MainWindow(BridgeGUI.BridgeWin):
             self.JoystickRecallPos_lbl.SetBackgroundColour((242,255,242))
 
         " Force win refresh (background issue) "
-        # TODO: Is this necessary?
         self.Refresh()
 
-    def UpdateInputValues (self, msg):
+    def UpdateInputValues (self,msg):
+
+        " Set Input Values "
         self.P0_X_lbl.SetLabel("%.2f" % self.Coord.p0[0])
         self.P0_Y_lbl.SetLabel("%.2f" % self.Coord.p0[1])
         self.P0_Z_lbl.SetLabel("%.2f" % self.Coord.p0[2])
@@ -362,10 +374,16 @@ class MainWindow(BridgeGUI.BridgeWin):
 
             self.statusbar.SetStatusText('Patient: Loaded', 2)
 
-    def joystick_setup_command( self, event ):
+    def joystick_calibration_command( self, event ):
 
-    	dialog= DialogJoystickCalibration(self, self.Conf, self.Bridge)
-    	dialog.ShowModal()
+        if self.Bridge.Joystick.Initialized:
+    	    dialog= DialogJoystickCalibration(self, self.Conf, self.Bridge)
+    	    dialog.ShowModal()
+        else:
+            print "# Warning: Joystick not initialized"
+            dialog = DialogAlert(self, "# Warning: Joystick not initialized")
+            dialog.ShowModal()
+
 
     " ################## "
     " #### COMMANDS #### "
@@ -422,7 +440,6 @@ class MainWindow(BridgeGUI.BridgeWin):
             self.Conf.Serial.AllConnected = True
 
         if self.Conf.Serial.AllConnected == True:
-            print 'ok'
             " Get active threads "
             threads_list = threading.enumerate()
             controlThread_running = False
@@ -456,7 +473,7 @@ class MainWindow(BridgeGUI.BridgeWin):
             self.disconnect_butt.Enable()
 
             self.UpdateControlInfo(None)
-            self.UpdateInputInfo(None)
+            self.UpdateInputInfo()
 
             " Update statubar "
             self.statusbar.SetStatusText('Connected', 0)
@@ -480,10 +497,6 @@ class MainWindow(BridgeGUI.BridgeWin):
                 except Exception, e:
                     print 'Error  ' + str(e)
 
-
-
-
-
     def disconnect_command (self, event):
 
         " Get active threads "
@@ -495,7 +508,7 @@ class MainWindow(BridgeGUI.BridgeWin):
             for i in range(0, len(threads_list)):
                 th = threads_list[i]
                 if th.name != "MainThread":
-                    th.terminate()
+                    th.Terminate()
         except Exception, e:
             print str(e)
 
@@ -532,7 +545,6 @@ class MainWindow(BridgeGUI.BridgeWin):
 
         self.timer.Stop()
 
-
     def initialize_system_command (self, event):
 
         print '+ initialize_system_command() called.'
@@ -568,7 +580,6 @@ class MainWindow(BridgeGUI.BridgeWin):
             dialog.ShowModal()
             print str(e)
             return
-
 
     def enableCtrl_command (self, event):
 
@@ -637,7 +648,7 @@ class MainWindow(BridgeGUI.BridgeWin):
             for i in range(0, len(threads_list)):
                 th = threads_list[i]
                 if th.name != "MainThread" and th.name != "ControlThread":
-                    th.terminate()
+                    th.Terminate()
         except Exception, e:
             print str(e)
 
@@ -670,14 +681,13 @@ class MainWindow(BridgeGUI.BridgeWin):
                 self.Bridge.Control.Listen = 1
 
         " Update input info in main window "
-        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo", None)
+        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
     def savePos_command (self):
         self.Coord.SavePos = [True, True, True, True, True, True]
 
     def gotoPos_command (self):
         self.Coord.GoToSavedPosMainTrigger = True
-
 
     def open_jointDialog_command (self, event):
         widget = event.GetEventObject()
