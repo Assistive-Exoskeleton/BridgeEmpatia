@@ -3,6 +3,7 @@ import ConfigParser
 import math
 import numpy
 import os, sys
+from bluetooth 	import *
 
 
 IDLE                = 0
@@ -35,13 +36,18 @@ class ControlClass:
     def __init__(self):
 
         self.Status                 = IDLE
-        self.Input                  = "Joystick"
+        self.BTenabled              = False
+        #ALE
+        self.BTclient_sock           = BluetoothSocket(RFCOMM)
+        self.jarvis_cmd             = ""
+        self.InputList              = ["Joystick", "Visual", "Vocal"]
+        self.Input                  = ""
         self.Listen = 0
         self.FIRST_RUN = True
 
         # TODO: Tuning Parameters "
         self.ThreadPeriod           = 0.5
-        self.Time                   = 0.3
+        self.Time                   = 0.5
         self.MaxDegDispl            = 5
         " Massimo spostamento 3D [m]"
         self.S                      = 0.02

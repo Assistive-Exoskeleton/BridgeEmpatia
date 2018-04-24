@@ -11,17 +11,18 @@ import numpy
 import math
 
 import BridgeGUI
-
+from BridgeBluetooth   import *
 from BridgeConf        import *
 from BridgeDialog      import *
 from BridgeControl     import *
 from BridgeJoint       import *
 from BridgeInput       import *
+from BridgeBluetooth import BluetoothClass
+
 
 import wx
 from wx.lib.wordwrap import wordwrap
-#from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
-from wx.lib.pubsub import setupkwargs
+from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
 from wx.lib.pubsub import pub as Publisher
 
 import serial
@@ -58,7 +59,6 @@ class CreatePlot3DExo(wx.Panel):
         col_norm      = (sysTextColour[0]*1.0/255, sysTextColour[1]*1.0/255, sysTextColour[2]*1.0/255)
         
         self.figure.patch.set_facecolor(col_norm)
-
 
         # Canvas
         self.canvas = FigureCanvas(parent, -1, self.figure)
@@ -112,9 +112,14 @@ class MainWindow(BridgeGUI.BridgeWin):
 
         # Define bridge configurations
         self.Bridge = BridgeClass()
-        self.Conf   = BridgeConfClass(self.Bridge)
-        self.Coord  = BridgeCoordClass()
+        self.Conf = BridgeConfClass(self.Bridge)
+        self.Coord = BridgeCoordClass()
+        self.BT = BluetoothClass(self.Bridge, self.Conf, self.Coord)
 
+        #ALE: avvio thread del BT
+        self.BTThread= Bluetooth_Thread("BluetoothThread",self.Conf,self.Bridge,self.Coord)
+
+        self.BTThread.start()
         " Initialize plots "
         self.exo3d_plot     = CreatePlot3DExo(self.exo3d_container,self.Conf)
         self.ani            = animation.FuncAnimation(self.exo3d_plot.figure, self.animate, fargs=[],interval = 500)
@@ -161,11 +166,14 @@ class MainWindow(BridgeGUI.BridgeWin):
         Publisher.subscribe(self.UpdateControlInfo, "UpdateControlInfo")
         Publisher.subscribe(self.UpdateInputInfo, "UpdateInputInfo")
         Publisher.subscribe(self.ShowDialogError, "ShowDialogError")
-        #self.UpdateControlInfo(None)
+        Publisher.subscribe(self.ShowDialogAlert, "ShowDialogAlert")
+        Publisher.subscribe(self.change_button, "ChangeButton")
 
         " Create timer function - Update input values "
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.UpdateInputValues, self.timer)
+
+
 
 
     def update(self, event):
@@ -186,6 +194,27 @@ class MainWindow(BridgeGUI.BridgeWin):
 
             self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
 
+    def change_button(self,case):
+        print "!!!", case
+        if case.data == "init":
+            self.connect_butt.Disable()
+            self.init_butt.Disable()
+        elif case.data == "enable control":
+            self.connect_butt.Disable()
+            self.init_butt.Disable()
+            self.enableCtrl_butt.Disable()
+            self.disconnect_butt.Enable()
+            self.disableCtrl_butt.Enable()
+            self.stop_butt.Enable()
+        elif case.data == "ready":
+            print "sono in ready"
+            self.enableCtrl_butt.Enable()
+            self.connect_butt.Disable()
+            self.disconnect_butt.Disable()
+            self.stop_butt.Disable()
+            self.init_butt.Disable()
+
+
     def ShowDialogError (self, msg):
         dialog = DialogError(self, msg)
         dialog.ShowModal()
@@ -196,7 +225,7 @@ class MainWindow(BridgeGUI.BridgeWin):
         dialog.ShowModal()
         return
 
-    def ShowDonningDialog (self, msg):
+    def ShowDonningDialog (self):
         if self.Bridge.Status != DONNING:
             dialog = DialogError(self, "MEGA FAIL DONNING.")
             dialog.ShowModal()
@@ -229,7 +258,6 @@ class MainWindow(BridgeGUI.BridgeWin):
 
         " Force win refresh (background issue) "
         self.Refresh()
-
 
     def UpdateInputInfo (self):
 
