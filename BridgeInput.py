@@ -6,6 +6,7 @@ import time
 import pygame
 import math
 
+from BridgeConf import *
 import winsound     # Audio Feedback
 import subprocess
 #from BridgeDialog import *
@@ -27,13 +28,14 @@ import speech_recognition as sr
 " ################################ "
 
 class Thread_InputClass(threading.Thread):
-    def __init__(self, Name, Bridge, Coord):
+    def __init__(self, Name, Bridge, Coord, BT):
 
         threading.Thread.__init__(self, name=Name)
         self.Running            = False
         self.Name               = Name
         self.Bridge             = Bridge
         self.Coord              = Coord
+        self.BT                 = BT
 
         self.AudioPath          = os.getcwd() + '\\Assets\\Audio\\'
 
@@ -61,7 +63,7 @@ class Thread_InputClass(threading.Thread):
         self.VocalSteps                 = self.Bridge.Control.VocalMaxSteps
 
         " Variabili per la memorizzazione " # TODO: SAVED POS
-        self.var_mem                    = ['', '', '', '', '']
+        self.var_mem                    = ['0', '0', '0', '0', '0']
         self.NumVarMem                  = 0
         self.vm                         = 4*[0]
 
@@ -78,7 +80,6 @@ class Thread_InputClass(threading.Thread):
 
         print '* Input Thread Run'
 
-        print 'Input: ' + self.Bridge.Control.Input
 
         " Human-Machine Interfaces Initialization"
 
@@ -123,12 +124,11 @@ class Thread_InputClass(threading.Thread):
                     # winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
                     # au_file = audio_file+'Jarvis.wav'
                     # return_code = subprocess.call(["afplay", au_file])
-                    self.Bip()
                     " Update input info in main window "
                     wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
                 except Exception, e:
-                    print '# ERROR: Init Vocal failed' + str(e)
+                    print '# Error: Init Embedded Vocal failed' + str(e)
                     " Update input info in main window "
                     return False
 
@@ -137,6 +137,7 @@ class Thread_InputClass(threading.Thread):
             else:
                 print '# Error: Not implemented interface: ' + self.Bridge.InputList[i]
                 wx.CallAfter(Publisher.sendMessage, "ShowDialogError", msg = "# Error: Not implemented interface")
+
 
         self.Running = True
 
@@ -147,14 +148,15 @@ class Thread_InputClass(threading.Thread):
                 self.Bridge.Control.FIRST_RUN = 1
                 self.VocalStatus = self.VOCAL_IDLE
                 events = pygame.event.get()
-                #
-                #
-                # self.Bridge.Joystick.Mode = self.PyJoystick.get_button(1)
+
+                #ALE: comunico all'app qual è il piano di lavoro corrente per aggiornare l'icona dedicata
+                if self.Bridge.Status== RUNNING and self.Bridge.Control.BTenabled:
+                            self.BT.SendMessage("Axis-joy:"+str(self.Bridge.Joystick.Mode))
 
                 " If a joystick event occurred "
                 for event in events:
                     if event.type == pygame.QUIT:
-                        self.Terminate()
+                        self.terminate()
 
                     elif event.type == pygame.JOYBUTTONUP:
                         pass
@@ -238,150 +240,187 @@ class Thread_InputClass(threading.Thread):
                     self.Bridge.Control.FIRST_RUN = False
                 else:
                     " Get command "
-                    self.Bridge.Control.Listen = 1
+                    #self.Bridge.Control.Listen = 1
                     if self.Bridge.Control.Listen:
 
                         self.Bridge.Control.Listen = 0
-                        print "Listening..."
-                        jarvis_cmd = self.WaitForInstructions()
-                        jarvis_cmd = jarvis_cmd.lower()
+                        print "Listening on Laptop... "
+                        self.Bridge.Control.jarvis_cmd = self.WaitForInstructions()
+                        print "Recognized ", self.Bridge.Control.jarvis_cmd
 
-                        print jarvis_cmd
+                    self.Bridge.Control.jarvis_cmd = self.Bridge.Control.jarvis_cmd.lower()
 
-                        " ################### "
-                        " VOCAL STATE MACHINE "
-                        " ################### "
 
-                        if 'aiuto' in jarvis_cmd:
-                            print '*** ALLARME!'
-                            self.VocalStatus = self.VOCAL_HELP
+                    " ################### "
+                    " VOCAL STATE MACHINE "
+                    " ################### "
 
-                        elif 'termina' in jarvis_cmd:
-                            self.VocalStatus = self.VOCAL_STOP_CONFERMATION
-                            winsound.PlaySound(self.AudioPath + 'ConfermaSpegnimento.wav', winsound.SND_FILENAME)
-                            # au_file = audio_file+'ConfermaSpegnimento.wav'
+                    if self.Bridge.Control.jarvis_cmd[0:4] == 'aiut':
+                        self.Bridge.Control.jarvis_cmd=""
+                        print '*** ALLARME!'
+                        self.VocalStatus = self.VOCAL_HELP
+
+                    elif 'termina' in self.Bridge.Control.jarvis_cmd:
+                        self.Bridge.Control.jarvis_cmd = ""
+                        self.VocalStatus = self.VOCAL_STOP_CONFERMATION
+                        winsound.PlaySound(self.AudioPath + 'ConfermaSpegnimento.wav', winsound.SND_FILENAME)
+                        # au_file = audio_file+'ConfermaSpegnimento.wav'
+                        # return_code = subprocess.call(["afplay", au_file])
+                        self.Bip()
+
+                    elif self.VocalStatus == self.VOCAL_IDLE:
+
+                        if 'jarvis' in self.Bridge.Control.jarvis_cmd:
+
+                            winsound.PlaySound(self.AudioPath + 'ConfermaAttivazione.wav', winsound.SND_FILENAME)
+                            print "vero o falso?"
+                            self.Bridge.Control.jarvis_cmd=""
+                            # au_file = audio_file + 'ConfermaAttivazione.wav'
                             # return_code = subprocess.call(["afplay", au_file])
                             self.Bip()
 
-                        elif self.VocalStatus == self.VOCAL_IDLE:
-                            if 'jarvis' in jarvis_cmd:
+                            self.VocalStatus = self.VOCAL_RUNNING_CONFERMATION
 
-                                winsound.PlaySound(self.AudioPath + 'ConfermaAttivazione.wav', winsound.SND_FILENAME)
-                                # au_file = audio_file + 'ConfermaAttivazione.wav'
-                                # return_code = subprocess.call(["afplay", au_file])
+                        elif 'dormi' in self.Bridge.Control.jarvis_cmd:
+                            self.Bridge.Control.jarvis_cmd = ""
+                            self.VocalStatus = self.VOCAL_IDLE
+
+                    elif self.VocalStatus == self.VOCAL_RUNNING_CONFERMATION:
+
+                        if self.Bridge.Control.jarvis_cmd == 'vero':
+                            self.Bridge.Control.jarvis_cmd = ""
+                            print '*** CONTROLLO VOCALE ATTIVATO ***'
+                            winsound.PlaySound(self.AudioPath + 'SonoAttivo.wav', winsound.SND_FILENAME)
+                            # au_file = audio_file+'SonoAttivo.wav'
+                            # return_code = subprocess.call(["afplay", au_file])
+                            self.Bip()
+
+                            self.VocalStatus = self.VOCAL_RUNNING
+
+                        elif self.Bridge.Control.jarvis_cmd == 'falso':
+                            self.Bridge.Control.jarvis_cmd = ""
+                            print '*** CONTROLLO VOCALE DISATTIVATO ***'
+                            winsound.PlaySound(self.AudioPath + 'Dormi2.wav', winsound.SND_FILENAME)
+                            # au_file = audio_file + 'Dormi2.wav'
+                            # return_code = subprocess.call(["afplay", au_file])
+                            self.Bip()
+
+                            self.VocalStatus = self.VOCAL_IDLE
+
+                        elif not self.Bridge.Control.jarvis_cmd=="":
+
+                            print '*** COMANDO VOCALE NON VALIDO ***'
+                            self.Bridge.Control.jarvis_cmd = ""
+                            winsound.PlaySound(self.AudioPath + 'IstruzioneNonValida.wav', winsound.SND_FILENAME)
+                            # au_file = audio_file+'IstruzioneNonValida.wav'
+                            # return_code = subprocess.call(["afplay", au_file])
+                            self.Bip()
+                            pass
+
+                    elif self.VocalStatus == self.VOCAL_RUNNING:
+
+                        " Parse command "
+                        if not self.Bridge.Control.jarvis_cmd == "":
+                            self.CommandRecognition(self.Bridge.Control.jarvis_cmd)
+                            self.Bridge.Control.jarvis_cmd = ""
+
+                        if self.VocalCmd == 'dormi':
+                            winsound.PlaySound(self.AudioPath + 'Dormi.wav', winsound.SND_FILENAME)
+                            # au_file = audio_file+'Dormi.wav'
+                            # return_code = subprocess.call(["afplay", au_file])
+                            self.Bip()
+                            self.VocalStatus = self.VOCAL_IDLE
+
+                        elif self.VocalCmd == 'memorizza':
+                            self.Bridge.Control.jarvis_cmd = ""
+                            '''
+                            winsound.PlaySound('Memorizza.wav', winsound.SND_FILENAME)
+                            self.Bip()
+                            self.running_3 = True
+    
+                            print '*** Vuoi memorizzare questa posizione come nuovo comando? [Vero/Falso] ***'
+                            conf_memo = self.WaitForInstructions()                          
+                            print conf_memo
+    
+                            if conf_memo == 'falso':
+                                self.running_3 = False
                                 self.Bip()
-
-                                self.VocalStatus = self.VOCAL_RUNNING_CONFERMATION
-
-                            elif 'dormi' in jarvis_cmd:
-                                self.VocalStatus = self.VOCAL_IDLE
-
-                        elif self.VocalStatus == self.VOCAL_RUNNING_CONFERMATION:
-
-                            if jarvis_cmd == 'vero':
-                                print '*** CONTROLLO VOCALE ATTIVATO ***'
-                                winsound.PlaySound(self.AudioPath + 'SonoAttivo.wav', winsound.SND_FILENAME)
-                                # au_file = audio_file+'SonoAttivo.wav'
-                                # return_code = subprocess.call(["afplay", au_file])
+    
+                            elif conf_memo == 'vero':
+                                self.Memorizza()
+    
+                            elif conf_memo[0:4] == 'aiut':
+                                print '*** ALLARME!'
+                                self.Coord.VocalCtrlPos = 'aiuto'
+                                self.running_VocalControl = False
+                                self.running_2 = False
+                                self.running_3 = False
+    
+                            else :
+                                self.running_3 = False
                                 self.Bip()
+                            '''
 
-                                self.VocalStatus = self.VOCAL_RUNNING
+                    elif self.VocalStatus == self.VOCAL_STOP_CONFERMATION:
+                        if Bridge.Control.jarvis_cmd == 'vero':
+                            self.Bridge.Control.jarvis_cmd = ""
+                            print '*** CONTROLLO VOCALE TERMINATO ***'
+                            winsound.PlaySound(self.AudioPath + 'Spegnimento.wav', winsound.SND_FILENAME)
+                            # au_file = audio_file+'Spegnimento.wav'
+                            # return_code = subprocess.call(["afplay", au_file])
+                            self.Bip()
 
-                            elif jarvis_cmd == 'falso':
-                                print '*** CONTROLLO VOCALE DISATTIVATO ***'
-                                winsound.PlaySound(self.AudioPath + 'Dormi2.wav', winsound.SND_FILENAME)
-                                # au_file = audio_file + 'Dormi2.wav'
-                                # return_code = subprocess.call(["afplay", au_file])
-                                self.Bip()
+                            self.VocalStatus = self.VOCAL_IDLE
+                            self.terminate()
 
-                                self.VocalStatus = self.VOCAL_IDLE
-
-                            else:
+                        elif Bridge.Control.jarvis_cmd == 'falso':
+                            self.Bridge.Control.jarvis_cmd = ""
+                            print '*** CONTROLLO VOCALE ATTIVO ***'
+                            winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
+                            # au_file = audio_file+'Dormi2.wav'
+                            # return_code = subprocess.call(["afplay", au_file])
+                            self.Bip()
+                            self.VocalStatus = self.VOCAL_IDLE
+                        else:
+                            if not self.Bridge.Control.jarvis_cmd == "":
                                 print '*** COMANDO VOCALE NON VALIDO ***'
                                 winsound.PlaySound(self.AudioPath + 'IstruzioneNonValida.wav', winsound.SND_FILENAME)
                                 # au_file = audio_file+'IstruzioneNonValida.wav'
                                 # return_code = subprocess.call(["afplay", au_file])
                                 self.Bip()
-                                pass
 
-                        elif self.VocalStatus == self.VOCAL_RUNNING:
-
-                            " Parse command "
-                            self.CommandRecognition(jarvis_cmd)
-
-                            if self.VocalCmd == 'dormi':
-                                winsound.PlaySound(self.AudioPath + 'Dormi.wav', winsound.SND_FILENAME)
-                                # au_file = audio_file+'Dormi.wav'
-                                # return_code = subprocess.call(["afplay", au_file])
-                                self.Bip()
-                                self.VocalStatus = self.VOCAL_IDLE
-
-                            elif self.VocalCmd == 'memorizza':
-                                '''
-                                winsound.PlaySound('Memorizza.wav', winsound.SND_FILENAME)
-                                self.Bip()
-                                self.running_3 = True
-        
-                                print '*** Vuoi memorizzare questa posizione come nuovo comando? [Vero/Falso] ***'
-                                conf_memo = self.WaitForInstructions()                          
-                                print conf_memo
-        
-                                if conf_memo == 'falso':
-                                    self.running_3 = False
-                                    self.Bip()
-        
-                                elif conf_memo == 'vero':
-                                    self.Memorizza()
-        
-                                elif conf_memo[0:4] == 'aiut':
-                                    print '*** ALLARME!'
-                                    self.Coord.VocalCtrlPos = 'aiuto'
-                                    self.running_VocalControl = False
-                                    self.running_2 = False
-                                    self.running_3 = False
-        
-                                else :
-                                    self.running_3 = False
-                                    self.Bip()
-                                '''
-
-                        elif self.VocalStatus == self.VOCAL_STOP_CONFERMATION:
-                            if jarvis_cmd == 'vero':
-                                print '*** CONTROLLO VOCALE TERMINATO ***'
-                                winsound.PlaySound(self.AudioPath + 'Spegnimento.wav', winsound.SND_FILENAME)
-                                # au_file = audio_file+'Spegnimento.wav'
-                                # return_code = subprocess.call(["afplay", au_file])
-                                self.Bip()
-
-                                self.VocalStatus = self.VOCAL_IDLE
-                                self.Terminate()
-
-                            elif jarvis_cmd == 'falso':
-                                print '*** CONTROLLO VOCALE ATTIVO ***'
-                                winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
-                                # au_file = audio_file+'Dormi2.wav'
-                                # return_code = subprocess.call(["afplay", au_file])
-                                self.Bip()
-                                self.VocalStatus = self.VOCAL_IDLE
-                            else:
-                                print '*** COMANDO VOCALE NON VALIDO ***'
-                                winsound.PlaySound(self.AudioPath + 'IstruzioneNonValida.wav', winsound.SND_FILENAME)
-                                # au_file = audio_file+'IstruzioneNonValida.wav'
-                                # return_code = subprocess.call(["afplay", au_file])
-                                self.Bip()
-
-                        elif self.VocalStatus == self.VOCAL_HELP:
-                            # TODO: VOCAL HELP
-                            print 'TODO: VOCAL_HELP'
-                            time.sleep(1)
+                    elif self.VocalStatus == self.VOCAL_HELP:
+                        # TODO: VOCAL HELP
+                        print 'TODO: VOCAL_HELP'
+                        time.sleep(1)
 
             time.sleep(0.1)
 
         print '- Input Thread Out'
 
-    " Funzione di riconoscimento dei comandi che può essere personalizzata -> cust0mizzazione "
+    " Funzione di riconoscimento dei comandi che può essere personalizzata -> customizzazione "
 
     def CommandRecognition(self, instr):
+
+        " instr_dict "
+        # 'fer': 'fermo'
+        # 'rip': 'riposo'
+        # 'mem': 'memorizza'
+        # 'dor': 'dormi'
+
+        " direction_dict "
+        # 'sin':[-1, 0, 0, 0]
+        # 'des':[ 1, 0, 0, 0]
+        # 'sal':[ 0, 0,-1, 0]
+        # 'sce':[ 0, 0, 1, 0]
+        # 'ava':[ 0,-1, 0, 0]
+        # 'ind':[ 0, 1, 0, 0]
+
+        " step_dict "
+        # 'spostamento picc': self.Step_Param[0]
+        # 'spostamento medi': self.Step_Param[1]
+        # 'spostamento gran': self.Step_Param[2]
+
 
         self.Coord.p0                       = [0,0,0,0]
         self.Bridge.Control.VocalStepsCnt   = 0
@@ -435,9 +474,10 @@ class Thread_InputClass(threading.Thread):
             print '*** Vado a',self.var_mem[4],'***'
             #self.Coord.VocalCtrlPos = 'memo5'
        
-        else :
+        elif not instr== "" :
             print '*** Istruzione non valida ***'
-            #winsound.PlaySound('IstruzioneNonValida.wav', winsound.SND_FILENAME)
+            self.Bridge.Control.jarvis_cmd=""
+            winsound.PlaySound('IstruzioneNonValida.wav', winsound.SND_FILENAME)
             # au_file = audio_file+'IstruzioneNonValida.wav'
             # return_code = subprocess.call(["afplay", au_file])
             self.Bip()
@@ -450,17 +490,12 @@ class Thread_InputClass(threading.Thread):
 
         with sr.Microphone() as source:
             try:
-                cmd = self.r.listen(source, phrase_time_limit = 2)
+                #cmd = self.r.listen(source, phrase_time_limit = 2)
                 print '+ Microphone Record called.'
-                #cmd = self.r.record(source, duration=2)
+                cmd = self.r.record(source, duration=2)
                 self.Bridge.Control.Status = POS_CTRL
 
-
                 # TODO: evitare deadlock "
-
-
-
-
                 # metto al massimo il numero di step fatti così interrompo il ciclo
                 #ALE
                 self.Bridge.Control.VocalStepsCnt = self.Bridge.Control.VocalSteps
@@ -483,7 +518,7 @@ class Thread_InputClass(threading.Thread):
         Dur     = 950 # Set Duration To 1000 ms == 1 second
         winsound.Beep(Freq,Dur)
 
-    def Terminate(self):
+    def terminate(self):
         " Exit the thread "
         self.Running = False
 
@@ -541,6 +576,6 @@ class Thread_JoystickCalibrationClass(threading.Thread):
             return
 
 
-    def Terminate(self):
+    def terminate(self):
 
         self.Running = False

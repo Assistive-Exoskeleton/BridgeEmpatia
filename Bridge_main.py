@@ -17,12 +17,11 @@ from BridgeDialog      import *
 from BridgeControl     import *
 from BridgeJoint       import *
 from BridgeInput       import *
-from BridgeBluetooth import BluetoothClass
-
 
 import wx
 from wx.lib.wordwrap import wordwrap
-from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
+#from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
+from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub as Publisher
 
 import serial
@@ -111,13 +110,12 @@ class MainWindow(BridgeGUI.BridgeWin):
         BridgeGUI.BridgeWin.__init__(self, parent)
 
         # Define bridge configurations
-        self.Bridge = BridgeClass()
-        self.Conf = BridgeConfClass(self.Bridge)
-        self.Coord = BridgeCoordClass()
-        self.BT = BluetoothClass(self.Bridge, self.Conf, self.Coord)
-
+        self.Bridge = BridgeClass(self)
+        self.Conf   = BridgeConfClass(self.Bridge)
+        self.Coord  = BridgeCoordClass()
+        self.BT     = BluetoothClass(self.Bridge, self.Conf,self.Coord)
         #ALE: avvio thread del BT
-        self.BTThread= Bluetooth_Thread("BluetoothThread",self.Conf,self.Bridge,self.Coord)
+        self.BTThread= Bluetooth_Thread("BluetoothThread",self.Conf,self.Bridge,self.Coord,self.BT)
 
         self.BTThread.start()
         " Initialize plots "
@@ -168,13 +166,14 @@ class MainWindow(BridgeGUI.BridgeWin):
         Publisher.subscribe(self.ShowDialogError, "ShowDialogError")
         Publisher.subscribe(self.ShowDialogAlert, "ShowDialogAlert")
         Publisher.subscribe(self.change_button, "ChangeButton")
+        Publisher.subscribe(self.StartTimer, "StartTimer")
 
         " Create timer function - Update input values "
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.UpdateInputValues, self.timer)
 
-
-
+    def StartTimer(self,msg):
+        self.timer.Start(msg)
 
     def update(self, event):
         print "updated: "
@@ -195,18 +194,18 @@ class MainWindow(BridgeGUI.BridgeWin):
             self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
 
     def change_button(self,case):
-        print "!!!", case
-        if case.data == "init":
+        #print "!!!", case
+        if case == "init":
             self.connect_butt.Disable()
             self.init_butt.Disable()
-        elif case.data == "enable control":
+        elif case == "enable control":
             self.connect_butt.Disable()
             self.init_butt.Disable()
             self.enableCtrl_butt.Disable()
             self.disconnect_butt.Enable()
             self.disableCtrl_butt.Enable()
             self.stop_butt.Enable()
-        elif case.data == "ready":
+        elif case == "ready":
             print "sono in ready"
             self.enableCtrl_butt.Enable()
             self.connect_butt.Disable()
@@ -234,13 +233,13 @@ class MainWindow(BridgeGUI.BridgeWin):
         dialog = DialogDonning(self)
         if dialog.ShowModal() == wx.ID_OK:
             self.Bridge.Status = REST_POSITION
-            self.UpdateControlInfo(None)
+            self.UpdateControlInfo()
         else:
             dialog = DialogError(self, "SYSTEM LOCKED.")
             dialog.ShowModal()
             return
 
-    def UpdateControlInfo (self, msg):
+    def UpdateControlInfo (self):
 
         " Set status "
         for i, lbl in zip(range(0, len(self.Ctrl_lbl)), self.Ctrl_lbl):
@@ -347,14 +346,11 @@ class MainWindow(BridgeGUI.BridgeWin):
 
         " Copy patient to Bridge "
         self.Bridge.Patient         = self.Conf.Patient
-        # self.Bridge.Control.Input   = 'Vocal' #["Joystick", "Vocal"]
-        # self.Bridge.Patient.Input
-
 
         " Define Threads "
 
         self.Bridge.ControlThread = Thread_ControlClass("ControlThread", self.Bridge, self.Coord, self.Conf)
-        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord)
+        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord, self.BT)
 
         for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
             " Define joint init threads "
@@ -490,7 +486,6 @@ class MainWindow(BridgeGUI.BridgeWin):
             if not controlThread_running:
                 self.Bridge.ControlThread.start()
 
-            self.timer.Start(self.Conf.InputValuesRefreshTmr)
 
 
             " Disable connect button "
@@ -500,8 +495,9 @@ class MainWindow(BridgeGUI.BridgeWin):
             self.init_butt.Enable()
             self.disconnect_butt.Enable()
 
-            self.UpdateControlInfo(None)
+            self.UpdateControlInfo()
             self.UpdateInputInfo()
+            self.StartTimer()
 
             " Update statubar "
             self.statusbar.SetStatusText('Connected', 0)
@@ -536,7 +532,7 @@ class MainWindow(BridgeGUI.BridgeWin):
             for i in range(0, len(threads_list)):
                 th = threads_list[i]
                 if th.name != "MainThread":
-                    th.Terminate()
+                    th.terminate()
         except Exception, e:
             print str(e)
 
@@ -571,7 +567,7 @@ class MainWindow(BridgeGUI.BridgeWin):
         " Update statubar "
         self.statusbar.SetStatusText('Disconnected', 0)
 
-        self.timer.Stop()
+        self.Bridge.MainWindow.timer.Stop()
 
     def initialize_system_command (self, event):
 
@@ -594,7 +590,7 @@ class MainWindow(BridgeGUI.BridgeWin):
             else:
                 self.Bridge.Status = IDLE
 
-            self.UpdateControlInfo(None)
+            self.UpdateControlInfo()
 
             " Enable all buttons "
             for item in self.button_list:
@@ -637,7 +633,7 @@ class MainWindow(BridgeGUI.BridgeWin):
         controlThread_running = False
 
         self.Bridge.ControlThread = Thread_ControlClass("ControlThread", self.Bridge, self.Coord, self.Conf)
-        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord)
+        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord, self.BT)
 
 
         for i in range(0, len(threads_list)):
@@ -661,7 +657,7 @@ class MainWindow(BridgeGUI.BridgeWin):
         " Enable Control Flag "
         self.Bridge.Status = RUNNING
         self.Bridge.Control.FIRST_RUN = True
-        self.UpdateControlInfo(None)
+        self.UpdateControlInfo()
 
         self.Coord.FirstStart = [True, True, True, True, True]
 
@@ -676,7 +672,7 @@ class MainWindow(BridgeGUI.BridgeWin):
             for i in range(0, len(threads_list)):
                 th = threads_list[i]
                 if th.name != "MainThread" and th.name != "ControlThread":
-                    th.Terminate()
+                    th.terminate()
         except Exception, e:
             print str(e)
 
@@ -689,7 +685,7 @@ class MainWindow(BridgeGUI.BridgeWin):
         " Disable Control Flag "
         self.Bridge.Status = READY
         self.Bridge.Control.Status = IDLE
-        self.UpdateControlInfo(None)
+        self.UpdateControlInfo()
 
         # TODO: CHECK FIRST START
         self.Coord.FirstStart = [True, True, True, True, True]

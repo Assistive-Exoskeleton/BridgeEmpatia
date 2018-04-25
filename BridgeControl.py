@@ -113,7 +113,7 @@ class Thread_ControlClass(threading.Thread):
                 wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
                 " Call donning dialog "
-                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", None)
+                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo")
                 wx.CallAfter(Publisher.sendMessage, "ShowDonningDialog")
 
             elif self.Bridge.Status == DONNING:
@@ -147,7 +147,7 @@ class Thread_ControlClass(threading.Thread):
                     time.sleep(0.5)
                     
                 self.Bridge.Status = READY
-                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", None)
+                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo")
                 wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
 

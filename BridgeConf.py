@@ -4,7 +4,7 @@ import math
 import numpy
 import os, sys
 from bluetooth 	import *
-
+from BridgeBluetooth import *
 
 IDLE                = 0
 INIT_SYSTEM         = 1
@@ -18,7 +18,8 @@ POS_CTRL            = 8
 
 
 class BridgeClass:
-    def __init__(self):
+    def __init__(self, parent):
+        self.MainWindow             = parent
         self.JointsNum              = 4
         self.Joints                 = [None] * self.JointsNum
         self.JointInitThreads       = [None] * self.JointsNum
@@ -31,17 +32,15 @@ class BridgeClass:
         self.Status                 = IDLE
         self.InputList = ["Joystick", "Vocal", "Visual"]
 
-
 class ControlClass:
     def __init__(self):
 
         self.Status                 = IDLE
         self.BTenabled              = False
-        #ALE
         self.BTclient_sock           = BluetoothSocket(RFCOMM)
         self.jarvis_cmd             = ""
         self.InputList              = ["Joystick", "Visual", "Vocal"]
-        self.Input                  = ""
+        self.Input                  = "Joystick"
         self.Listen = 0
         self.FIRST_RUN = True
 
