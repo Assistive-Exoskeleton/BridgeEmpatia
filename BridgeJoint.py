@@ -215,7 +215,6 @@ class Joint:
             print 'ReadCmd() failed | ' + str(e)
             return 0
 
-                
     def OpenPort(self):
         try:
             self.Port.port     = self.CommPort
@@ -304,64 +303,31 @@ class Joint:
             self.WriteCmd(command)
             return False, self.Position
 
+    def SetSpeedHz(self, speed):
 
-    def SetMinSpeedHz(self, speed ):
-
-        if speed > 0:
-            " Orario "
-            targetdirection = "#1d0\r"
-        else:
-            " Antiorario "
-            targetdirection = "#1d1\r"
-
-        speed = abs(speed)
-
-
-
-        " Check if the desired value is in the correct range "
-        if speed > 25 and speed <= 25000:
-            targetspeed = "#1u%d\r" % speed
-            command = [targetdirection, targetspeed]
-            return self.WriteCmd(command)
-        else:
-            print 'velocity out of range'
-            return False, -1
-
-    def SetMaxSpeedHz(self, speed):
-
-        # TODO: check array [1 1 -1 1 1] "
-        # TODO: check roba
-
-        # if self.Num == 3:
-        #    speed = speed * -1
-
-        " NON PUOI DARE RIFERIMENTO 0 "
-        # if speed == 0:
-
-
-       
-        if speed > 0:
-            " Antiorario "
+        if speed >= 0:
+            " Counterclockwise "
             targetdirection = "#1d1\r"
         else:
-            " Orario "
+            " Clockwise "
             targetdirection = "#1d0\r"
 
-
-
         speed = abs(speed)
+        if speed > 25000:
+            speed = 25000
 
-        #if speed < 5:
-        #    speed = 5
-
-        #check che sia nel range
-        if speed >= 5 and speed <= 25000:
+        "Check range of speed"
+        if speed >= 1 and speed <= 25000:
             targetspeed = "#1o%d\r" % speed
-            command = [targetdirection, targetspeed]  #target position, start movement
-            print 'Speed J%d: ' % self.Num + targetspeed
-            return self.WriteCmd(command)
+            command = [targetdirection, targetspeed, "#1A\r"]  #target position, start movement
+            # print 'Speed J%d: ' % self.Num + targetspeed
+            ret = self.WriteCmd(command)
+            time.sleep(0.01)
+            return ret
         else:
-            print 'Speed J%d: out of range: %d' % self.Num , speed
+            command = ["#1S\r"]
+            self.WriteCmd(command)
+            time.sleep(0.01)
             return False, -1
 
     def StartSpeed(self):
@@ -369,7 +335,7 @@ class Joint:
         self.WriteCmd(command)
         time.sleep(1)
 
-        command = ["#1y10\r","#1A\r"]    #first record (homing) and start
+        command = ["#1y10\r","#1A\r"]
         self.WriteCmd(command)
 
     def Stop(self):
@@ -656,11 +622,11 @@ class Thread_JointUpdateClass(threading.Thread):
         command = ["#1y3\r", "#1s0\r", "#1A\r"]
 
         while self.Jn.WriteCmd(command) == False:
-            time.sleep(1)
+            time.sleep(0.01)
 
         " Get current position "
         self.Jn.Position = self.Jn.GetPositionDeg()
-        print 'J%d Pos: %f' % (self.Jn.Num, self.Jn.Position)
+        #print 'J%d Pos: %f' % (self.Jn.Num, self.Jn.Position)
         
         while self.Running:
 
@@ -681,7 +647,7 @@ class Thread_JointUpdateClass(threading.Thread):
                         print ' J%d Speed Control ' % self.Jn.Num
 
                         " Speed Control, Speed Reference  "
-                        command = ["#1y10\r", "#1o1\r", "#1A\r"]
+                        command = ["#1y10\r"]
 
                     elif self.Bridge.Control.Status == POS_CTRL:
 
@@ -697,7 +663,7 @@ class Thread_JointUpdateClass(threading.Thread):
                         command = ["#1y3\r", "#1p2\r"]
 
                     while self.Jn.WriteCmd(command) == False:
-                        time.sleep(0.1)
+                        time.sleep(0.01)
 
                 " If the control is enabled "
                 if self.Bridge.Control.Status == SPEED_CTRL:
@@ -705,7 +671,7 @@ class Thread_JointUpdateClass(threading.Thread):
                     " Set speed "
                     #print '!!! Sono a set speed !!!'
                     self.Jn.Position = self.Jn.GetPositionDeg()
-                    self.Jn.SetMaxSpeedHz(self.Jn.deg2step(self.Coord.Jv[self.Jn.Num-1]))
+                    self.Jn.SetSpeedHz(self.Jn.deg2step(self.Coord.Jv[self.Jn.Num - 1]))
                     # print (self.Coord.Jv[self.Jn.Num-1] * self.Jn.Ratio/360)
 
                 elif self.Bridge.Control.Status == POS_CTRL:

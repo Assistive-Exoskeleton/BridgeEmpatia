@@ -405,7 +405,7 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
 
         self.Bridge.CalibrationThread.terminate()
         self.dialog.Destroy()
-        self.Bridge.MainWindow.Stop()
+        #self.Bridge.MainWindow.Stop()
 
     def UpdateJoystickCalibrationInfo (self):
 

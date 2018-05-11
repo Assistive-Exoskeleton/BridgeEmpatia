@@ -172,16 +172,12 @@ class MainWindow(BridgeGUI.BridgeWin):
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.UpdateInputValues, self.timer)
 
-    def StartTimer(self,msg):
-        self.timer.Start(msg)
-
-    def update(self, event):
-        print "updated: "
-        print time.ctime()
-
     " ################### "
     " #### PUBLISHER #### "
     " ################### "
+
+    def StartTimer(self,msg):
+        self.timer.Start(msg)
 
     def UpdateJointsInfo (self):
 
@@ -497,7 +493,7 @@ class MainWindow(BridgeGUI.BridgeWin):
 
             self.UpdateControlInfo()
             self.UpdateInputInfo()
-            self.StartTimer()
+            self.StartTimer(self.Conf.InputValuesRefreshTmr)
 
             " Update statubar "
             self.statusbar.SetStatusText('Connected', 0)
