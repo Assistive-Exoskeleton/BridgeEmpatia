@@ -432,20 +432,20 @@ class Thread_ControlClass(threading.Thread):
 
             for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
 
-                if self.Coord.Jdes[i] <= (J.Jmin + self.Bridge.Control.Threshold) and (self.Coord.Jdes[i] - J.Position) <= 0:
+                if J.Position <= (J.Jmin + self.Bridge.Control.Threshold) and self.Coord.Jdes[i] <= J.Jmin and (self.Coord.Jdes[i] - J.Position) <= 0:
                     winsound.Beep(550, 500)  # frequency, duration[ms
                     print '# J%d close to lower limit (Jdes: %f) - (Jpos: %f) - (Jmin: %f)' % (i+1, self.Coord.Jdes[i], J.Position, J.Jmin)
-                    self.Bridge.JointBounded[i] = True
+                    J.Bounded = True
                     self.Coord.Jdes[i] = J.Jmin
 
 
-                elif self.Coord.Jdes[i] >= (J.Jmax - self.Bridge.Control.Threshold) and (self.Coord.Jdes[i] - J.Position) >= 0:
+                elif J.Position <= (J.Jmax - self.Bridge.Control.Threshold) and self.Coord.Jdes[i] >= J.Jmax and (self.Coord.Jdes[i] - J.Position) >= 0:
                     winsound.Beep(330, 500) # frequency, duration[ms]
                     print '# J%d close to upper limit (Jdes: %f) - (Jpos: %f) - (Jmax: %f)' % (i+1, self.Coord.Jdes[i], J.Position, J.Jmax)
-                    self.Bridge.JointBounded[i] = True
+                    J.Bounded = True
                     self.Coord.Jdes[i] = J.Jmax
                 else:
-                    self.Bridge.JointBounded[i] = False
+                    J.Bounded = False
 
                 JCurrentPos = []
                 if not __debug__:
@@ -470,11 +470,10 @@ class Thread_ControlClass(threading.Thread):
                 diff[i] = self.Coord.Jdes[i] - JCurrentPos[i]
 
                 if abs(diff[i]) > self.Bridge.Control.MaxDegDispl:
-                    #print '# Repentine Change'
+                    print '# Repentine Change'
                     self.Coord.Jdes = JCurrentPos
-                    #self.Bridge.Control.Status = POS_CTRL
-                else:
-                    self.Coord.Jv[i] = ((self.Coord.Jdes[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
+
+                self.Coord.Jv[i] = ((self.Coord.Jdes[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
 
                 # TODO: valutare cosa fare - "
                 #self.Conf.CtrlEnable =  False

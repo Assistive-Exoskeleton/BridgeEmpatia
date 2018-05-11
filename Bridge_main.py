@@ -39,65 +39,15 @@ from matplotlib import cm
 import scipy.io as spio
 import winsound
 
-" ############## "
-" #PLOT 3D EXO # "
-" ############## "
-
-class CreatePlot3DExo(wx.Panel):
-
-    def __init__(self,parent,Conf):
-
-        wx.Panel.__init__(self,parent)
-
-        self.Conf     = Conf
-        self.dpi      = 75
-        self.dim_pan  = parent.GetSize()
-        self.figure   = Figure(figsize=(self.dim_pan[0]*1.0/self.dpi,(self.dim_pan[1])*1.0/self.dpi), dpi=self.dpi)
-        
-        sysTextColour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
-        col_norm      = (sysTextColour[0]*1.0/255, sysTextColour[1]*1.0/255, sysTextColour[2]*1.0/255)
-        
-        self.figure.patch.set_facecolor(col_norm)
-
-        # Canvas
-        self.canvas = FigureCanvas(parent, -1, self.figure)
-        sizer1 = wx.BoxSizer(wx.VERTICAL)
-        sizer1.Add(self.canvas, 1, wx.ALL | wx.EXPAND)
-
-        self.ax = self.figure.add_subplot(1, 1, 1, projection='3d')
-        self.ax.axis('equal')
-
-        self.ax.set_xlim3d(-(self.Conf.Patient.l1+self.Conf.Patient.l2+self.Conf.Patient.l3),(self.Conf.Patient.l1+self.Conf.Patient.l2+self.Conf.Patient.l3))
-        self.ax.set_ylim3d(-(self.Conf.Patient.l1+self.Conf.Patient.l2+self.Conf.Patient.l3),(self.Conf.Patient.l1+self.Conf.Patient.l2+self.Conf.Patient.l3))
-        self.ax.set_zlim3d(-(self.Conf.Patient.l1+self.Conf.Patient.l2+self.Conf.Patient.l3),(self.Conf.Patient.l1+self.Conf.Patient.l2+self.Conf.Patient.l3))
-
-        marker_style = dict(linestyle='-', color=[0.2, 0.2, 0.2], markersize=20)
-        self.line = self.ax.plot([], [], [], marker='o', **marker_style)[0]
-        marker_style2 = dict(linestyle='-', color='red', markersize=15)
-        self.line2 = self.ax.plot([], [], [], marker='o', **marker_style2)[0]
-
-        self.ax.set_xlabel('X')
-        self.ax.set_ylabel('Y')
-        self.ax.set_zlabel('Z')
-
-        #self.ax.set_xticklabels([])
-        #self.ax.set_yticklabels([])
-        #self.ax.set_zticklabels([])
-
-
-        self.ax.view_init(elev=50., azim=50)
-        #self.ax.view_init(elev=0, azim=270)
-
-        parent.SetSizer(sizer1)
-        parent.Fit()
-
-" ################## "
-" # TERMINAL CLASS # "
-" ################## "
-
-class ChildFrame(BridgeGUI.BridgeTerminal):
-    def __init__(self, parent):
-        BridgeGUI.BridgeTerminal.__init__(self, parent)
+IDLE                = 0
+INIT_SYSTEM         = 1
+DONNING             = 2
+REST_POSITION       = 3
+READY               = 4
+RUNNING             = 5
+ERROR               = 6
+SPEED_CTRL          = 7
+POS_CTRL            = 8
 
 
 " ############# "
@@ -165,7 +115,7 @@ class MainWindow(BridgeGUI.BridgeWin):
         Publisher.subscribe(self.UpdateInputInfo, "UpdateInputInfo")
         Publisher.subscribe(self.ShowDialogError, "ShowDialogError")
         Publisher.subscribe(self.ShowDialogAlert, "ShowDialogAlert")
-        Publisher.subscribe(self.change_button, "ChangeButton")
+        Publisher.subscribe(self.ChangeButton, "ChangeButton")
         Publisher.subscribe(self.StartTimer, "StartTimer")
 
         " Create timer function - Update input values "
@@ -186,12 +136,16 @@ class MainWindow(BridgeGUI.BridgeWin):
                 self.Jinitialized_lbl[i].SetLabel(u"●")
             else:
                 self.Jinitialized_lbl[i].SetLabel(u"○")
+            if Joint.Bounded:
+                self.Jboundaries_lbl[i].SetLabel(u"●")
+            else:
+                self.Jboundaries_lbl[i].SetLabel(u"○")
 
             self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
 
-    def change_button(self,case):
+    def ChangeButton(self, case):
         #print "!!!", case
-        if case == "init":
+        if case == 'INIT_SYSTEM':
             self.connect_butt.Disable()
             self.init_butt.Disable()
         elif case == "enable control":
@@ -734,18 +688,63 @@ class MainWindow(BridgeGUI.BridgeWin):
             print '#Error: Set Displacement failed |' + str(e)
             return
 
-# STDOUTPUT REDIRECT
-class RedirectText(object):
-    def __init__(self,aWxTextCtrl):
-        self.out=aWxTextCtrl
+" ############## "
+" #PLOT 3D EXO # "
+" ############## "
 
-    def write(self, string):
-        wx.CallAfter(self.out.WriteText, string)
+class CreatePlot3DExo(wx.Panel):
 
+    def __init__(self, parent, Conf):
+        wx.Panel.__init__(self, parent)
 
-########
-# MAIN #
-########
+        self.Conf = Conf
+        self.dpi = 75
+        self.dim_pan = parent.GetSize()
+        self.figure = Figure(figsize=(self.dim_pan[0] * 1.0 / self.dpi, (self.dim_pan[1]) * 1.0 / self.dpi),
+                             dpi=self.dpi)
+
+        sysTextColour = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
+        col_norm = (sysTextColour[0] * 1.0 / 255, sysTextColour[1] * 1.0 / 255, sysTextColour[2] * 1.0 / 255)
+
+        self.figure.patch.set_facecolor(col_norm)
+
+        # Canvas
+        self.canvas = FigureCanvas(parent, -1, self.figure)
+        sizer1 = wx.BoxSizer(wx.VERTICAL)
+        sizer1.Add(self.canvas, 1, wx.ALL | wx.EXPAND)
+
+        self.ax = self.figure.add_subplot(1, 1, 1, projection='3d')
+        self.ax.axis('equal')
+
+        self.ax.set_xlim3d(-(self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3),
+                           (self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3))
+        self.ax.set_ylim3d(-(self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3),
+                           (self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3))
+        self.ax.set_zlim3d(-(self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3),
+                           (self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3))
+
+        marker_style = dict(linestyle='-', color=[0.2, 0.2, 0.2], markersize=20)
+        self.line = self.ax.plot([], [], [], marker='o', **marker_style)[0]
+        marker_style2 = dict(linestyle='-', color='red', markersize=15)
+        self.line2 = self.ax.plot([], [], [], marker='o', **marker_style2)[0]
+
+        self.ax.set_xlabel('X')
+        self.ax.set_ylabel('Y')
+        self.ax.set_zlabel('Z')
+
+        # self.ax.set_xticklabels([])
+        # self.ax.set_yticklabels([])
+        # self.ax.set_zticklabels([])
+
+        self.ax.view_init(elev=50., azim=50)
+        # self.ax.view_init(elev=0, azim=270)
+
+        parent.SetSizer(sizer1)
+        parent.Fit()
+
+'########'
+'# MAIN #'
+'########'
 
 print 'Debug Mode: ',__debug__
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout

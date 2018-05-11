@@ -46,6 +46,7 @@ class Joint:
 
         self.Connected      = False
         self.Homed          = False
+        self.Bounded        = False
         self.Coord          = Coord
         self.Timeout        = False
 
@@ -616,17 +617,13 @@ class Thread_JointUpdateClass(threading.Thread):
 
         self.Running   = True
 
-        " Position ctrl, absolute position "
-        #command = ["#1y2\r", "#1p2\r"]
-
+        " Position Control, Relative Position, Start"
         command = ["#1y3\r", "#1s0\r", "#1A\r"]
-
         while self.Jn.WriteCmd(command) == False:
             time.sleep(0.01)
 
         " Get current position "
         self.Jn.Position = self.Jn.GetPositionDeg()
-        #print 'J%d Pos: %f' % (self.Jn.Num, self.Jn.Position)
         
         while self.Running:
 
@@ -634,13 +631,11 @@ class Thread_JointUpdateClass(threading.Thread):
                 " Measure process time "
                 t0 = time.clock()
 
-                " Detecting New Status (POSITION vs SPEED Control)"
+                " Detecting New Control Mode"
                 if self.Bridge.Control.Status != self.OldStatus:
                     self.OldStatus = self.Bridge.Control.Status
 
                     self.Jn.Position = self.Jn.GetPositionDeg()
-                    print 'J%d Pos: %.1f' % (self.Jn.Num, self.Jn.Position)
-
 
                     if self.Bridge.Control.Status == SPEED_CTRL:
 
