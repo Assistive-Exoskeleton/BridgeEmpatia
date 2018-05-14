@@ -41,7 +41,7 @@ class ControlClass:
         self.jarvis_cmd             = ""
         self.InputList              = ["Joystick", "Visual", "Vocal"]
         self.Input                  = "Joystick"
-        self.Listen = 0
+        self.Listen = 1
         self.FIRST_RUN = True
 
         # TODO: Tuning Parameters "
@@ -63,7 +63,7 @@ class ControlClass:
         self.Alpha                  = 1
         self.Alpha0                 = 1
         self.IterMax                = 1000
-        self.Threshold              = 2     # deg di tolleranza
+        self.Threshold              = 3    # deg di tolleranza
 
         # " Flag per limitare velocità "
         # self.BoundedJv              = [False, False, False, False, False]

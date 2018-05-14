@@ -243,7 +243,7 @@ class Thread_InputClass(threading.Thread):
                     #self.Bridge.Control.Listen = 1
                     if self.Bridge.Control.Listen:
 
-                        self.Bridge.Control.Listen = 0
+                        #self.Bridge.Control.Listen = 0
                         print "Listening on Laptop... "
                         self.Bridge.Control.jarvis_cmd = self.WaitForInstructions()
                         print "Recognized ", self.Bridge.Control.jarvis_cmd
@@ -490,9 +490,9 @@ class Thread_InputClass(threading.Thread):
 
         with sr.Microphone() as source:
             try:
-                #cmd = self.r.listen(source, phrase_time_limit = 2)
+                cmd = self.r.listen(source, phrase_time_limit = 2)
                 print '+ Microphone Record called.'
-                cmd = self.r.record(source, duration=2)
+                #cmd = self.r.record(source, duration=2)
                 self.Bridge.Control.Status = POS_CTRL
 
                 # TODO: evitare deadlock "

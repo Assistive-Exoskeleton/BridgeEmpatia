@@ -472,6 +472,7 @@ class Thread_ControlClass(threading.Thread):
                 if abs(diff[i]) > self.Bridge.Control.MaxDegDispl:
                     print '# Repentine Change'
                     self.Coord.Jdes = JCurrentPos
+                    #self.Bridge.Control.Status = POS_CTRL
 
                 self.Coord.Jv[i] = ((self.Coord.Jdes[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
 
