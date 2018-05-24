@@ -3,9 +3,8 @@ import ConfigParser
 import math
 import numpy
 import os, sys
-from bluetooth 	import *
-from BridgeBluetooth import *
 
+NONE                = -1
 IDLE                = 0
 INIT_SYSTEM         = 1
 DONNING             = 2
@@ -15,7 +14,6 @@ RUNNING             = 5
 ERROR               = 6
 SPEED_CTRL          = 7
 POS_CTRL            = 8
-
 
 class BridgeClass:
     def __init__(self, parent):
@@ -30,14 +28,13 @@ class BridgeClass:
         self.Patient                = PatientClass()
         self.Joystick               = JoystickClass()
         self.Status                 = IDLE
+        self.OldStatus              = NONE
         self.InputList = ["Joystick", "Vocal", "Visual"]
 
 class ControlClass:
     def __init__(self):
 
         self.Status                 = IDLE
-        self.BTenabled              = False
-        self.BTclient_sock           = BluetoothSocket(RFCOMM)
         self.jarvis_cmd             = ""
         self.InputList              = ["Joystick", "Visual", "Vocal"]
         self.Input                  = "Joystick"
@@ -120,8 +117,6 @@ class JoystickClass:
         self.AxisOffset         = [-0.273468017578, -0.257843017578]
         self.CalibrationTmr     = 5000
 
-
-
 class SerialClass:
     def __init__(self):
         self.COM            = [None] * 5
@@ -150,7 +145,6 @@ class PatientClass:
         self.Input          = ''
         self.JoystickCalibration = [1.0]*4
 
-
 class ExoClass:
     def __init__(self):
         self.Jmin           = [0]*5
@@ -159,7 +153,6 @@ class ExoClass:
         self.Joffset        = [0]*5
         self.Loaded         = False
         self.Filename       = ''
-
 
 class BridgeConfClass:
     def __init__(self,Bridge):

@@ -142,7 +142,6 @@ class Joint:
                 
         return True
 
-
     def WriteCmdOrig(self, command):
 
         ok_flag = True

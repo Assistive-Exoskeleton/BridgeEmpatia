@@ -11,7 +11,6 @@ import numpy
 import math
 
 import BridgeGUI
-from BridgeBluetooth   import *
 from BridgeConf        import *
 from BridgeDialog      import *
 from BridgeControl     import *
@@ -63,11 +62,7 @@ class MainWindow(BridgeGUI.BridgeWin):
         self.Bridge = BridgeClass(self)
         self.Conf   = BridgeConfClass(self.Bridge)
         self.Coord  = BridgeCoordClass()
-        self.BT     = BluetoothClass(self.Bridge, self.Conf,self.Coord)
-        #ALE: avvio thread del BT
-        self.BTThread= Bluetooth_Thread("BluetoothThread",self.Conf,self.Bridge,self.Coord,self.BT)
 
-        self.BTThread.start()
         " Initialize plots "
         self.exo3d_plot     = CreatePlot3DExo(self.exo3d_container,self.Conf)
         self.ani            = animation.FuncAnimation(self.exo3d_plot.figure, self.animate, fargs=[],interval = 500)
@@ -100,14 +95,13 @@ class MainWindow(BridgeGUI.BridgeWin):
 
         for item in self.button_list:
             item.Disable()
+        self.connect_butt.Enable()
 
         input_choiceChoices = self.Bridge.InputList
         print input_choiceChoices
         self.input_choice.Clear()
         self.input_choice.AppendItems(input_choiceChoices)
         self.input_choice.SetSelection(0)
-
-
 
         Publisher.subscribe(self.UpdateJointsInfo, "UpdateJointsInfo")
         Publisher.subscribe(self.ShowDonningDialog, "ShowDonningDialog")
@@ -144,25 +138,31 @@ class MainWindow(BridgeGUI.BridgeWin):
             self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
 
     def ChangeButton(self, case):
-        #print "!!!", case
-        if case == 'INIT_SYSTEM':
+
+        print '+ Change State: ' + str(case)
+
+        if case == IDLE:
+            self.connect_butt.Disable()
+            self.init_butt.Enable()
+
+        elif case == INIT_SYSTEM:
             self.connect_butt.Disable()
             self.init_butt.Disable()
-        elif case == "enable control":
+
+        elif case == RUNNING:
             self.connect_butt.Disable()
             self.init_butt.Disable()
             self.enableCtrl_butt.Disable()
             self.disconnect_butt.Enable()
             self.disableCtrl_butt.Enable()
             self.stop_butt.Enable()
-        elif case == "ready":
-            print "sono in ready"
+
+        elif case == READY:
             self.enableCtrl_butt.Enable()
             self.connect_butt.Disable()
             self.disconnect_butt.Disable()
             self.stop_butt.Disable()
             self.init_butt.Disable()
-
 
     def ShowDialogError (self, msg):
         dialog = DialogError(self, msg)
@@ -241,8 +241,6 @@ class MainWindow(BridgeGUI.BridgeWin):
         self.P0_Z_lbl.SetLabel("%.2f" % self.Coord.p0[2])
         self.P0_PS_lbl.SetLabel("%.2f" % self.Coord.p0[3])
 
-
-
     def animate(self, i):
 
         self.exo3d_plot.line.set_data([0, self.Coord.Elbow[0], self.Coord.EndEff_current[0]], [0, self.Coord.Elbow[1], self.Coord.EndEff_current[1]])
@@ -298,9 +296,8 @@ class MainWindow(BridgeGUI.BridgeWin):
         self.Bridge.Patient         = self.Conf.Patient
 
         " Define Threads "
-
         self.Bridge.ControlThread = Thread_ControlClass("ControlThread", self.Bridge, self.Coord, self.Conf)
-        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord, self.BT)
+        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord)
 
         for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
             " Define joint init threads "
@@ -538,7 +535,7 @@ class MainWindow(BridgeGUI.BridgeWin):
             if not __debug__:
                 self.Bridge.Status = INIT_SYSTEM
             else:
-                self.Bridge.Status = IDLE
+                self.Bridge.Status = READY
 
             self.UpdateControlInfo()
 
@@ -583,7 +580,7 @@ class MainWindow(BridgeGUI.BridgeWin):
         controlThread_running = False
 
         self.Bridge.ControlThread = Thread_ControlClass("ControlThread", self.Bridge, self.Coord, self.Conf)
-        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord, self.BT)
+        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord)
 
 
         for i in range(0, len(threads_list)):
@@ -747,16 +744,15 @@ class CreatePlot3DExo(wx.Panel):
 '########'
 
 print 'Debug Mode: ',__debug__
+
 # mandatory in wx, create an app, False stands for not deteriction stdin/stdout
 app = wx.App(False)
 
 # create an object
 frame = MainWindow (None)
-#terminal = ChildFrame(None)
 
 # show the frame
 frame.Show(True)
-#terminal.Show(True)
 
 # start the applications
 app.MainLoop()

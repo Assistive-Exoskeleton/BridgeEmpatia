@@ -28,14 +28,13 @@ import speech_recognition as sr
 " ################################ "
 
 class Thread_InputClass(threading.Thread):
-    def __init__(self, Name, Bridge, Coord, BT):
+    def __init__(self, Name, Bridge, Coord):
 
         threading.Thread.__init__(self, name=Name)
         self.Running            = False
         self.Name               = Name
         self.Bridge             = Bridge
         self.Coord              = Coord
-        self.BT                 = BT
 
         self.AudioPath          = os.getcwd() + '\\Assets\\Audio\\'
 
@@ -148,10 +147,6 @@ class Thread_InputClass(threading.Thread):
                 self.Bridge.Control.FIRST_RUN = 1
                 self.VocalStatus = self.VOCAL_IDLE
                 events = pygame.event.get()
-
-                #ALE: comunico all'app qual è il piano di lavoro corrente per aggiornare l'icona dedicata
-                if self.Bridge.Status== RUNNING and self.Bridge.Control.BTenabled:
-                            self.BT.SendMessage("Axis-joy:"+str(self.Bridge.Joystick.Mode))
 
                 " If a joystick event occurred "
                 for event in events:

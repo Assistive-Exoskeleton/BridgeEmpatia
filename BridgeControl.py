@@ -20,6 +20,16 @@ from wx.lib.pubsub import pub as Publisher
 from BridgeConf import *
 from BridgeJoint import *
 
+IDLE                = 0
+INIT_SYSTEM         = 1
+DONNING             = 2
+REST_POSITION       = 3
+READY               = 4
+RUNNING             = 5
+ERROR               = 6
+SPEED_CTRL          = 7
+POS_CTRL            = 8
+
 '''
 global file_EndEff0
 file_EndEff0 = []
@@ -54,7 +64,6 @@ class Thread_ControlClass(threading.Thread):
         self.Running = True
 
         while self.Running:
-
 
 
             " ############# "
@@ -192,6 +201,11 @@ class Thread_ControlClass(threading.Thread):
                     print ' ControlThread: Overrun'
                 else:
                     time.sleep(self.Bridge.Control.ThreadPeriod - elapsed_time)
+
+            if self.Bridge.Status != self.Bridge.OldStatus:
+                self.Bridge.OldStatus = self.Bridge.Status
+                wx.CallAfter(Publisher.sendMessage, "ChangeButton", case = self.Bridge.Status)
+
 
         print '- Control Thread Out'
 
@@ -479,10 +493,7 @@ class Thread_ControlClass(threading.Thread):
                 # TODO: valutare cosa fare - "
                 #self.Conf.CtrlEnable =  False
 
-
-
-
-
+ 
             '''
             " Mappo lo spostamento di posizione in spostamento di velocità richiesto ai giunti "
             " calcolo delta in gradi che voglio muovere sui vari motori"
