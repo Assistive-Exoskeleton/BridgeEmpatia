@@ -16,7 +16,7 @@ from wx.lib.pubsub import pub as Publisher
 
 import unicodedata
 
-from BridgeConf import *
+from Bridge import *
 from BridgeJoint import *
 from BridgeInput import *
 
@@ -373,9 +373,10 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
             " Set widget name - Index number "
             but.Name = str(i)
 
-    def joystick_calibration_command(self, event):
+    def joystick_calibration_command_axis(self, event):
 
         widget = event.GetEventObject()
+        print widget.GetName()
         direction = int(widget.GetName())
 
         if self.Bridge.Control.Input == 'Joystick':
@@ -388,8 +389,18 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
                 self.dialog = DialogAlert(self, 'Please, push the joystick forward as much as you can')
             else:
                 self.dialog = DialogAlert(self, 'Please, push the joystick backward as much as you can')
+
+
+            print "Start Calibration"
+
+            self.Bridge.Joystick.Calibration(direction)
+
+            self.timer = wx.Timer(self)
+            self.Bind(wx.EVT_TIMER, self.end_calibration, self.timer)
+            self.timer.Start(self.Bridge.Joystick.CalibrationTmr)
+
             self.dialog.ShowModal()
-            self.Bridge.Joystick.Calibration()
+
         else:
 
             dialog = DialogError(self, 'Please, select the joystick as control modality')
@@ -397,12 +408,13 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
 
     def end_calibration(self, msg):
 
-        self.Bridge.CalibrationThread.terminate()
+        self.Bridge.Joystick.CalibrationThread.terminate()
+        self.timer.Stop()
         try:
             self.dialog.Destroy()
         except Exception, e:
-            print "#"
-        #self.Bridge.MainWindow.Stop()
+            print "#Error |" + str(e)
+
 
     def UpdateJoystickCalibrationInfo (self):
 

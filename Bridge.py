@@ -10,6 +10,9 @@ from wx.lib.wordwrap import wordwrap
 from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub as Publisher
 
+from BridgeInput import *
+from BridgeControl import *
+
 NONE                = -1
 IDLE                = 0
 INIT_SYSTEM         = 1
@@ -67,215 +70,268 @@ class BridgeClass:
 
         "Set Status"
         self.Status = case
-        print "+ Change Status: " + str(case)
+        print "+ New Status = " + str(case)
         try:
             wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case=case)
         except Exception, e:
             print "#Error Set Status failed |" + str(e)
 
+    def MainThreadsInitialization(self):
+
+        " Get active threads "
+        threads_list = threading.enumerate()
+        print threads_list
+
+        " controlThread inputThread MainThread check"
+        inputThread_running = False
+        controlThread_running = False
+
+        try:
+            for i in range(0, len(threads_list)):
+                th = threads_list[i]
+                if th.name == "ControlThread":
+                    print '# Warning: ControlThread already running.'
+                    controlThread_running = True
+
+                if th.name == "InputThread":
+                    print '# Warning: InputThread already running.'
+                    inputThread_running = True
+
+
+            " Define and Run InputThread and ControThread "
+            if not inputThread_running:
+                self.InputThread = Thread_InputClass("InputThread", self, self.MainWindow.Coord)
+                self.InputThread.start()
+            if not controlThread_running:
+                self.ControlThread = Thread_ControlClass("ControlThread", self, self.MainWindow.Coord, self.MainWindow.Conf)
+                self.ControlThread.start()
+
+            " Define Init Threads "
+            for i, J in zip(range(0,self.JointsNum), self.Joints):
+                " Define joint init threads "
+                self.JointInitThreads[i]     = Thread_JointInitClass("JointInitThread" + str(i), J)
+            return True
+
+        except Exception, e:
+            print "#Error: Main Threads Initialization failed |" + str(e)
+            return False
+
+
+    def UpdateThreadsInitialization(self):
+
+        " Get active threads "
+        threads_list = threading.enumerate()
+        print threads_list
+
+        try:
+            for i, J in zip(range(0, self.JointsNum), self.Joints):
+                if not "JointUpdateThread" + str(i) in threads_list:
+                    print 'JointUpdateThread: ', i
+                    self.JointUpdateThreads[i] = Thread_JointUpdateClass("JointUpdateThread" + str(i+1), J, self.MainWindow.Coord,
+                                                                         self)
+                    self.JointUpdateThreads[i].start()
+            return True
+
+        except Exception, e:
+            print "#Error: Update Threads Initialization failed |" + str(e)
+            return False
 
 class PositionClass:
-    def __init__(self, Bridge, Name, Jtarget):
-        self.Bridge         = Bridge
-        self.Name           = Name
-        self.JointsNum      = self.Bridge.JointsNum
-        self.Jtarget        = Jtarget
-
+   def __init__(self, Bridge, Name, Jtarget):
+       self.Bridge         = Bridge
+       self.Name           = Name
+       self.JointsNum      = self.Bridge.JointsNum
+       self.Jtarget        = Jtarget
 
 class ControlClass:
-    def __init__(self, Bridge):
+   def __init__(self, Bridge):
 
-        self.Bridge                 = Bridge
-        self.Status                 = IDLE
-        self.jarvis_cmd             = ""
-        self.InputList              = ["Joystick", "Visual", "Vocal"]
-        self.Input                  = "Joystick"
-        self.Positions              = [None]
-        self.Listen = 1
-        self.FIRST_RUN = True
+       self.Bridge                 = Bridge
+       self.Status                 = IDLE
+       self.jarvis_cmd             = ""
+       self.InputList              = ["Joystick", "Visual", "Vocal"]
+       self.Input                  = "Joystick"
+       self.Positions              = [None]
+       self.Listen = 1
+       self.FIRST_RUN = True
 
-        " Timing Parameters"
-        self.ThreadPeriod           = 0.5
-        self.Time                   = 0.5
-        self.MaxDegDispl            = 5
+       " Timing Parameters"
+       self.ThreadPeriod           = 0.5
+       self.Time                   = 0.5
+       self.MaxDegDispl            = 5
 
-        " Max Speed [m/s]"
-        self.S                      = 0.04
+       " Max Speed [m/s]"
+       self.S                      = 0.04
 
-        " Tollerance sull'errore cartesiano nella cinematica inversa "
-        self.Tollerance             = 5e-3
-        self.Eps                    = 0.1
-        " Peso per smorzare la velocita' di giunto vicino alle singolarita'/limiti WS - NB massimo valore 1 "
-        self.Wq0s                   = 0.2
+       " Tollerance sull'errore cartesiano nella cinematica inversa "
+       self.Tollerance             = 5e-3
+       self.Eps                    = 0.1
+       " Peso per smorzare la velocita' di giunto vicino alle singolarita'/limiti WS - NB massimo valore 1 "
+       self.Wq0s                   = 0.2
 
-        " IK parameters "
-        self.Dol                    = 5     # gradi di distanza da ROM
-        self.Du                     = 0.5 # step to increase/decrease joint limit ramps
-        self.Alpha                  = 1
-        self.Alpha0                 = 1
-        self.IterMax                = 1000
-        self.Threshold              = 3    # deg di tolleranza
+       " IK parameters "
+       self.Dol                    = 5     # gradi di distanza da ROM
+       self.Du                     = 0.5 # step to increase/decrease joint limit ramps
+       self.Alpha                  = 1
+       self.Alpha0                 = 1
+       self.IterMax                = 1000
+       self.Threshold              = 3    # deg di tolleranza
 
-        self.IKparam = [self.Tollerance, self.Eps, self.Wq0s, self.Dol, self.Du, self.IterMax]
+       self.IKparam = [self.Tollerance, self.Eps, self.Wq0s, self.Dol, self.Du, self.IterMax]
 
-        " ############# "
-        " VOCAL CONTROL "
-        " ############# "
-        self.VocalMaxSteps          = 10
+       " ############# "
+       " VOCAL CONTROL "
+       " ############# "
+       self.VocalMaxSteps          = 10
 
-        ' Set in BridgeInputThread '
-        self.VocalSteps             = self.VocalMaxSteps
-        self.VocalStepsCnt          = 0
+       ' Set in BridgeInputThread '
+       self.VocalSteps             = self.VocalMaxSteps
+       self.VocalStepsCnt          = 0
 
-    def SetIKparameters(self, IKparameters):
+   def SetIKparameters(self, IKparameters):
 
-        self.Tollerance = IKparameters[0]
-        self.Eps        = IKparameters[1]
-        self.Wq0s       = IKparameters[2]
-        self.Dol        = IKparameters[3]
-        self.Du         = IKparameters[4]
-        self.IterMax    = IKparameters[5]
+       self.Tollerance = IKparameters[0]
+       self.Eps        = IKparameters[1]
+       self.Wq0s       = IKparameters[2]
+       self.Dol        = IKparameters[3]
+       self.Du         = IKparameters[4]
+       self.IterMax    = IKparameters[5]
 
-        print '+ New IK Parameters = ', self.IKparam
+       print '+ New IK Parameters = ', self.IKparam
 
-    def SetSpeedGain(self, SpeedGain):
+   def SetSpeedGain(self, SpeedGain):
 
-        self.S = SpeedGain
-        print '+ New Speed Gain =', self.S
+       self.S = SpeedGain
+       print '+ New Speed Gain =', self.S
 
-    def SetDisplacement(self, Displacement):
+   def SetDisplacement(self, Displacement):
 
-        self.VocalSteps = Displacement
-        print '+ New Displacement =', self.VocalSteps
+       self.VocalSteps = Displacement
+       print '+ New Displacement =', self.VocalSteps
 
-    def SetHMI(self, HMISelection):
+   def SetHMI(self, HMISelection):
 
-        self.Input = self.Bridge.InputList[HMISelection]
-        print '+ New HMI =', self.Input
+       self.Input = self.Bridge.InputList[HMISelection]
+       print '+ New HMI =', self.Input
 
-    def SetStatus(self, status):
+   def SetStatus(self, status):
 
-        self.Status = status
-        print '+ New Status =', self.Status
+       self.Status = status
+       print '+ New Status =', self.Status
 
 class BridgeCoordClass:
-    def __init__(self):
+   def __init__(self):
 
-        " User input [-1;+1]"
-        self.p0                         = [0]*4
+       " User input [-1;+1]"
+       self.p0                         = [0]*4
 
-        " End effector coordinates (in space) - current "
-        self.EndEff_current             = numpy.array([0.0, 0.0, 0.0, 0.0])
+       " End effector coordinates (in space) - current "
+       self.EndEff_current             = numpy.array([0.0, 0.0, 0.0, 0.0])
 
-        " End effector coordinates (in space) - desired "
-        self.EndEff_des                 = numpy.array([0.0, 0.0, 0.0, 0.0])
+       " End effector coordinates (in space) - desired "
+       self.EndEff_des                 = numpy.array([0.0, 0.0, 0.0, 0.0])
 
-        " Usato per plot 3D, ma calcolato nel thread di controllo "
-        self.Elbow                      = numpy.array([0.0, 0.0, 0.0])
+       " Usato per plot 3D, ma calcolato nel thread di controllo "
+       self.Elbow                      = numpy.array([0.0, 0.0, 0.0])
 
-        " Posizione attuale dei giunti "
-        self.Jpos                       = [0]*5
+       " Posizione attuale dei giunti "
+       self.Jpos                       = [0]*5
 
-        " Posizione desiderata dei giunti "
-        self.Jdes                       = [0]*5
+       " Posizione desiderata dei giunti "
+       self.Jdes                       = [0]*5
 
-        " Velocita' desiderata dei giunti "
-        self.Jv                         = [0]*5
+       " Velocita' desiderata dei giunti "
+       self.Jv                         = [0]*5
 
-        " List of Saved Positions"
+       " List of Saved Positions"
 
-        #self.SavePos                    = [False, False, False, False, False]
-        #self.GoToSavedPos               = [False, False, False, False, False]
-        #self.GoToSavedPosMainTrigger    = False
-        #self.SavePosMainTrigger         = False
+       #self.SavePos                    = [False, False, False, False, False]
+       #self.GoToSavedPos               = [False, False, False, False, False]
+       #self.GoToSavedPosMainTrigger    = False
+       #self.SavePosMainTrigger         = False
 
 class JoystickClass:
-    def __init__(self, Bridge):
-        " 0: Normale - 1: Advanced "
-        self.Bridge             = Bridge
-        self.Mode               = 0
-        self.Initialized        = False
-        self.SavePosition       = 0
-        self.GotoSavedPosition  = 0
-        self.Alarm              = 0
-        #TODO: INIT JOYSTICK Dove va?
-        self.Gain               = 1.0
-        self.AxisOffset         = [-0.273468017578, -0.257843017578]
-        self.CalibrationTmr     = 5000
+   def __init__(self, Bridge):
+       " 0: Normale - 1: Advanced "
+       self.Bridge             = Bridge
+       self.Mode               = 0
+       self.Initialized        = False
+       self.SavePosition       = 0
+       self.GotoSavedPosition  = 0
+       self.Alarm              = 0
+       #TODO: INIT JOYSTICK Dove va?
+       self.Gain               = 1.0
+       self.AxisOffset         = [-0.273468017578, -0.257843017578]
+       self.CalibrationTmr     = 5000
 
-    def Calibration(self):
+   def Calibration(self, direction):
 
-        self.CalibrationThread = Thread_JoystickCalibrationClass("CalibrationThread", self.Bridge, self.Conf,direction)
-        self.CalibrationThread.start()
-        self.timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self.end_calibration, self.timer)
-        self.timer.Start(self.Bridge.Joystick.CalibrationTmr)
+       try:
+           self.CalibrationThread = Thread_JoystickCalibrationClass("CalibrationThread", self.Bridge, direction)
+           self.CalibrationThread.start()
+
+       except Exception, e:
+           print "#Error: Joystick Calibration failed |" + str(e)
 
 class SerialClass:
-    def __init__(self):
-        self.COM            = [None] * 5
-        self.Connected      = [False] * 5
+   def __init__(self):
+       self.COM            = [None] * 5
+       self.Connected      = [False] * 5
 
-        " Flag generale connessione porte seriali "
-        self.AllConnected   = False
+       " Flag generale connessione porte seriali "
+       self.AllConnected   = False
 
-        " Errore dovuto a un numero non sufficiente di porte seriali o configurazione mancante/sbagliata "
-        self.Error          = True
+       " Errore dovuto a un numero non sufficiente di porte seriali o configurazione mancante/sbagliata "
+       self.Error          = True
 
 class PatientClass:
-    def __init__(self):
-        self.Name           = ''
-        self.Jmin           = [0]*5
-        self.Jmax           = [0]*5
-        self.Jrest          = [0]*5
-        self.Jdef           = [0]*5
-        self.l1             = 1#None      # [m]
-        self.l2             = 1#None      # [m]
-        self.l3             = 1#None      # [m]
-        self.FixationTime   = None      # [samples]
-        self.RJoint3        = 0.07     # [m]
-        self.Loaded         = False
-        self.Filename       = ''
-        self.Input          = ''
-        self.JoystickCalibration = [1.0]*4
+   def __init__(self):
+       self.Name           = ''
+       self.Jmin           = [0]*5
+       self.Jmax           = [0]*5
+       self.Jrest          = [0]*5
+       self.Jdef           = [0]*5
+       self.l1             = 1#None      # [m]
+       self.l2             = 1#None      # [m]
+       self.l3             = 1#None      # [m]
+       self.FixationTime   = None      # [samples]
+       self.RJoint3        = 0.07     # [m]
+       self.Loaded         = False
+       self.Filename       = ''
+       self.Input          = ''
+       self.JoystickCalibration = [1.0]*4
 
 class ExoClass:
-    def __init__(self):
-        self.Jmin           = [0]*5
-        self.Jmax           = [0]*5
-        self.Jratio         = [0]*5
-        self.Joffset        = [0]*5
-        self.Loaded         = False
-        self.Filename       = ''
+   def __init__(self):
+       self.Jmin           = [0]*5
+       self.Jmax           = [0]*5
+       self.Jratio         = [0]*5
+       self.Joffset        = [0]*5
+       self.Loaded         = False
+       self.Filename       = ''
 
 class BridgeConfClass:
     def __init__(self,parent):
-        self.Bridge                 = parent
-        self.version                = '1.0'
-        self.exo_file               = 'Conf.ini'
-        self.Serial                 = SerialClass()
-        self.Patient                = PatientClass()
-        self.Exo                    = ExoClass()
+       self.Bridge                 = parent
+       self.version                = '1.0'
+       self.exo_file               = 'Conf.ini'
+       self.Serial                 = SerialClass()
+       self.Patient                = PatientClass()
+       self.Exo                    = ExoClass()
 
-        " Input values timer in milliseconds "
-        self.InputValuesRefreshTmr  = 50
+       " Input values timer in milliseconds "
+       self.InputValuesRefreshTmr  = 50
 
-        # Parameters
-        self.w_plot_joy             = 0
-        self.h_plot_joy             = 0
+       # Parameters
+       self.w_plot_joy             = 0
+       self.h_plot_joy             = 0
 
 
-        self.ReadConfFile(self.Bridge)
+       self.ReadConfFile(self.Bridge)
 
-        self.ReadPatientFile(self.Patient.Filename)
-        print '* Reading Patient File ...'
+       self.ReadPatientFile(self.Patient.Filename)
+       print '* Reading Patient File ...'
 
-        '''
-        print self.Exo.Jmin
-        print self.Exo.Jmax
-        print self.Exo.Jratio
-        print self.Exo.Joffset
-        '''
 
     def ReadConfFile (self,Bridge):
         self.Bridge = Bridge

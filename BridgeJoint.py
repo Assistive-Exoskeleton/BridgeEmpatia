@@ -6,8 +6,6 @@ import numpy
 import serial
 import threading, time
 
-from BridgeConf import BridgeClass, BridgeConfClass, BridgeCoordClass
-
 IDLE                = 0
 INIT_SYSTEM         = 1
 DONNING             = 2
@@ -133,8 +131,8 @@ class Joint:
 
             try:
                 self.Port.write(cmd_el)
-            except:
-                print "WriteCmd() failed."
+            except Exception, e:
+                print 'WriteCmd() failed. ' + str(e)
                 return False
 
             ret = self.ReplyCheck(cmd_el)
@@ -215,7 +213,7 @@ class Joint:
                 return 0
         except Exception, e:
             print 'ReadCmd() failed | ' + str(e)
-            return 0
+            return -1
 
     def OpenPort(self):
         try:
@@ -225,43 +223,52 @@ class Joint:
             self.Port.stopbits = serial.STOPBITS_ONE
             self.Port.bytesize = serial.EIGHTBITS
             self.Port.timeout  = 0.1
-            
             self.Port.open()
             self.Port.isOpen()
-
             self.Port.flush()
             self.Port.flushInput()
             self.Port.flushOutput()
             self.Connected = True
-
             return True
+
         except Exception, e:
             self.Connected = False
-            print e
+            print "#Error |", str(e)
             return False
 
-    " Close serial port "
+
     def ClosePort(self):
 
-        " Stop the joint motor "
-        command = "#1S\r"
+        " Close serial port "
+
+        #"Stop the joint motor "
+        #command = "#1S\r"
         
         try:            
-            self.Port.write(command)
-            self.Port.flush()
-        
-            time.sleep(0.1)
-            
-            self.Port.flushInput()
-            self.Port.flushOutput()
-            self.Port.close()
-            self.Connected = False
+            #self.Port.write(command)
+            if self.Port.isOpen():
+                self.Port.close()
+                self.Connected = False
             return True
 
         except Exception, e:
-            print e
+            print "#Error Close Port |", e
             return False
-    
+
+    def FlushPort(self):
+
+        "Flush COM port"
+        try:
+            if self.Port.isOpen():
+                self.Port.flush()
+                self.Port.flushInput()
+                self.Port.flushOutput()
+            return True
+
+        except Exception, e:
+            print "#Error Flush Port |", e
+            return False
+
     " Send the target position to the controller (deg) "
     def SetPositionDeg(self, p0deg):
 
@@ -384,6 +391,7 @@ class Joint:
     def GetPositionDeg(self):
         return self.step2deg(self.ReadCmd("#1I\r")) + self.Offset
 
+
     "Read the actual position from the controller (step)"
     def GetPositionStep(self):
         return self.ReadCmd("#1I\r")
@@ -401,7 +409,7 @@ class Joint:
         command = ["#1y1\r", "#1p2\r"]
 
         while self.WriteCmd(command) == False:
-            time.sleep(1)
+            time.sleep(0.01)
 
     "Start the Motor"
     def MotorStart(self):
@@ -409,7 +417,7 @@ class Joint:
 
         try:
             while self.WriteCmd(command) == False:
-                time.sleep(1)
+                time.sleep(0.01)
         except Exception, e:
             print 'WriteCmd() failed. ' + str(e)
             return False
@@ -612,18 +620,23 @@ class Thread_JointUpdateClass(threading.Thread):
         self.OldStatus      = IDLE
         self.Bridge         = Bridge
         self.Coord          = Coord
+        self.Jn.ForceExit   = False
+
         
     def run(self):
 
         self.Running   = True
 
-        " Position Control, Relative Position, Start"
-        command = ["#1y3\r", "#1s0\r", "#1A\r"]
-        while self.Jn.WriteCmd(command) == False:
-            time.sleep(0.01)
+        if not __debug__:
+            " Position Control, Relative Position, Start"
+            command = ["#1y3\r", "#1s0\r", "#1A\r"]
+            while self.Jn.WriteCmd(command) == False:
+                time.sleep(0.01)
 
         " Get current position "
         self.Jn.Position = self.Jn.GetPositionDeg()
+
+        print "Running"
         
         while self.Running:
 
@@ -687,21 +700,27 @@ class Thread_JointUpdateClass(threading.Thread):
 
             except Exception, e:
                 print '# Error: JointUpdate %d failure. %s' % (self.Jn.Num, str(e))
+                self.terminate()
+                break
 
 
-        print ' - JointUpdate %d: thread exit' % self.Jn.Num
+        " Flush COM Port"
+
+        try:
+            
+            time.sleep(0.1)
+            while self.Jn.FlushPort() == False:
+                time.sleep(0.1)
+            self.Jn.ForceExit = False
+        except:
+            print "# Flush Port failed | " + str(e)
 
     def terminate(self):
-        print 'AAAAAAAAAAAAAAAAAAAAA 1'
-        " Close the serial port "
-        try:
-            print 'AAAAAAAAAAAAAAAAAAAAA 2'
-            self.Jn.ForceExit = True
-            time.sleep(0.1)
-            self.Jn.ClosePort()
-        except:
-            print 'Errore chiusura Port seriale'
 
-        
         " Exit the thread "
         self.Running = False
+        self.Jn.ForceExit = True
+
+
+
+        

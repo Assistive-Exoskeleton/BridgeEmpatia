@@ -6,11 +6,11 @@ import time
 import pygame
 import math
 
-from BridgeConf import *
+from Bridge import *
 import winsound     # Audio Feedback
 import subprocess
 #from BridgeDialog import *
-from BridgeConf import *
+from Bridge import *
 from BridgeGUI import Dialog_Error
 #from BridgeDialog import DialogError
 import BridgeGUI
@@ -516,13 +516,12 @@ class Thread_InputClass(threading.Thread):
 
 class Thread_JoystickCalibrationClass(threading.Thread):
 
-    def __init__(self, Name, Bridge, Conf, direction):
+    def __init__(self, Name, Bridge, direction):
 
         threading.Thread.__init__(self)
-        self.Running = False
-        self.Bridge = Bridge
-        self.Conf   = Conf
-        self.direction= direction # 0:Forward 1:Backward 2:Right 3:Left
+        self.Running                = False
+        self.Bridge                 = Bridge
+        self.direction              = direction # 0:Forward 1:Backward 2:Right 3:Left
 
 
     def run(self):

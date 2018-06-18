@@ -6,7 +6,7 @@ import math
 from numpy.linalg import inv
 import math
 import numpy
-from BridgeConf import *
+from Bridge import *
 import scipy.io as spio
 import datetime
 import winsound # per audio feedback
@@ -17,9 +17,10 @@ from wx.lib.wordwrap import wordwrap
 from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub as Publisher
 
-from BridgeConf import *
+from Bridge import *
 from BridgeJoint import *
 
+NONE                = -1
 IDLE                = 0
 INIT_SYSTEM         = 1
 DONNING             = 2
@@ -157,7 +158,7 @@ class Thread_ControlClass(threading.Thread):
                     time.sleep(0.5)
                     
                 self.Bridge.Status = READY
-                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo")
+                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
                 wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
 

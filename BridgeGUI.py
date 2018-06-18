@@ -350,7 +350,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		bSizer1061.Add( self.m_speed_gain, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.speed_gain_entry = wx.Slider( self.m_control_settings, wx.ID_ANY, 50, 1, 100, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL )
+		self.speed_gain_entry = wx.Slider( self.m_control_settings, wx.ID_ANY, 5, 1, 20, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL )
 		bSizer1061.Add( self.speed_gain_entry, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		
@@ -1287,8 +1287,8 @@ class BridgeWindow ( wx.Frame ):
 		self.connect_butt.Bind( wx.EVT_BUTTON, self.connect_command )
 		self.disconnect_butt.Bind( wx.EVT_BUTTON, self.disconnect_command )
 		self.init_butt.Bind( wx.EVT_BUTTON, self.initialize_system_command )
-		self.enableCtrl_butt.Bind( wx.EVT_BUTTON, self.enableCtrl_command )
-		self.disableCtrl_butt.Bind( wx.EVT_BUTTON, self.disableCtrl_command )
+		self.enableCtrl_butt.Bind( wx.EVT_BUTTON, self.enable_control_command )
+		self.disableCtrl_butt.Bind( wx.EVT_BUTTON, self.disable_control_command )
 		self.savePos_butt.Bind( wx.EVT_BUTTON, self.save_position_command )
 		self.gotoPos_butt.Bind( wx.EVT_BUTTON, self.goto_position_command )
 		self.stop_butt.Bind( wx.EVT_BUTTON, self.stop_command )
@@ -1332,10 +1332,10 @@ class BridgeWindow ( wx.Frame ):
 	def initialize_system_command( self, event ):
 		event.Skip()
 	
-	def enableCtrl_command( self, event ):
+	def enable_control_command( self, event ):
 		event.Skip()
 	
-	def disableCtrl_command( self, event ):
+	def disable_control_command( self, event ):
 		event.Skip()
 	
 	def save_position_command( self, event ):
@@ -2712,7 +2712,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		self.Centre( wx.BOTH )
 		
 		# Connect Events
-		self.calib_butt1.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
+		self.calib_butt1.Bind( wx.EVT_BUTTON, self.joystick_calibration_command_axis )
 		self.calib_butt2.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
 		self.calib_butt3.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
 		self.calib_butt4.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
@@ -2722,9 +2722,11 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 	
 	
 	# Virtual event handlers, overide them in your derived class
-	def joystick_calibration_command( self, event ):
+	def joystick_calibration_command_axis( self, event ):
 		event.Skip()
 	
+	def joystick_calibration_command( self, event ):
+		event.Skip()
 	
 	
 	

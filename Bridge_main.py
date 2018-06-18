@@ -11,7 +11,7 @@ import numpy
 import math
 
 import BridgeGUI
-from BridgeConf        import *
+from Bridge        import *
 from BridgeDialog      import *
 from BridgeControl     import *
 from BridgeJoint       import *
@@ -325,8 +325,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
     def BridgeInitialization(self):
 
-        print 'BridgeInitialization called.'
-
         " Joints Init "
         for i in range(0, self.Bridge.JointsNum):
             self.Bridge.Joints[i]   = Joint(i+1,
@@ -337,17 +335,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
         " Copy patient to Bridge "
         self.Bridge.Patient         = self.Conf.Patient
-
-        " Define Threads "
-        self.Bridge.ControlThread = Thread_ControlClass("ControlThread", self.Bridge, self.Coord, self.Conf)
-        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord)
-
-        for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
-            " Define joint init threads "
-            self.Bridge.JointInitThreads[i]     = Thread_JointInitClass("JointInitThread" + str(i), J)
-
-            " Define joint update threads "
-            self.Bridge.JointUpdateThreads[i]   = Thread_JointUpdateClass("JointUpdateThread" + str(i), J, self.Coord, self.Bridge)
 
         return True
 
@@ -425,6 +412,10 @@ class MainWindow(BridgeGUI.BridgeWindow):
             dialog = DialogError(self, "Error: Bridge initialization failed.")
             dialog.ShowModal()
             return
+        if not self.Bridge.MainThreadsInitialization():
+            dialog = DialogError(self, "Error: Threads initialization failed.")
+            dialog.ShowModal()
+            return
 
         if not __debug__:
 
@@ -455,28 +446,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
             self.Conf.Serial.AllConnected = True
 
         if self.Conf.Serial.AllConnected == True:
-            " Get active threads "
-            threads_list = threading.enumerate()
-            controlThread_running = False
-            inputThread_running = False
-
-            for i in range(0, len(threads_list)):
-                th = threads_list[i]
-                if th.name == "ControlThread":
-                    print '# Warning: ControlThread already running.'
-                    controlThread_running = True
-
-                if th.name == "InputThread":
-                    print '# Warning: InputThread already running.'
-                    inputThread_running = True
-
-            " Run InputThread "
-            if not inputThread_running:
-                self.Bridge.InputThread.start()
-
-            if not controlThread_running:
-                self.Bridge.ControlThread.start()
-
 
             self.Bridge.SetStatus(IDLE)
 
@@ -512,33 +481,25 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
         " Kill all the threads except MainThread "
 
+        print "* Terminating Threads ..."
         for i in range(0, len(threads_list)):
             th = threads_list[i]
-            if th.name != "MainThread":
+            if th.name != "MainThread" :
                 try:
                     th.terminate()
-                except Exception, e:
-                    print "# Error " + th.name + "could not be terminated |" + str(e)
-
-
-        " Wait for the threads to end "
-        for i in range(0, len(threads_list)):
-            th = threads_list[i]
-            if th.name != "MainThread":
-                try:
                     th.join()
                 except Exception, e:
-                    print "# Error " + th.name + "could not be joined |" + str(e)
-
-
-        " Disable all buttons "
+                    print "#Error terminating " + th.name + " | " + str(e)
 
         if not __debug__:
             try:
                 " Close Serial ports "
                 for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
                     if self.Conf.Serial.Connected[i]:
-                        J.ClosePort()
+                        while not J.FlushPort():
+                            time.sleep(0.1)
+                        while not J.ClosePort():
+                            time.sleep(0.1)
                         print '+ %s Closed' % J.CommPort
                         self.Conf.Serial.Connected[i] = False
                     else:
@@ -555,7 +516,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
         try:
             " Update control status "
             if not __debug__:
-                self.Bridge.SetStatus(INIT_SYSTEM)
+                self.Bridge.SetStatus(READY)
             else:
                 self.Bridge.SetStatus(READY)
 
@@ -565,86 +526,46 @@ class MainWindow(BridgeGUI.BridgeWindow):
             print " #Error: Inizialization failed " + str(e)
             return
 
-    def enableCtrl_command (self, event):
+    def enable_control_command (self, event):
 
         " Run JointUpdateThreads "
 
-        " Get active threads "
-        threads_list            = threading.enumerate()
-        print threads_list
-        inputThread_running = False
-        controlThread_running = False
+        if not self.Bridge.UpdateThreadsInitialization():
+            dialog = DialogError(self, "Error: Threads initialization failed.")
+            dialog.ShowModal()
+            return
 
         " Set control status "
         self.Bridge.Control.Status = POS_CTRL
 
-        # TODO: SPOSTARE IN INIT-CONTROL
         if not __debug__:
             " Verifica ROM giunti paziente & Run update threads "
             for i in range(0,self.Bridge.JointsNum):
                 self.Bridge.Joints[i].Jmin = self.Bridge.Patient.Jmin[i]
                 self.Bridge.Joints[i].Jmax = self.Bridge.Patient.Jmax[i]
 
-                if not "JointUpdateThread"+str(i) in threads_list:
-                    print 'JointUpdateThread: ', i
-                    self.Bridge.JointUpdateThreads[i].start()
-
-        inputThread_running = False
-        controlThread_running = False
-
-        self.Bridge.ControlThread = Thread_ControlClass("ControlThread", self.Bridge, self.Coord, self.Conf)
-        self.Bridge.InputThread   = Thread_InputClass("InputThread", self.Bridge, self.Coord)
-
-
-        for i in range(0, len(threads_list)):
-            th = threads_list[i]
-            if th.name == "ControlThread":
-                print '# Warning: ControlThread already running.'
-                controlThread_running = True
-
-            if th.name == "InputThread":
-                print '# Warning: InputThread already running.'
-                inputThread_running = True
-
-
-        " Run InputThread "
-        if not inputThread_running:
-            self.Bridge.InputThread.start()
-
-        if not controlThread_running:
-            self.Bridge.ControlThread.start()
-
         " Enable Control Flag "
-        self.Bridge.Status = RUNNING
+        self.Bridge.SetStatus(RUNNING)
         self.Bridge.Control.FIRST_RUN = True
 
-    def disableCtrl_command (self, events):
-        " Kill all the threads except MainThread and ControlThread"
+    def disable_control_command (self, events):
 
         threads_list= threading.enumerate()
-        print threads_list
 
-        try:
-            for i in range(0, len(threads_list)):
-                th = threads_list[i]
-                if th.name != "MainThread" and th.name != "ControlThread" and th.name != "InputThread":
+        "Kill all the threads"
+
+        print "* Terminating JointUpdateThreads ..."
+        for i in range(0, len(threads_list)):
+            th = threads_list[i]
+            if th.name != "MainThread" and th.name != "ControlThread" and th.name != "InputThread":
+                try:
                     th.terminate()
-                    print "*Terminating " + th.name
-        except Exception, e:
-            print "#Error terminating threads |" + str(e)
-
-        " Wait for the threads to end "
-        try:
-            for i in range(0,len(threads_list)):
-                th = threads_list[i]
-                if th.name != "MainThread" and th.name != "ControlThread" and th.name != "InputThread":
                     th.join()
-                    print "*Joining " + th.name
-        except Exception, e:
-            print "#Error joining threads |" + str(e)
+                except Exception, e:
+                    print "#Error terminating " + th.name + " | " + str(e)
 
         " Change Status "
-        self.Bridge.Status = READY
+        self.Bridge.SetStatus(READY)
         self.Bridge.Control.Status = IDLE
 
     def stop_command (self, event):
@@ -704,7 +625,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
     def set_speed_gain(self, event):
         "Set Speed Gain"
         try:
-            self.Bridge.Control.SetSpeedGain(self.speed_gain_entry.GetValue())
+            self.Bridge.Control.SetSpeedGain(float(self.speed_gain_entry.GetValue())/100)
         except Exception, e:
             print '#Error: Set Speed Gain failed |' + str(e)
             return

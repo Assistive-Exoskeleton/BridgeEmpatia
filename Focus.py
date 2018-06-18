@@ -1,68 +1,30 @@
-import random
-import wx
+import serial, time
+print "Abriendo puerto"
 
-########################################################################
-class MyPanel(wx.Panel):
-    """"""
+ser = serial
 
-    #----------------------------------------------------------------------
-    def __init__(self, parent):
-        """Constructor"""
-        wx.Panel.__init__(self, parent)
+try:
+  ser = serial.Serial("com4", 9600, timeout = 1)
+  serial_port = "Open"
+  print "The port %s is available" %ser
 
-        self.username = wx.StaticText(self, label="username")
-        self.online_status = wx.StaticText(self, label="offline")
-        self.dialing_status = wx.StaticText(self, label="no dial tone")
+except serial.serialutil.SerialException:
+  print "The port is at use"
 
-        btn = wx.Button(self, label="Update")
-        btn.Bind(wx.EVT_BUTTON, self.onUpdate)
+  ser.close()
+  ser.open()
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.username, 0, wx.ALL, 5)
-        sizer.Add(self.online_status, 0, wx.ALL, 5)
-        sizer.Add(self.dialing_status, 0, wx.ALL, 5)
-        sizer.Add(btn, 0, wx.ALL, 5)
-        self.SetSizer(sizer)
+while ser.read():
+  print "Sending data"
 
-    #----------------------------------------------------------------------
-    def update_text(self, info):
-        """"""
-        index = {
-            "username":self.username,
-            "online status":self.online_status,
-            "dial status":self.dialing_status
-            }
-        text = index[info[0]]
-        data = info[1]
-        append = info[2]
-        if append:
-            current = text.GetLabel()
-            text.SetLabel(current + " " + data)
-        else:
-            text.SetLabel(data)
+ser.setBreak(True)
+time.sleep(0.2)
 
-    #----------------------------------------------------------------------
-    def onUpdate(self, event):
-        """"""
-        info = random.choice(
-            [("username", "mork89", 1),
-             ("online status", "online", 0),
-             ("dial status", "dialing", 1)
-             ])
-        self.update_text(info)
+ser.sendBreak(duration = 0.02)
+time.sleep(0.2)
 
-########################################################################
-class MainFrame(wx.Frame):
-    """"""
+ser.close()
+time.sleep(0.2)
+print "The port is closed"
 
-    #----------------------------------------------------------------------
-    def __init__(self):
-        """Constructor"""
-        wx.Frame.__init__(self, None, title="Dynamic StaticText")
-        panel = MyPanel(self)
-        self.Show()
-
-if __name__ == "__main__":
-    app = wx.App(False)
-    frame = MainFrame()
-    app.MainLoop()
+exit()
