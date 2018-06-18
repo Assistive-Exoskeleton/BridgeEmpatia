@@ -53,10 +53,10 @@ POS_CTRL            = 8
 " # GUI CLASS # "
 " ############# "
 
-class MainWindow(BridgeGUI.BridgeWin):
+class MainWindow(BridgeGUI.BridgeWindow):
     def __init__(self, parent):
 
-        BridgeGUI.BridgeWin.__init__(self, parent)
+        BridgeGUI.BridgeWindow.__init__(self, parent)
 
         # Define bridge configurations
         self.Bridge = BridgeClass(self)
@@ -65,7 +65,7 @@ class MainWindow(BridgeGUI.BridgeWin):
 
         " Initialize plots "
         self.exo3d_plot     = CreatePlot3DExo(self.exo3d_container,self.Conf)
-        self.ani            = animation.FuncAnimation(self.exo3d_plot.figure, self.animate, fargs=[],interval = 500)
+        self.ani            = animation.FuncAnimation(self.exo3d_plot.figure, self.Animate, fargs=[], interval = 500)
 
         " Initialize plots "
         self.statusbar.SetFieldsCount(4)
@@ -89,6 +89,7 @@ class MainWindow(BridgeGUI.BridgeWin):
         self.Jfault_lbl         = [self.J1fault_lbl, self.J2fault_lbl, self.J3fault_lbl, self.J4fault_lbl, self.J5fault_lbl]
         self.Ctrl_lbl           = [self.ctrlIDLE_lbl, self.ctrlINIT_lbl, self.ctrlDONNING_lbl, self.ctrlRESTPOS_lbl, self.ctrlREADY_lbl, self.ctrlRUNNING_lbl, self.ctrlSTOP_lbl]
         self.button_list        = [self.disconnect_butt, self.init_butt, self.disableCtrl_butt, self.enableCtrl_butt, self.stop_butt, self.savePos_butt, self.gotoPos_butt]
+        self.IKparam_list       = [self.m_tollerance_entry, self.m_epsilon_entry, self.m_wq0s_entry, self.m_dol_entry, self.m_du_entry, self.m_itermax_entry]
 
         for lbl in self.Jvalue_lbl:
             lbl.Bind( wx.EVT_LEFT_DCLICK, self.open_jointDialog_command )
@@ -98,23 +99,26 @@ class MainWindow(BridgeGUI.BridgeWin):
         self.connect_butt.Enable()
 
         input_choiceChoices = self.Bridge.InputList
-        print input_choiceChoices
+
         self.input_choice.Clear()
         self.input_choice.AppendItems(input_choiceChoices)
         self.input_choice.SetSelection(0)
+        self.UpdateIKparam()
 
-        Publisher.subscribe(self.UpdateJointsInfo, "UpdateJointsInfo")
-        Publisher.subscribe(self.ShowDonningDialog, "ShowDonningDialog")
-        Publisher.subscribe(self.UpdateControlInfo, "UpdateControlInfo")
-        Publisher.subscribe(self.UpdateInputInfo, "UpdateInputInfo")
-        Publisher.subscribe(self.ShowDialogError, "ShowDialogError")
-        Publisher.subscribe(self.ShowDialogAlert, "ShowDialogAlert")
-        Publisher.subscribe(self.ChangeButton, "ChangeButton")
-        Publisher.subscribe(self.StartTimer, "StartTimer")
+        Publisher.subscribe(self.UpdateJointsInfo,      "UpdateJointsInfo")
+        Publisher.subscribe(self.ShowDonningDialog,     "ShowDonningDialog")
+        Publisher.subscribe(self.UpdateControlInfo,     "UpdateControlInfo")
+        Publisher.subscribe(self.UpdateInputInfo,       "UpdateInputInfo")
+        Publisher.subscribe(self.UpdateSavedPositions,  "UpdateSavedPositions")
+        Publisher.subscribe(self.UpdateIKparam,         "UpdateIKparam")
+        Publisher.subscribe(self.ShowDialogError,       "ShowDialogError")
+        Publisher.subscribe(self.ShowDialogAlert,       "ShowDialogAlert")
+        Publisher.subscribe(self.StartTimer,            "StartTimer")
 
         " Create timer function - Update input values "
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.UpdateInputValues, self.timer)
+
 
     " ################### "
     " #### PUBLISHER #### "
@@ -122,47 +126,6 @@ class MainWindow(BridgeGUI.BridgeWin):
 
     def StartTimer(self,msg):
         self.timer.Start(msg)
-
-    def UpdateJointsInfo (self):
-
-        for i, Joint in zip(range(0,len(self.Bridge.Joints)), self.Bridge.Joints):
-            if Joint.Homed:
-                self.Jinitialized_lbl[i].SetLabel(u"●")
-            else:
-                self.Jinitialized_lbl[i].SetLabel(u"○")
-            if Joint.Bounded:
-                self.Jboundaries_lbl[i].SetLabel(u"●")
-            else:
-                self.Jboundaries_lbl[i].SetLabel(u"○")
-
-            self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
-
-    def ChangeButton(self, case):
-
-        print '+ Change State: ' + str(case)
-
-        if case == IDLE:
-            self.connect_butt.Disable()
-            self.init_butt.Enable()
-
-        elif case == INIT_SYSTEM:
-            self.connect_butt.Disable()
-            self.init_butt.Disable()
-
-        elif case == RUNNING:
-            self.connect_butt.Disable()
-            self.init_butt.Disable()
-            self.enableCtrl_butt.Disable()
-            self.disconnect_butt.Enable()
-            self.disableCtrl_butt.Enable()
-            self.stop_butt.Enable()
-
-        elif case == READY:
-            self.enableCtrl_butt.Enable()
-            self.connect_butt.Disable()
-            self.disconnect_butt.Disable()
-            self.stop_butt.Disable()
-            self.init_butt.Disable()
 
     def ShowDialogError (self, msg):
         dialog = DialogError(self, msg)
@@ -176,7 +139,7 @@ class MainWindow(BridgeGUI.BridgeWin):
 
     def ShowDonningDialog (self):
         if self.Bridge.Status != DONNING:
-            dialog = DialogError(self, "MEGA FAIL DONNING.")
+            dialog = DialogError(self, "Donning Failed")
             dialog.ShowModal()
             return
 
@@ -189,21 +152,69 @@ class MainWindow(BridgeGUI.BridgeWin):
             dialog.ShowModal()
             return
 
-    def UpdateControlInfo (self):
+    def UpdateControlInfo (self, case):
 
-        " Set status "
-        for i, lbl in zip(range(0, len(self.Ctrl_lbl)), self.Ctrl_lbl):
-            if self.Bridge.Status == i:
+        " Update Status Info "
 
-                if i != len(self.Ctrl_lbl):
-                    lbl.SetBackgroundColour((57,232,149))
+        if case == NONE:
+
+            " Lock Buttons"
+            for item in self.button_list:
+                item.Disable()
+            self.connect_butt.Enable()
+
+            " Update statubar "
+            self.statusbar.SetStatusText('Disconnected', 0)
+
+        else:
+
+
+            for i, lbl in zip(range(0, len(self.Ctrl_lbl)), self.Ctrl_lbl):
+                if case == i:
+
+                    if i != len(self.Ctrl_lbl):
+                        lbl.SetBackgroundColour((57,232,149))
+                    else:
+                        lbl.SetBackgroundColour((224,97,97))
+                elif self.Bridge.Status ==  NONE:
+                    pass
                 else:
-                    lbl.SetBackgroundColour((224,97,97))
-            else:
-                if i != len(self.Ctrl_lbl):
-                    lbl.SetBackgroundColour((242,255,242))
-                else:
-                    lbl.SetBackgroundColour((255,232,232))
+                    if i != len(self.Ctrl_lbl):
+                        lbl.SetBackgroundColour((242,255,242))
+                    else:
+                        lbl.SetBackgroundColour((255,232,232))
+
+            if case == IDLE:
+                self.connect_butt.Disable()
+                self.disconnect_butt.Enable()
+                self.init_butt.Enable()
+
+            elif case == INIT_SYSTEM:
+                self.connect_butt.Disable()
+                self.init_butt.Disable()
+                self.disconnect_butt.Enable()
+
+            elif case == RUNNING:
+                self.connect_butt.Disable()
+                self.init_butt.Disable()
+                self.enableCtrl_butt.Disable()
+                self.disconnect_butt.Enable()
+                self.disableCtrl_butt.Enable()
+                self.stop_butt.Enable()
+                self.savePos_butt.Enable()
+                self.gotoPos_butt.Enable()
+
+            elif case == READY:
+                self.enableCtrl_butt.Enable()
+                self.connect_butt.Disable()
+                self.disconnect_butt.Enable()
+                self.stop_butt.Disable()
+                self.init_butt.Disable()
+                self.savePos_butt.Disable()
+                self.gotoPos_butt.Disable()
+
+            " Update statubar "
+            self.statusbar.SetStatusText('Connected', 0)
 
         " Force win refresh (background issue) "
         self.Refresh()
@@ -241,7 +252,39 @@ class MainWindow(BridgeGUI.BridgeWin):
         self.P0_Z_lbl.SetLabel("%.2f" % self.Coord.p0[2])
         self.P0_PS_lbl.SetLabel("%.2f" % self.Coord.p0[3])
 
-    def animate(self, i):
+    def UpdateJointsInfo (self):
+
+        for i, Joint in zip(range(0,len(self.Bridge.Joints)), self.Bridge.Joints):
+            if Joint.Homed:
+                self.Jinitialized_lbl[i].SetLabel(u"●")
+            else:
+                self.Jinitialized_lbl[i].SetLabel(u"○")
+            if Joint.Bounded:
+                self.Jboundaries_lbl[i].SetLabel(u"●")
+            else:
+                self.Jboundaries_lbl[i].SetLabel(u"○")
+
+            self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
+
+    def UpdateIKparam(self):
+
+        " Update IK parameters "
+
+        for i, lbl in zip(range(0,len(self.IKparam_list)), self.IKparam_list):
+            lbl.SetLabel(str(self.Bridge.Control.IKparam[i]))
+
+    def UpdateSavedPositions(self):
+
+        " Update Saved Positions "
+
+        self.SavedPositions_list.Clear()
+        for i, pos in zip(range(0,len(self.Bridge.SavedPositions)), self.Bridge.SavedPositions):
+            appended = "Position " + str(i+1)
+            self.SavedPositions_list.Append(appended)
+            self.SavedPositions_list.SetSelection(i)
+
+
+    def Animate(self, i):
 
         self.exo3d_plot.line.set_data([0, self.Coord.Elbow[0], self.Coord.EndEff_current[0]], [0, self.Coord.Elbow[1], self.Coord.EndEff_current[1]])
         self.exo3d_plot.line.set_3d_properties([0, self.Coord.Elbow[2], self.Coord.EndEff_current[2]])
@@ -393,8 +436,9 @@ class MainWindow(BridgeGUI.BridgeWin):
                         self.Conf.Serial.Connected[i] = True
                     else:
                         print '- Error: couldn\'t open %s.' % J.CommPort
-                        return
+
             except:
+                print "#Error: could not open %s." % J.CommPort
                 dialog = DialogError(self, "Error: COM init failed.")
                 dialog.ShowModal()
                 return
@@ -434,20 +478,12 @@ class MainWindow(BridgeGUI.BridgeWin):
                 self.Bridge.ControlThread.start()
 
 
+            self.Bridge.SetStatus(IDLE)
 
-            " Disable connect button "
-            self.connect_butt.Disable()
-
-            " Enable init system button "
-            self.init_butt.Enable()
-            self.disconnect_butt.Enable()
-
-            self.UpdateControlInfo()
-            self.UpdateInputInfo()
+            " Start Timer for UpdateInputInfo"
             self.StartTimer(self.Conf.InputValuesRefreshTmr)
 
-            " Update statubar "
-            self.statusbar.SetStatusText('Connected', 0)
+
 
 
         else:
@@ -475,20 +511,25 @@ class MainWindow(BridgeGUI.BridgeWin):
         print threads_list
 
         " Kill all the threads except MainThread "
-        try:
-            for i in range(0, len(threads_list)):
-                th = threads_list[i]
-                if th.name != "MainThread":
+
+        for i in range(0, len(threads_list)):
+            th = threads_list[i]
+            if th.name != "MainThread":
+                try:
                     th.terminate()
-        except Exception, e:
-            print str(e)
+                except Exception, e:
+                    print "# Error " + th.name + "could not be terminated |" + str(e)
 
 
         " Wait for the threads to end "
         for i in range(0, len(threads_list)):
             th = threads_list[i]
             if th.name != "MainThread":
-                th.join()
+                try:
+                    th.join()
+                except Exception, e:
+                    print "# Error " + th.name + "could not be joined |" + str(e)
+
 
         " Disable all buttons "
 
@@ -505,51 +546,23 @@ class MainWindow(BridgeGUI.BridgeWin):
             except Exception, e:
                 print str(e)
 
-        for item in self.button_list:
-            item.Disable()
-
-        " Enable connect button "
-        self.connect_butt.Enable()
-
-        " Update statubar "
-        self.statusbar.SetStatusText('Disconnected', 0)
+        self.Bridge.SetStatus(NONE)
 
         self.Bridge.MainWindow.timer.Stop()
 
     def initialize_system_command (self, event):
 
-        print '+ initialize_system_command() called.'
-
         try:
-            " Get active threads "
-            threads_list            = threading.enumerate()
-            controlThread_running   = False
-
-            for i in range(0,len(threads_list)):
-                th = threads_list[i]
-                if th.name == "ControlThread":
-                    print '# Warning: ControlThread already running.'
-                    controlThread_running = True
-
             " Update control status "
             if not __debug__:
-                self.Bridge.Status = INIT_SYSTEM
+                self.Bridge.SetStatus(INIT_SYSTEM)
             else:
-                self.Bridge.Status = READY
-
-            self.UpdateControlInfo()
-
-            " Enable all buttons "
-            for item in self.button_list:
-                item.Enable()
-
-            if not controlThread_running:
-                self.Bridge.ControlThread.start()
+                self.Bridge.SetStatus(READY)
 
         except Exception, e:
-            dialog = DialogError(self, "System init failed.")
+            dialog = DialogError(self, "System initialization failed.")
             dialog.ShowModal()
-            print str(e)
+            print " #Error: Inizialization failed " + str(e)
             return
 
     def enableCtrl_command (self, event):
@@ -604,10 +617,6 @@ class MainWindow(BridgeGUI.BridgeWin):
         " Enable Control Flag "
         self.Bridge.Status = RUNNING
         self.Bridge.Control.FIRST_RUN = True
-        self.UpdateControlInfo()
-
-        self.Coord.FirstStart = [True, True, True, True, True]
-
 
     def disableCtrl_command (self, events):
         " Kill all the threads except MainThread and ControlThread"
@@ -618,24 +627,25 @@ class MainWindow(BridgeGUI.BridgeWin):
         try:
             for i in range(0, len(threads_list)):
                 th = threads_list[i]
-                if th.name != "MainThread" and th.name != "ControlThread":
+                if th.name != "MainThread" and th.name != "ControlThread" and th.name != "InputThread":
                     th.terminate()
+                    print "*Terminating " + th.name
         except Exception, e:
-            print str(e)
+            print "#Error terminating threads |" + str(e)
 
         " Wait for the threads to end "
-        for i in range(1,len(threads_list)):
-            th = threads_list[i]
-            if th.name != "MainThread" and th.name != "ControlThread":
-                th.join()
+        try:
+            for i in range(0,len(threads_list)):
+                th = threads_list[i]
+                if th.name != "MainThread" and th.name != "ControlThread" and th.name != "InputThread":
+                    th.join()
+                    print "*Joining " + th.name
+        except Exception, e:
+            print "#Error joining threads |" + str(e)
 
-        " Disable Control Flag "
+        " Change Status "
         self.Bridge.Status = READY
         self.Bridge.Control.Status = IDLE
-        self.UpdateControlInfo()
-
-        # TODO: CHECK FIRST START
-        self.Coord.FirstStart = [True, True, True, True, True]
 
     def stop_command (self, event):
 
@@ -654,13 +664,19 @@ class MainWindow(BridgeGUI.BridgeWin):
         " Update input info in main window "
         wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
-    def savePos_command (self):
-        self.Coord.SavePos = [True, True, True, True, True, True]
-
-    def gotoPos_command (self):
-        self.Coord.GoToSavedPosMainTrigger = True
+    def goto_position_command (self, event):
+        try:
+            Selection = self.SavedPositions_list.GetSelection()
+            if Selection == -1:
+                dialog = DialogError(self, "Please Save Position first")
+                dialog.ShowModal()
+            else:
+                self.Bridge.GoToPosition(Selection)
+        except Exception, e:
+            print "#Error Go To Position Failed|" + str(e)
 
     def open_jointDialog_command (self, event):
+
         widget = event.GetEventObject()
 
         #if not self.Conf.Patient.Loaded:
@@ -670,20 +686,47 @@ class MainWindow(BridgeGUI.BridgeWin):
     def set_control_interface (self,event):
 
         try:
-            self.Bridge.Control.Input = self.Bridge.InputList[self.input_choice.GetSelection()]
+            self.Bridge.Control.SetHMI(self.input_choice.GetSelection())
+            self.UpdateInputInfo()
             self.inputDescription_lbl.SetLabel(str(self.Bridge.Control.Input))
         except Exception, e:
             print '#Error: Set Control Interface failed |' + str(e)
             return
 
     def set_displacement(self, event):
-
+        "Set Displacement Step for Vocal Control"
         try:
-            self.Bridge.Control.VocalSteps = self.displacement_entry.GetValue()
-            print self.Bridge.Control.VocalSteps
+            self.Bridge.Control.SetDisplacement(self.displacement_entry.GetValue())
         except Exception, e:
             print '#Error: Set Displacement failed |' + str(e)
             return
+
+    def set_speed_gain(self, event):
+        "Set Speed Gain"
+        try:
+            self.Bridge.Control.SetSpeedGain(self.speed_gain_entry.GetValue())
+        except Exception, e:
+            print '#Error: Set Speed Gain failed |' + str(e)
+            return
+
+    def save_ik_parameters( self, event ):
+        IKparam = [None]*len(self.IKparam_list)
+        try:
+            for i, lbl in zip(range(0, len(self.IKparam_list)), self.IKparam_list):
+                IKparam[i] = float(unicodedata.normalize('NFKD', lbl.GetValue()).encode("ascii", "ignore"))
+            self.Bridge.Control.SetIKparameters(IKparam)
+        except Exception, e:
+            print '#Error: Set IK parameters failed |' + str(e)
+            return
+
+    def save_position_command(self, event):
+        try:
+            self.Bridge.SavePosition()
+            self.UpdateSavedPositions()
+
+        except Exception, e:
+            print '#Error: Save Position failed |' + str(e)
+
 
 " ############## "
 " #PLOT 3D EXO # "
@@ -749,7 +792,7 @@ print 'Debug Mode: ',__debug__
 app = wx.App(False)
 
 # create an object
-frame = MainWindow (None)
+frame = MainWindow(None)
 
 # show the frame
 frame.Show(True)

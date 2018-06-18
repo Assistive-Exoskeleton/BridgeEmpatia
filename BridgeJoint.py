@@ -34,6 +34,8 @@ class Joint:
         self.Jmax           = 0                         # patient max
         self.InitError      = False
 
+        self.Jtarget        = None
+
         if not self.SetRange(Patient.Jmin[Num-1], Patient.Jmax[Num-1]):
             self.InitError = True
 
@@ -124,7 +126,7 @@ class Joint:
             print " ReplyCheck() - Wrong Reply"
             return False
         
-    " set up one or more parameters "
+    " Set up one or more parameters "
     def WriteCmd(self, command):
 
         for cmd_el in command:
@@ -542,7 +544,7 @@ class Thread_JointRestPositionClass(threading.Thread):
     def run(self):
         self.Running = True
         
-        " Leggo posizone in STEP "
+        " Get Position in Step "
         currentPosition = str(self.Jn.ReadCmd("#1I\r"))
 
         " Resetto "
@@ -604,7 +606,6 @@ class Thread_JointUpdateClass(threading.Thread):
         self.Name           = Name
         self.Running        = False
         self.Jn             = Jj
-        self.FirstStart     = True
         " TODO: valutare tempi meno stringenti (originale 0.1) "
         self.Period         = 0.2
         self.StopPosition   = None

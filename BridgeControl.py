@@ -29,6 +29,7 @@ RUNNING             = 5
 ERROR               = 6
 SPEED_CTRL          = 7
 POS_CTRL            = 8
+RETRIEVE_POSITION   = 9
 
 '''
 global file_EndEff0
@@ -55,7 +56,7 @@ class Thread_ControlClass(threading.Thread):
         self.Bridge             = Bridge
 
         self.CheckWS            = CheckWs
-        self.Coord.Jpos= self.Bridge.Patient.Jrest
+        self.Coord.Jpos         = self.Bridge.Patient.Jrest
 
     def run(self):
 
@@ -122,7 +123,7 @@ class Thread_ControlClass(threading.Thread):
                 wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
                 " Call donning dialog "
-                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo")
+                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
                 wx.CallAfter(Publisher.sendMessage, "ShowDonningDialog")
 
             elif self.Bridge.Status == DONNING:
@@ -202,15 +203,16 @@ class Thread_ControlClass(threading.Thread):
                 else:
                     time.sleep(self.Bridge.Control.ThreadPeriod - elapsed_time)
 
+            elif self.Bridge.Status == RETRIEVE_POSITION:
+                pass
+
             if self.Bridge.Status != self.Bridge.OldStatus:
                 self.Bridge.OldStatus = self.Bridge.Status
-                wx.CallAfter(Publisher.sendMessage, "ChangeButton", case = self.Bridge.Status)
+                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
+
 
 
         print '- Control Thread Out'
-
-    " ##################################################################################### "
-
 
     def MartaCtrl(self):
 
@@ -545,10 +547,10 @@ class Thread_ControlClass(threading.Thread):
             self.Coord.Jv = [0]*5
             self.Bridge.Control.Status = POS_CTRL
 
-
     def terminate(self):
         " Exit the thread "
         self.Running = False
+        self.Bridge.Status = NONE
 
         # text_file_EndEff0 = open("Output_EndEff0.txt", "w")
         # text_file_EndEff_des = open("Output_EndEff_des.txt", "w")
@@ -562,5 +564,4 @@ class Thread_ControlClass(threading.Thread):
         # text_file_Jpos.write("\n{0}".format(file_Jpos))
         # text_file_Jdes.write("\n{0}".format(file_Jdes))
         # text_file_p0_.write("\n{0}".format(file_p0_))
-
 

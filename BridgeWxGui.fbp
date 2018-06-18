@@ -26,7 +26,7 @@
         <property name="ui_table">UI</property>
         <property name="use_enum">0</property>
         <property name="use_microsoft_bom">0</property>
-        <object class="Frame" expanded="1">
+        <object class="Frame" expanded="0">
             <property name="aui_managed">0</property>
             <property name="aui_manager_style">wxAUI_MGR_DEFAULT</property>
             <property name="bg">wxSYS_COLOUR_WINDOW</property>
@@ -44,7 +44,7 @@
             <property name="minimum_size">1002,-1</property>
             <property name="name">BridgeWin</property>
             <property name="pos"></property>
-            <property name="size">1029,622</property>
+            <property name="size">1080,684</property>
             <property name="style">wxDEFAULT_FRAME_STYLE</property>
             <property name="subclass"></property>
             <property name="title">Bridge</property>
@@ -134,7 +134,7 @@
                 <event name="OnSize"></event>
                 <event name="OnUpdateUI"></event>
             </object>
-            <object class="wxMenuBar" expanded="1">
+            <object class="wxMenuBar" expanded="0">
                 <property name="bg"></property>
                 <property name="context_help"></property>
                 <property name="context_menu">1</property>
@@ -179,7 +179,7 @@
                 <event name="OnSetFocus"></event>
                 <event name="OnSize"></event>
                 <event name="OnUpdateUI"></event>
-                <object class="wxMenu" expanded="1">
+                <object class="wxMenu" expanded="0">
                     <property name="label">File</property>
                     <property name="name">m_menu1</property>
                     <property name="permission">protected</property>
@@ -233,7 +233,7 @@
                         <event name="OnUpdateUI"></event>
                     </object>
                 </object>
-                <object class="wxMenu" expanded="1">
+                <object class="wxMenu" expanded="0">
                     <property name="label">Tools</property>
                     <property name="name">Tools</property>
                     <property name="permission">protected</property>
@@ -2003,7 +2003,7 @@
                                                     <object class="notebookpage" expanded="0">
                                                         <property name="bitmap"></property>
                                                         <property name="label">Control</property>
-                                                        <property name="select">1</property>
+                                                        <property name="select">0</property>
                                                         <object class="wxPanel" expanded="0">
                                                             <property name="BottomDockable">1</property>
                                                             <property name="LeftDockable">1</property>
@@ -3455,7 +3455,7 @@
                                                     <object class="notebookpage" expanded="0">
                                                         <property name="bitmap"></property>
                                                         <property name="label">Advanced</property>
-                                                        <property name="select">0</property>
+                                                        <property name="select">1</property>
                                                         <object class="wxPanel" expanded="0">
                                                             <property name="BottomDockable">1</property>
                                                             <property name="LeftDockable">1</property>

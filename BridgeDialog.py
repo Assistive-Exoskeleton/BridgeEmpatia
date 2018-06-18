@@ -41,9 +41,9 @@ def availableSerialPort():
 " Dialog exo setup "
 
 
-class DialogExoSetup(BridgeGUI.Dialog_ExoSetup):
+class DialogExoSetup(BridgeGUI.DialogExoSetup):
     def __init__(self, parent, Conf, Bridge):
-        BridgeGUI.Dialog_ExoSetup.__init__(self, parent)
+        BridgeGUI.DialogExoSetup.__init__(self, parent)
 
         self.Conf = Conf
         self.Bridge = Bridge
@@ -163,7 +163,7 @@ class DialogExoSetup(BridgeGUI.Dialog_ExoSetup):
             return
 
         if ret:
-            dialog = DialogError(self, "Test procedure done", "Bridge - Note")
+            dialog = DialogError(self, "Test procedure done")
             dialog.ShowModal()
         else:
             error = ''
@@ -333,6 +333,7 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
                 print 'Error ' + str(e)
                 self.Filename = None
                 pass
+
     def joystick_calibration_command( self, event ):
 
         if self.Bridge.Joystick.Initialized:
@@ -342,7 +343,6 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
             print "# Warning: Joystick not initialized"
             dialog = DialogAlert(self, "# Warning: Joystick not initialized")
             dialog.ShowModal()
-
 
     def onText_command(self, event):
         " Check values "
@@ -388,14 +388,8 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
                 self.dialog = DialogAlert(self, 'Please, push the joystick forward as much as you can')
             else:
                 self.dialog = DialogAlert(self, 'Please, push the joystick backward as much as you can')
-
-            self.Bridge.CalibrationThread = Thread_JoystickCalibrationClass("CalibrationThread", self.Bridge, self.Conf,
-                                                                            direction)
-            self.Bridge.CalibrationThread.start()
-            self.timer = wx.Timer(self)
-            self.Bind(wx.EVT_TIMER, self.end_calibration, self.timer)
-            self.timer.Start(self.Bridge.Joystick.CalibrationTmr)
             self.dialog.ShowModal()
+            self.Bridge.Joystick.Calibration()
         else:
 
             dialog = DialogError(self, 'Please, select the joystick as control modality')
@@ -404,11 +398,13 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
     def end_calibration(self, msg):
 
         self.Bridge.CalibrationThread.terminate()
-        self.dialog.Destroy()
+        try:
+            self.dialog.Destroy()
+        except Exception, e:
+            print "#"
         #self.Bridge.MainWindow.Stop()
 
     def UpdateJoystickCalibrationInfo (self):
-
 
         for i in range(0,len(self.Bridge.Patient.JoystickCalibration)):
             if self.Bridge.Patient.JoystickCalibration[i] != 1.0:
@@ -505,9 +501,9 @@ class DialogJoint(BridgeGUI.Dialog_Joint):
 " ############## "
 
 
-class DialogDonning(BridgeGUI.Dialog_Donning):
-    def __init__(self, parent):
-        BridgeGUI.Dialog_Donning.__init__(self, parent)
+class DialogDonning(BridgeGUI.DialogDonning):
+    def      __init__(self, parent):
+        BridgeGUI.DialogDonning.__init__(self, parent)
 
     def ok_command(self, event):
         self.EndModal(wx.ID_OK)

@@ -60,12 +60,6 @@ class Thread_InputClass(threading.Thread):
 
         " Variabili per controllo 'step' "
         self.VocalSteps                 = self.Bridge.Control.VocalMaxSteps
-
-        " Variabili per la memorizzazione " # TODO: SAVED POS
-        self.var_mem                    = ['0', '0', '0', '0', '0']
-        self.NumVarMem                  = 0
-        self.vm                         = 4*[0]
-
         self.Step_Param                  = [1, 5, 20]
         self.Speed_Param                 = []
 
@@ -87,7 +81,6 @@ class Thread_InputClass(threading.Thread):
             if self.Bridge.InputList[i] == 'Joystick':
 
                 try:
-                    print '+ Joystick Interface'
                     " Init pygame "
                     pygame.init()
 
@@ -114,7 +107,7 @@ class Thread_InputClass(threading.Thread):
                     return
 
             elif self.Bridge.InputList[i] == 'Vocal':
-                print '+ Vocal Interface'
+
                 " Introduzione controllo vocale "
 
                 try:

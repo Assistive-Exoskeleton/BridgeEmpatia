@@ -11,15 +11,15 @@ import wx
 import wx.xrc
 
 ###########################################################################
-## Class BridgeWin
+## Class BridgeWindow
 ###########################################################################
 
-class BridgeWin ( wx.Frame ):
+class BridgeWindow ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Bridge", pos = wx.DefaultPosition, size = wx.Size( 1029,622 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"Bridge", pos = wx.DefaultPosition, size = wx.Size( 1100,720 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
-		self.SetSizeHintsSz( wx.Size( 1002,-1 ), wx.Size( -1,-1 ) )
+		self.SetSizeHintsSz( wx.Size( 1080,-1 ), wx.Size( -1,-1 ) )
 		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
 		self.statusbar = self.CreateStatusBar( 1, wx.ST_SIZEGRIP, wx.ID_ANY )
@@ -1218,9 +1218,9 @@ class BridgeWin ( wx.Frame ):
 		
 		bSizer2311111.Add( self.m_staticText611111, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.m_scrolledWindow1 = wx.ScrolledWindow( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.SIMPLE_BORDER )
-		self.m_scrolledWindow1.SetScrollRate( 5, 5 )
-		bSizer2311111.Add( self.m_scrolledWindow1, 1, wx.EXPAND |wx.ALL, 5 )
+		SavedPositions_listChoices = []
+		self.SavedPositions_list = wx.ListBox( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, SavedPositions_listChoices, 0 )
+		bSizer2311111.Add( self.SavedPositions_list, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		
 		bSizer22.Add( bSizer2311111, 1, wx.EXPAND, 5 )
@@ -1282,15 +1282,15 @@ class BridgeWin ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.joystick_calibration_command, id = self.m_joystick_calibration.GetId() )
 		self.input_choice.Bind( wx.EVT_CHOICE, self.set_control_interface )
 		self.displacement_entry.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.set_displacement )
-		self.speed_gain_entry.Bind( wx.EVT_SCROLL, self.set_speed_gain )
+		self.speed_gain_entry.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.set_speed_gain )
 		self.m_button_save_ik_parameters.Bind( wx.EVT_BUTTON, self.save_ik_parameters )
 		self.connect_butt.Bind( wx.EVT_BUTTON, self.connect_command )
 		self.disconnect_butt.Bind( wx.EVT_BUTTON, self.disconnect_command )
 		self.init_butt.Bind( wx.EVT_BUTTON, self.initialize_system_command )
 		self.enableCtrl_butt.Bind( wx.EVT_BUTTON, self.enableCtrl_command )
 		self.disableCtrl_butt.Bind( wx.EVT_BUTTON, self.disableCtrl_command )
-		self.savePos_butt.Bind( wx.EVT_BUTTON, self.savePos_command )
-		self.gotoPos_butt.Bind( wx.EVT_BUTTON, self.gotoPos_command )
+		self.savePos_butt.Bind( wx.EVT_BUTTON, self.save_position_command )
+		self.gotoPos_butt.Bind( wx.EVT_BUTTON, self.goto_position_command )
 		self.stop_butt.Bind( wx.EVT_BUTTON, self.stop_command )
 	
 	def __del__( self ):
@@ -1338,10 +1338,10 @@ class BridgeWin ( wx.Frame ):
 	def disableCtrl_command( self, event ):
 		event.Skip()
 	
-	def savePos_command( self, event ):
+	def save_position_command( self, event ):
 		event.Skip()
 	
-	def gotoPos_command( self, event ):
+	def goto_position_command( self, event ):
 		event.Skip()
 	
 	def stop_command( self, event ):
@@ -1349,10 +1349,10 @@ class BridgeWin ( wx.Frame ):
 	
 
 ###########################################################################
-## Class Dialog_Donning
+## Class DialogDonning
 ###########################################################################
 
-class Dialog_Donning ( wx.Dialog ):
+class DialogDonning ( wx.Dialog ):
 	
 	def __init__( self, parent ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Donning", pos = wx.DefaultPosition, size = wx.Size( 645,238 ), style = wx.DEFAULT_DIALOG_STYLE )
@@ -1414,10 +1414,10 @@ class Dialog_Donning ( wx.Dialog ):
 	
 
 ###########################################################################
-## Class Dialog_ExoSetup
+## Class DialogExoSetup
 ###########################################################################
 
-class Dialog_ExoSetup ( wx.Dialog ):
+class DialogExoSetup ( wx.Dialog ):
 	
 	def __init__( self, parent ):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Exo setup", pos = wx.DefaultPosition, size = wx.Size( 396,549 ), style = wx.DEFAULT_DIALOG_STYLE )
