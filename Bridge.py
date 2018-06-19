@@ -36,7 +36,6 @@ class BridgeClass:
         self.Control                = ControlClass(self)
         self.Patient                = PatientClass()
         self.Joystick               = JoystickClass(self)
-        self.StatusList             = ["Idle","Initialization","Donning","Retrieve Position","Ready","Running","Error"]
         self.Status                 = NONE
         self.OldStatus              = NONE
         self.InputList              = ["Joystick", "Vocal", "Visual"]
@@ -147,6 +146,7 @@ class ControlClass:
    def __init__(self, Bridge):
 
        self.Bridge                 = Bridge
+       self.StatusList             = ["Idle", "Position", "Speed", "Auto"]
        self.Status                 = IDLE
        self.jarvis_cmd             = ""
        self.InputList              = ["Joystick", "Visual", "Vocal"]

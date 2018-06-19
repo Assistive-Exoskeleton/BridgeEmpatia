@@ -145,10 +145,9 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
         dialog = DialogDonning(self)
         if dialog.ShowModal() == wx.ID_OK:
-            self.Bridge.Status = REST_POSITION
-            self.UpdateControlInfo()
+            self.Bridge.SetStatus(REST_POSITION)
         else:
-            dialog = DialogError(self, "SYSTEM LOCKED.")
+            dialog = DialogError(self, "System Locked")
             dialog.ShowModal()
             return
 
@@ -176,7 +175,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
                         lbl.SetBackgroundColour((57,232,149))
                     else:
                         lbl.SetBackgroundColour((224,97,97))
-                elif self.Bridge.Status ==  NONE:
+                elif case ==  NONE:
                     pass
                 else:
                     if i != len(self.Ctrl_lbl):
@@ -215,7 +214,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
             " Update statubar "
             self.statusbar.SetStatusText('Connected', 0)
-
+            
         " Force win refresh (background issue) "
         self.Refresh()
 
@@ -528,25 +527,30 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
     def enable_control_command (self, event):
 
-        " Run JointUpdateThreads "
 
-        if not self.Bridge.UpdateThreadsInitialization():
-            dialog = DialogError(self, "Error: Threads initialization failed.")
-            dialog.ShowModal()
-            return
 
-        " Set control status "
-        self.Bridge.Control.Status = POS_CTRL
+
 
         if not __debug__:
+
             " Verifica ROM giunti paziente & Run update threads "
             for i in range(0,self.Bridge.JointsNum):
                 self.Bridge.Joints[i].Jmin = self.Bridge.Patient.Jmin[i]
                 self.Bridge.Joints[i].Jmax = self.Bridge.Patient.Jmax[i]
 
-        " Enable Control Flag "
+            " Run JointUpdateThreads "
+            if not self.Bridge.UpdateThreadsInitialization():
+                dialog = DialogError(self, "Error: Threads initialization failed.")
+                dialog.ShowModal()
+                return
+
+        " Set Status "
         self.Bridge.SetStatus(RUNNING)
-        self.Bridge.Control.FIRST_RUN = True
+
+        " Set control status "
+        self.Bridge.Control.Status = POS_CTRL
+
+        self.Bridge.Control.FirstRun = True
 
     def disable_control_command (self, events):
 

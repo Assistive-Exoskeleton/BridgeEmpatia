@@ -217,8 +217,6 @@ class Thread_ControlClass(threading.Thread):
 
     def MartaCtrl(self):
 
-        # print 'control'
-
         self.Jpos_rad           = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0])
         self.temp_EndEff0       = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0])
         self.WS_is_gay          = False

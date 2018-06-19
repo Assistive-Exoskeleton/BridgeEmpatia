@@ -628,6 +628,7 @@ class Thread_JointUpdateClass(threading.Thread):
         self.Running   = True
 
         if not __debug__:
+
             " Position Control, Relative Position, Start"
             command = ["#1y3\r", "#1s0\r", "#1A\r"]
             while self.Jn.WriteCmd(command) == False:
@@ -636,8 +637,6 @@ class Thread_JointUpdateClass(threading.Thread):
         " Get current position "
         self.Jn.Position = self.Jn.GetPositionDeg()
 
-        print "Running"
-        
         while self.Running:
 
             try:
@@ -677,7 +676,7 @@ class Thread_JointUpdateClass(threading.Thread):
                 if self.Bridge.Control.Status == SPEED_CTRL:
                     
                     " Set speed "
-                    #print '!!! Sono a set speed !!!'
+
                     self.Jn.Position = self.Jn.GetPositionDeg()
                     self.Jn.SetSpeedHz(self.Jn.deg2step(self.Coord.Jv[self.Jn.Num - 1]))
                     # print (self.Coord.Jv[self.Jn.Num-1] * self.Jn.Ratio/360)
@@ -687,15 +686,14 @@ class Thread_JointUpdateClass(threading.Thread):
                     self.Jn.Position = self.Jn.GetPositionDeg()
 
 
-                    " TODO: cosa succede se il sistema e' forzato? "
+                    #TODO: cosa succede se il sistema e' forzato? "
                     #self.Jn.SetPositionDeg(self.Jn.GetPositionDeg())
 
                 elapsed_time = time.clock() - t0
 
                 if elapsed_time > self.Period:
-                    print '- Warning: JointUpdate %d Overrun: %d' % (self.Jn.Num, time.clock())
+                    print '@ Warning: JointUpdate %d Overrun: %d' % (self.Jn.Num, elapsed_time)
                 else:
-
                     time.sleep(self.Period - elapsed_time)
 
             except Exception, e:
@@ -707,8 +705,6 @@ class Thread_JointUpdateClass(threading.Thread):
         " Flush COM Port"
 
         try:
-            
-            time.sleep(0.1)
             while self.Jn.FlushPort() == False:
                 time.sleep(0.1)
             self.Jn.ForceExit = False

@@ -354,7 +354,26 @@ class BridgeWindow ( wx.Frame ):
 		bSizer1061.Add( self.speed_gain_entry, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		
-		bSizer74.Add( bSizer1061, 1, wx.EXPAND, 5 )
+		bSizer74.Add( bSizer1061, 0, wx.EXPAND, 5 )
+		
+		bSizer10611 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_speed_gain1 = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Control Mode", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.m_speed_gain1.Wrap( -1 )
+		self.m_speed_gain1.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_speed_gain1.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
+		
+		bSizer10611.Add( self.m_speed_gain1, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		self.ControlMode_lbl = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"OFF", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
+		self.ControlMode_lbl.Wrap( -1 )
+		self.ControlMode_lbl.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
+		self.ControlMode_lbl.SetBackgroundColour( wx.Colour( 242, 255, 242 ) )
+		
+		bSizer10611.Add( self.ControlMode_lbl, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		bSizer74.Add( bSizer10611, 1, wx.EXPAND, 5 )
 		
 		
 		bSizer721.Add( bSizer74, 1, wx.EXPAND, 5 )
