@@ -153,7 +153,8 @@ class DialogExoSetup(BridgeGUI.DialogExoSetup):
             dialog.ShowModal()
             return
 
-        " Run test motor "
+        " Clear drive error & Run test motor "
+        joint.DriveErrorClear()
         ret = joint.MotorTest()
 
         " Close serial port "
@@ -172,8 +173,6 @@ class DialogExoSetup(BridgeGUI.DialogExoSetup):
 
             dialog = DialogError(self, "Test procedure failed %s" % error)
             dialog.ShowModal()
-
-        joint = None
 
 
 " Dialog patient setup "
@@ -413,7 +412,7 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
         try:
             self.dialog.Destroy()
         except Exception, e:
-            print "#Error |" + str(e)
+            print "#Error | " + str(e)
 
 
     def UpdateJoystickCalibrationInfo (self):
@@ -493,7 +492,7 @@ class DialogJoint(BridgeGUI.Dialog_Joint):
         elif self.Status != READY:
             self.error_lbl.SetLabel('System status error')
         else:
-            self.Joint.SetPositionMode()
+            self.Joint.SetAbsolutePositionMode()
             self.Joint.SetPositionDeg(self.angle)
 
             while abs(self.Joint.GetPositionDeg() - self.angle) > 0.5:

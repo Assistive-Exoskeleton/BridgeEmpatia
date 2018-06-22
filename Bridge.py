@@ -23,6 +23,9 @@ RUNNING             = 5
 ERROR               = 6
 SPEED_CTRL          = 7
 POS_CTRL            = 8
+POS_CTRL_ABS        = 9
+RECALL_POSITION     = 10
+
 
 class BridgeClass:
     def __init__(self, parent):
@@ -45,25 +48,29 @@ class BridgeClass:
         "Save Actual Position"
         try:
             num = len(self.SavedPositions)
-            name = "Position "+ str(num+1)
-            self.SavedPositions.append(PositionClass(self,name,self.MainWindow.Coord.Jpos))
+            name = "Position "+ str(num)
+            New_Position = PositionClass(self,name,[None]*self.JointsNum)
+            for i in range(0, self.JointsNum):
+                New_Position.Jtarget[i] = self.Joints[i].PositionStep
+            self.SavedPositions.append(New_Position)
         except Exception, e:
             print "#Error: Save Position failed |" + str(e)
         finally:
-            print self.SavedPositions[num].Jtarget
+            print " + New Position Saved = " + str(self.SavedPositions[num].Jtarget)
 
-    def GoToPosition(self,sel):
+    def GoToPosition(self,num):
         "Go To Saved Position"
 
         try:
 
             for i in range(0, self.JointsNum):
-
-                print self.SavedPositions[sel].Jtarget[i]
-
-
+                self.Joints[i].SetJtarget(self.SavedPositions[num].Jtarget[i])
+                self.Joints[i].RestDone = False
+            self.SetStatus(RECALL_POSITION)
         except Exception, e:
             print "#Error: Go To Position failed |" + str(e)
+        finally:
+            print " + New Position Recalled = " + str(self.SavedPositions[num].Jtarget)
 
     def SetStatus(self,case):
 
@@ -114,7 +121,6 @@ class BridgeClass:
         except Exception, e:
             print "#Error: Main Threads Initialization failed |" + str(e)
             return False
-
 
     def UpdateThreadsInitialization(self):
 
@@ -217,7 +223,7 @@ class ControlClass:
    def SetStatus(self, status):
 
        self.Status = status
-       print '+ New Status =', self.Status
+       print '+ New Control Status =', self.Status
 
 class BridgeCoordClass:
    def __init__(self):
@@ -245,10 +251,6 @@ class BridgeCoordClass:
 
        " List of Saved Positions"
 
-       #self.SavePos                    = [False, False, False, False, False]
-       #self.GoToSavedPos               = [False, False, False, False, False]
-       #self.GoToSavedPosMainTrigger    = False
-       #self.SavePosMainTrigger         = False
 
 class JoystickClass:
    def __init__(self, Bridge):

@@ -10,7 +10,6 @@ from Bridge import *
 import winsound     # Audio Feedback
 import subprocess
 #from BridgeDialog import *
-from Bridge import *
 from BridgeGUI import Dialog_Error
 #from BridgeDialog import DialogError
 import BridgeGUI
@@ -22,6 +21,20 @@ from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub as Publisher
 
 import speech_recognition as sr
+
+NONE                = -1
+IDLE                = 0
+INIT_SYSTEM         = 1
+DONNING             = 2
+REST_POSITION       = 3
+READY               = 4
+RUNNING             = 5
+ERROR               = 6
+SPEED_CTRL          = 7
+POS_CTRL            = 8
+POS_CTRL_ABS        = 9
+RETRIEVE_POSITION   = 10
+
 
 " ################################ "
 " # JOYSTICK UPDATE THREAD CLASS # "
@@ -62,6 +75,10 @@ class Thread_InputClass(threading.Thread):
         self.VocalSteps                 = self.Bridge.Control.VocalMaxSteps
         self.Step_Param                  = [1, 5, 20]
         self.Speed_Param                 = []
+
+        self.var_mem                    = ['','','','','']
+        self.NumVarMem                  = 0
+        self.vm                         = 4*[0]
 
         " Dizionari "
         self.instr_dict    = {'fer':'fermo', 'rip':'riposo', 'mem':'memorizza', 'dor':'dormi', 'ter':'termina'}
@@ -146,9 +163,6 @@ class Thread_InputClass(threading.Thread):
                     if event.type == pygame.QUIT:
                         self.terminate()
 
-                    elif event.type == pygame.JOYBUTTONUP:
-                        pass
-
                     elif event.type == pygame.JOYBUTTONDOWN:
 
                         if self.PyJoystick.get_button(0):
@@ -163,7 +177,7 @@ class Thread_InputClass(threading.Thread):
                                 print '* Change Plane Button: Z'
                                 winsound.Beep(440, 500)
 
-                        #self.Bridge.Joystick.SavePosition         = self.PyJoystick.get_button(2)
+                        #if self.PyJoystick.get_button(2):
                         #self.Bridge.Joystick.GotoSavedPosition    = self.PyJoystick.get_button(3)
                         #self.Bridge.Joystick.Alarm                = self.PyJoystick.get_button(4)
 
@@ -350,7 +364,7 @@ class Thread_InputClass(threading.Thread):
                             '''
 
                     elif self.VocalStatus == self.VOCAL_STOP_CONFERMATION:
-                        if Bridge.Control.jarvis_cmd == 'vero':
+                        if self.Bridge.Control.jarvis_cmd == 'vero':
                             self.Bridge.Control.jarvis_cmd = ""
                             print '*** CONTROLLO VOCALE TERMINATO ***'
                             winsound.PlaySound(self.AudioPath + 'Spegnimento.wav', winsound.SND_FILENAME)
@@ -361,7 +375,7 @@ class Thread_InputClass(threading.Thread):
                             self.VocalStatus = self.VOCAL_IDLE
                             self.terminate()
 
-                        elif Bridge.Control.jarvis_cmd == 'falso':
+                        elif self.Bridge.Control.jarvis_cmd == 'falso':
                             self.Bridge.Control.jarvis_cmd = ""
                             print '*** CONTROLLO VOCALE ATTIVO ***'
                             winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
@@ -481,7 +495,7 @@ class Thread_InputClass(threading.Thread):
                 cmd = self.r.listen(source, phrase_time_limit = 2)
                 print '+ Microphone Record called.'
                 #cmd = self.r.record(source, duration=2)
-                self.Bridge.Control.Status = POS_CTRL
+                self.Bridge.Control.SetStatus(POS_CTRL)
 
                 # TODO: evitare deadlock "
                 # metto al massimo il numero di step fatti così interrompo il ciclo

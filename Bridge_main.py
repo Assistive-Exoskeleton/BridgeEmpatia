@@ -38,6 +38,7 @@ from matplotlib import cm
 import scipy.io as spio
 import winsound
 
+NONE                = -1
 IDLE                = 0
 INIT_SYSTEM         = 1
 DONNING             = 2
@@ -47,6 +48,9 @@ RUNNING             = 5
 ERROR               = 6
 SPEED_CTRL          = 7
 POS_CTRL            = 8
+POS_CTRL_ABS        = 9
+RETRIEVE_POSITION   = 10
+
 
 
 " ############# "
@@ -59,9 +63,10 @@ class MainWindow(BridgeGUI.BridgeWindow):
         BridgeGUI.BridgeWindow.__init__(self, parent)
 
         # Define bridge configurations
+        self.Coord = BridgeCoordClass()
         self.Bridge = BridgeClass(self)
         self.Conf   = BridgeConfClass(self.Bridge)
-        self.Coord  = BridgeCoordClass()
+
 
         " Initialize plots "
         self.exo3d_plot     = CreatePlot3DExo(self.exo3d_container,self.Conf)
@@ -97,6 +102,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
         for item in self.button_list:
             item.Disable()
         self.connect_butt.Enable()
+        self.stop_butt.Enable()
 
         input_choiceChoices = self.Bridge.InputList
 
@@ -161,6 +167,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
             for item in self.button_list:
                 item.Disable()
             self.connect_butt.Enable()
+            self.stop_butt.Enable()
 
             " Update statubar "
             self.statusbar.SetStatusText('Disconnected', 0)
@@ -187,11 +194,13 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 self.connect_butt.Disable()
                 self.disconnect_butt.Enable()
                 self.init_butt.Enable()
+                self.enableCtrl_butt.Enable()
 
             elif case == INIT_SYSTEM:
                 self.connect_butt.Disable()
                 self.init_butt.Disable()
                 self.disconnect_butt.Enable()
+                self.enableCtrl_butt.Enable()
 
             elif case == RUNNING:
                 self.connect_butt.Disable()
@@ -199,7 +208,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 self.enableCtrl_butt.Disable()
                 self.disconnect_butt.Enable()
                 self.disableCtrl_butt.Enable()
-                self.stop_butt.Enable()
                 self.savePos_butt.Enable()
                 self.gotoPos_butt.Enable()
 
@@ -207,14 +215,13 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 self.enableCtrl_butt.Enable()
                 self.connect_butt.Disable()
                 self.disconnect_butt.Enable()
-                self.stop_butt.Disable()
                 self.init_butt.Disable()
                 self.savePos_butt.Disable()
                 self.gotoPos_butt.Disable()
 
             " Update statubar "
             self.statusbar.SetStatusText('Connected', 0)
-            
+
         " Force win refresh (background issue) "
         self.Refresh()
 
@@ -262,8 +269,10 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 self.Jboundaries_lbl[i].SetLabel(u"●")
             else:
                 self.Jboundaries_lbl[i].SetLabel(u"○")
-
-            self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
+            try:
+                self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
+            except:
+                self.Jvalue_lbl[i].SetLabel("N.A.")
 
     def UpdateIKparam(self):
 
@@ -278,7 +287,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
         self.SavedPositions_list.Clear()
         for i, pos in zip(range(0,len(self.Bridge.SavedPositions)), self.Bridge.SavedPositions):
-            appended = "Position " + str(i+1)
+            appended = "Position " + str(i)
             self.SavedPositions_list.Append(appended)
             self.SavedPositions_list.SetSelection(i)
 
@@ -341,12 +350,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
     " ################## "
     " ####   MENU   #### "
     " ################## "
-
-    def exo_setup_command (self, event):
-        dialog = DialogExoSetup(self, self.Conf, self.Bridge)
-
-        if dialog.ShowModal() == wx.ID_OK:
-            self.Conf.Serial.Error = False
 
     def exo_setup_command (self, event):
         dialog = DialogExoSetup(self, self.Conf, self.Bridge)
@@ -451,9 +454,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
             " Start Timer for UpdateInputInfo"
             self.StartTimer(self.Conf.InputValuesRefreshTmr)
 
-
-
-
         else:
 
             " Update statubar "
@@ -492,7 +492,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
         if not __debug__:
             try:
-                " Close Serial ports "
+                print "* Closing Serial Ports ..."
                 for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
                     if self.Conf.Serial.Connected[i]:
                         while not J.FlushPort():
@@ -515,7 +515,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
         try:
             " Update control status "
             if not __debug__:
-                self.Bridge.SetStatus(READY)
+                self.Bridge.SetStatus(INIT_SYSTEM)
             else:
                 self.Bridge.SetStatus(READY)
 
@@ -526,9 +526,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
             return
 
     def enable_control_command (self, event):
-
-
-
 
 
         if not __debug__:
@@ -589,6 +586,50 @@ class MainWindow(BridgeGUI.BridgeWindow):
         " Update input info in main window "
         wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
+
+
+    def exit (self,event):
+        " Kill all the threads except MainThread "
+
+        " Get active threads "
+        threads_list = threading.enumerate()
+        print threads_list
+
+        print "* Terminating Threads ..."
+        for i in range(0, len(threads_list)):
+            th = threads_list[i]
+            if th.name != "MainThread":
+                try:
+                    th.terminate()
+                    th.join()
+                except Exception, e:
+                    print "# Error terminating " + th.name + " | " + str(e)
+
+        if not __debug__:
+            try:
+                print "* Closing Serial Ports ..."
+                for i, J in zip(range(0, self.Bridge.JointsNum), self.Bridge.Joints):
+                    if self.Conf.Serial.Connected[i]:
+                        while not J.FlushPort():
+                            time.sleep(0.1)
+                        while not J.ClosePort():
+                            time.sleep(0.1)
+                        print '+ %s Closed' % J.CommPort
+                        self.Conf.Serial.Connected[i] = False
+                    else:
+                        print '# Error: couldn\'t close %s.' % J.CommPort
+            except Exception, e:
+                print str(e)
+        try:
+            self.Close()
+            print "Closed"
+        except Exception, e:
+            print "# Error closing | " + str(e)
+
+        self.Bridge.SetStatus(NONE)
+
+        self.Bridge.MainWindow.timer.Stop()
+
     def goto_position_command (self, event):
         try:
             Selection = self.SavedPositions_list.GetSelection()
@@ -598,7 +639,10 @@ class MainWindow(BridgeGUI.BridgeWindow):
             else:
                 self.Bridge.GoToPosition(Selection)
         except Exception, e:
+            dialog = DialogError(self, "GoTo Position failed.")
+            dialog.ShowModal()
             print "#Error Go To Position Failed|" + str(e)
+
 
     def open_jointDialog_command (self, event):
 
@@ -645,13 +689,8 @@ class MainWindow(BridgeGUI.BridgeWindow):
             return
 
     def save_position_command(self, event):
-        try:
             self.Bridge.SavePosition()
             self.UpdateSavedPositions()
-
-        except Exception, e:
-            print '#Error: Save Position failed |' + str(e)
-
 
 " ############## "
 " #PLOT 3D EXO # "

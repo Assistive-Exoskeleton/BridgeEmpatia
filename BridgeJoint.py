@@ -15,6 +15,7 @@ RUNNING             = 5
 ERROR               = 6
 SPEED_CTRL          = 7
 POS_CTRL            = 8
+POS_CTRL_ABS        = 9
 
 class Joint:
 
@@ -25,27 +26,28 @@ class Joint:
         self.Ratio          = Exo.Jratio[Num-1]         # reduction ratio
         self.Offset         = Exo.Joffset[Num-1]        # home (0 step) position (deg)
         self.Jdef           = Patient.Jdef[Num-1]       # lo uso come target iniziale
-        self.Jrest          = Patient.Jrest[Num-1]      # lo uso come posizione di rest post donning
+        self.StepDegrees    = 1.8
+        self.Jtarget        = Patient.Jrest[Num - 1]      # lo uso come posizione di rest post donning
+        self.JtargetStep    = self.deg2step(self.Jtarget)
         self.JminExo        = Exo.Jmin[Num-1]           # min joint angular position
         self.JmaxExo        = Exo.Jmax[Num-1]           # max joint angular position
         self.Jmin           = 0                         # patient min
         self.Jmax           = 0                         # patient max
         self.InitError      = False
 
-        self.Jtarget        = None
-
         if not self.SetRange(Patient.Jmin[Num-1], Patient.Jmax[Num-1]):
             self.InitError = True
 
         " Degrees value of one step "
-        self.StepDegrees    = 1.8
+
 
         " Current position "
-        self.Position       = 0
-        self.PositionDeg    = 0
+        self.Position       = None
+        self.PositionDeg    = None
+        self.PositionStep   = None
 
         self.Connected      = False
-        self.Homed          = False
+
         self.Bounded        = False
         self.Coord          = Coord
         self.Timeout        = False
@@ -54,15 +56,19 @@ class Joint:
 
         self.ForceExit      = False
 
+        self.Homed          = False
         self.RestDone       = False
+        self.TargetDone     = False
+
 
         self.SetPort(COM)
         
+    def SetJtarget(self, Jtarget):
+        self.JtargetStep = Jtarget
 
     " Set serial port "
     def SetPort(self, name):
         self.CommPort = name
-
 
     " Set joint range "
     def SetRange(self, jmin, jmax):
@@ -132,7 +138,7 @@ class Joint:
             try:
                 self.Port.write(cmd_el)
             except Exception, e:
-                print 'WriteCmd() failed. ' + str(e)
+                print 'WriteCmd() failed | ' + str(e)
                 return False
 
             ret = self.ReplyCheck(cmd_el)
@@ -236,16 +242,11 @@ class Joint:
             print "#Error |", str(e)
             return False
 
-
     def ClosePort(self):
 
         " Close serial port "
 
-        #"Stop the joint motor "
-        #command = "#1S\r"
-        
-        try:            
-            #self.Port.write(command)
+        try:
             if self.Port.isOpen():
                 self.Port.close()
                 self.Connected = False
@@ -269,48 +270,161 @@ class Joint:
             print "#Error Flush Port |", e
             return False
 
-    " Send the target position to the controller (deg) "
+    '#######################'
+    '# MOT0R CONTROL MODES #'
+    '#######################'
+
+    "Set the Absolute Position Mode: Profile #1"
+    def SetAbsolutePositionMode(self):
+        command = ["#1y1\r","#1p2\r"]
+
+        try:
+            while self.WriteCmd(command) == False:
+                time.sleep(0.01)
+            return True
+        except Exception, e:
+            print "# Set Absolute Position Mode failed | " + str(e)
+            return False
+
+    "Set the Relative Position Mode: Profile #3"
+    def SetRelativePositionMode(self):
+        command = ["#1y3\r","#1p1\r","#1s0\r","#1A\r"]
+
+        try:
+            while self.WriteCmd(command) == False:
+                time.sleep(0.01)
+            return True
+        except Exception, e:
+            print "# Set Relative Position Mode failed | " + str(e)
+            return False
+
+    "Set the Speed Mode: Profile #10"
+    def SetSpeedMode(self):
+        command = ["#1y10\r"]
+
+        try:
+            while self.WriteCmd(command) == False:
+                time.sleep(0.01)
+            return True
+        except Exception, e:
+            print "# Set Absolute Position Mode failed | " + str(e)
+            return False
+
+    "Set the Homing Mode: Profile #2"
+    def SetHomingMode(self):
+        command = ["#1y2\r", "#1A\r"]
+
+        try:
+            while self.WriteCmd(command) == False:
+                time.sleep(0.01)
+            return True
+        except Exception, e:
+            print "# Set Homing Mode failed | " + str(e)
+            return False
+
+    "Start the Motor"
+    def MotorStart(self):
+        command = ["#1A\r"]
+
+        try:
+            while self.WriteCmd(command) == False:
+                time.sleep(0.01)
+            return True
+        except Exception, e:
+            print '# Motor Start failed | ' + str(e)
+            return False
+
+    "Test the Motor"
+    def MotorTest(self):
+
+        self.SetRelativePositionMode()
+
+        command = ["#1s100\r","#1A\r"]
+
+        try:
+            while self.WriteCmd(command) == False:
+                if self.Timeout:
+                    return False
+
+                time.sleep(0.01)
+
+        except Exception, e:
+            print '# Error Motor Test + | ' + str(e)
+            return False
+
+        time.sleep(1)
+
+        command = ["#1s-100\r","#1A\r"]
+        try:
+            while self.WriteCmd(command) == False:
+                if self.Timeout:
+                    return False
+
+                time.sleep(0.01)
+
+        except Exception, e:
+            print '# Error Motor Test - | ' + str(e)
+            return False
+
+        time.sleep(0.5)
+
+        return True
+
+
+
     def SetPositionDeg(self, p0deg):
 
-        " Check if the desired value is in the correct range "
-        if p0deg >= self.Jmin and p0deg <= self.Jmax:
-            " Calculate deg to step "
-            p0step = self.deg2step(p0deg - self.Offset)
+        " Send the target position to the controller (deg) "
+        try:
+            " Check if the desired value is in the correct range "
+            if p0deg >= self.Jmin and p0deg <= self.Jmax:
+                " Calculate deg to step "
+                p0step = self.deg2step(p0deg - self.Offset)
+            else:
+                return False
 
-        '''
-        elif p0deg <= self.Jmin + 3:
-
-            print 'J%d out of range (<min)' % self.Num
-            p0step = self.deg2step(self.Jmin + 3 - self.Offset)
-
-        elif p0deg >= self.Jmax - 3:
-
-            print 'J%d out of range (>max)' % self.Num
-            p0step = self.deg2step(self.Jmax - 3 - self.Offset)
-        '''
-        " Get current position "
-        self.Position = self.GetPositionDeg()
-        print self.Position
-        self.PositionStep = self.GetPositionStep()
-        print self.PositionStep
-        # print '!!! Posizione corrente thread set position: ', self.Position
-
-        print 'J%d p0step: '   % self.Num, p0step
-        print 'J%d p0step actual: ' % self.Num, self.PositionStep
+            print 'J%d p0step: '   % self.Num, p0step
+            print 'J%d p0step actual: ' % self.Num, self.PositionStep
 
 
-        if abs(p0step - self.PositionStep) <= 2:
+            if  abs(p0step - self.PositionStep) < 1:
 
-            print 'J%d Stop' % self.Num
-            return True, self.Position
+                print 'J%d Stop' % self.Num
+                return False
 
-        else:
+            else:
 
-            print 'J%d Move' % self.Num
-            targetpos = "#1s%d\r" % p0step
-            command = [targetpos, "#1A\r"]  #Target Position, Start Movement
-            self.WriteCmd(command)
-            return False, self.Position
+                print 'J%d Move' % self.Num
+                targetpos = "#1s%d\r" % p0step
+                command = [targetpos, "#1A\r"]  #Target Position, Start Movement
+                self.WriteCmd(command)
+                return True
+
+        except Exception, e:
+            return False
+            print "#Error Set Position Deg | " + str(e)
+
+    def SetPositionStep(self, p0step):
+
+        " Send the target position to the controller (step) "
+        try:
+            " Check if the desired value is in the correct range "
+            if self.step2deg(p0step) <= self.Jmin and self.step2deg(p0step) >= self.Jmax and abs(p0step - self.PositionStep) <= 1:
+
+                print 'J%d Stop' % self.Num
+                return False
+
+            else:
+
+                print 'J%d Move' % self.Num
+                targetpos = "#1s%d\r" % p0step
+                command = [targetpos, "#1A\r"]  #Target Position, Start Movement
+                self.WriteCmd(command)
+                return True
+
+        except Exception, e:
+            return False
+            print "#Error Set Position Step | " + str(e)
 
     def SetSpeedHz(self, speed):
 
@@ -339,58 +453,54 @@ class Joint:
             time.sleep(0.01)
             return False, -1
 
-    def StartSpeed(self):
-        command = ["#1D0\r", "#1D0\r"]
-        self.WriteCmd(command)
-        time.sleep(1)
-
-        command = ["#1y10\r","#1A\r"]
-        self.WriteCmd(command)
-
-    def Stop(self):
-        command = ["#1S\r","#1S\r"]
-        self.WriteCmd(command)
-        time.sleep(0.01)
-
-    def Start(self):
-        command = ["#1A\r"]
-        self.WriteCmd(command)
-        time.sleep(0.01)
-
     def HomingQuery(self):
 
-        "Reset the position error "
-        command = ["#1D0\r", "#1D0\r"]
-        self.WriteCmd(command)
-
-        time.sleep(0.5)
+        self.DriveErrorClear()
+        time.sleep(0.1)
 
         " First Reference Query"
+
         if self.ReadCmd("#1:is_referenced\r") == 0:
 
-            " Select record #2 (homing) and run the motor "
-            command = ["#1y2\r","#1A\r"]
-            self.WriteCmd(command)
+            self.SetHomingMode()
 
             while self.ReadCmd("#1:is_referenced\r") == 0:
 
                 if not self.Port.isOpen():
                     return False
 
-                time.sleep(0.5)
+                time.sleep(0.1)
+
+            self.DriveErrorReset()
+            time.sleep(0.1)
 
         return True
 
-
     def DriveErrorClear(self):
-        command = ["#1D0\r", "#1D0\r"]
-        self.WriteCmd(command)
-        #print 'DriveErrorClear'
+        command = ["#1D\r"]
+
+        try:
+            while self.WriteCmd(command) == False:
+                time.sleep(0.01)
+            return True
+        except Exception, e:
+            print "# Drive Error Clear failed | " + str(e)
+            return False
+
+    def DriveErrorReset(self):
+        command = ["#1D0\r"]
+
+        try:
+            while self.WriteCmd(command) == False:
+                time.sleep(0.01)
+            return True
+        except Exception, e:
+            print "# Drive Error Clear failed | " + str(e)
+            return False
     
     "Read the actual position from the controller (deg)"
     def GetPositionDeg(self):
         return self.step2deg(self.ReadCmd("#1I\r")) + self.Offset
-
 
     "Read the actual position from the controller (step)"
     def GetPositionStep(self):
@@ -404,71 +514,6 @@ class Joint:
     def step2deg(self, pstep):
         return (pstep / (self.Ratio / self.StepDegrees))
 
-    "Set the Position Mode: Profile #1"
-    def SetPositionMode(self):
-        command = ["#1y1\r", "#1p2\r"]
-
-        while self.WriteCmd(command) == False:
-            time.sleep(0.01)
-
-    "Start the Motor"
-    def MotorStart(self):
-        command = ["#1A\r"]
-
-        try:
-            while self.WriteCmd(command) == False:
-                time.sleep(0.01)
-        except Exception, e:
-            print 'WriteCmd() failed. ' + str(e)
-            return False
-
-    "Test the Motor"
-    def MotorTest(self):
-
-        command = ["#1D0\r","#1y1\r", "#1p2\r"]
-
-        try:
-            while self.WriteCmd(command) == False:
-
-                if self.Timeout:
-                    return False
-
-                time.sleep(1)
-
-        except Exception, e:
-            print 'WriteCmd() failed. ' + str(e)
-            return False
-
-        command = ["#1s100\r","#1A\r"]
-
-        try:
-            while self.WriteCmd(command) == False:
-                if self.Timeout:
-                    return False
-
-                time.sleep(1)
-
-        except Exception, e:
-            print 'WriteCmd() failed. ' + str(e)
-            return False
-
-        time.sleep(2)
-
-        command = ["#1s-100\r","#1A\r"]
-        try:
-            while self.WriteCmd(command) == False:
-                if self.Timeout:
-                    return False
-
-                time.sleep(1)
-
-        except Exception, e:
-            print 'WriteCmd() failed. ' + str(e)
-            return False
-
-        time.sleep(2)
-
-        return True
 
 " ####################"
 "  JOINT INIT THREAD  "
@@ -484,56 +529,45 @@ class Thread_JointInitClass(threading.Thread):
     def run(self):
 
         self.Running = True
-        
-        " Start Homing Procedure "
 
         print 'J%d - Homing start' % self.Jn.Num
 
         if self.Jn.HomingQuery() == False:
 
             print '# ERROR: J%d HomingQuery() failed' % self.Jn.Num
-            return
+            return False
 
-        print 'J%d - Homing done' % self.Jn.Num
 
-        command = ["#1D0\r", "#1D0\r"]
-        self.Jn.WriteCmd(command)
-        time.sleep(0.5)
-        
-        " Get motor position "
-        homing_position = self.Jn.GetPositionDeg()
-        print 'J%d - Homing position (deg: %d | step: %d):' % (self.Jn.Num, homing_position, self.Jn.deg2step(homing_position))
+        " Get encoder position "
+
+        self.Jn.PositionStep = self.Jn.GetPositionStep()
+        self.Jn.Position = self.Jn.GetPositionDeg()
+
+        print 'J%d - Homing position (deg: %d | step: %d):' % (self.Jn.Num, self.Jn.Position, self.Jn.PositionStep)
         
         time.sleep(0.5)
-        
-        " Configure the controller with the following settings:"
-        " a) record 2 "
-        " b) absolute position "
-        command = ["#1y1\r", "#1p2\r"]
-        
-        while self.Jn.WriteCmd(command) == False:
-            time.sleep(1)
-        
-        time.sleep(0.1)
-        
-        
+
+        self.Jn.SetAbsolutePositionMode()
+
         " Set the donning position "
         if self.Jn.Num != 1:         
             self.Jn.SetPositionDeg(self.Jn.Jdef)
      
-            while abs(self.Jn.GetPositionDeg() - self.Jn.Jdef) > 2.0:
-                print '**** Sto andando a target position, J%d - %d' % (self.Jn.Num, self.Jn.GetPositionDeg())
-                time.sleep(1)
+            while abs(self.Jn.Position - self.Jn.Jdef) > 0.5:
+                self.Jn.Position = self.Jn.GetPositionDeg()
+                #print '**** Sto andando a target position, J%d - %d' % (self.Jn.Num, self.Jn.Position)
+                time.sleep(0.5)
 
         self.Jn.Position = self.Jn.GetPositionDeg()
 
-        print 'J%d - In position (%f)' % (self.Jn.Num, self.Jn.GetPositionDeg())       
+        print 'J%d - In position (%f)' % (self.Jn.Num, self.Jn.Position)
 
         " Set home flag "
         self.Jn.Homed = True
 
-        print ' J%d - target position (%f)' % (self.Jn.Num, self.Jn.Jdef)
-        
+        print 'J%d - Default position (deg: %d | step: %d):' % (self.Jn.Num, self.Jn.Position, self.Jn.PositionStep)
+        print 'J%d - target position (%f)' % (self.Jn.Num, self.Jn.Jdef)
+
     def terminate(self):
         " Exit the thread "
         self.Running = False
@@ -541,7 +575,7 @@ class Thread_JointInitClass(threading.Thread):
 " ################################# "
 "  JOINT INIT REST POSITION THREAD  "
 " ################################# "
-class Thread_JointRestPositionClass(threading.Thread):
+class Thread_JointTargetPositionClass(threading.Thread):
 
     def __init__(self, Name, Jj):
         threading.Thread.__init__(self)
@@ -550,55 +584,30 @@ class Thread_JointRestPositionClass(threading.Thread):
         self.Jn             = Jj
         
     def run(self):
+
         self.Running = True
-        
-        " Get Position in Step "
-        currentPosition = str(self.Jn.ReadCmd("#1I\r"))
 
-        " Resetto "
-        # command = ['#1D0', '#1D'+ currentPosition +'\r']
-        
-        command = ['#1D0\r']
-        try:
-            while self.Jn.WriteCmd(command) == False:
-                
-                if self.Jn.Timeout:
-                    return False
+        #" Get Position in Step "
+        #currentPosition = str(self.Jn.ReadCmd("#1I\r"))
+        #self.Jn.Position = self.Jn.GetPositionDeg()
 
-                time.sleep(1)
+        " Motor Error Reset "
+        self.Jn.DriveErrorClear()
 
-        except Exception, e:
-            print 'WriteCmd() failed. ' + str(e)
-            return False
+        self.Jn.SetAbsolutePositionMode()
 
-        command = ['#1D'+ currentPosition +'\r']
+        " Set the Target position "
+        self.Jn.SetPositionDeg(self.Jn.Jtarget)
 
-        try:
-            while self.Jn.WriteCmd(command) == False:
-                
-                if self.Jn.Timeout:
-                    return False
-
-                time.sleep(1)
-
-        except Exception, e:
-            print 'WriteCmd() failed. ' + str(e)
-            return False
-
-
-        " Set the rest position "
-        self.Jn.SetPositionDeg(self.Jn.Jrest)
-
-        while abs(self.Jn.Jrest - self.Jn.GetPositionDeg()) > 1:
-            if not self.Running:
-                print 'parte sbagliata del while'
-                self.Jn.RestDone = False
-                return False
-
+        while abs(self.Jn.Position - self.Jn.Jtarget) > 0.5:
+            self.Jn.Position = self.Jn.GetPositionDeg()
+            # print '**** Sto andando a target position, J%d - %d' % (self.Jn.Num, self.Jn.GetPositionDeg())
             time.sleep(0.5)
 
         self.Jn.Position = self.Jn.GetPositionDeg()
-        print self.Jn.Position
+
+        print 'J%d - In position (%f)' % (self.Jn.Num, self.Jn.GetPositionDeg())
+
         self.Jn.RestDone = True
         
     def terminate(self):
@@ -627,12 +636,8 @@ class Thread_JointUpdateClass(threading.Thread):
 
         self.Running   = True
 
-        if not __debug__:
-
-            " Position Control, Relative Position, Start"
-            command = ["#1y3\r", "#1s0\r", "#1A\r"]
-            while self.Jn.WriteCmd(command) == False:
-                time.sleep(0.01)
+        " Position Control, Relative Position, Start"
+        self.Jn.SetRelativePositionMode()
 
         " Get current position "
         self.Jn.Position = self.Jn.GetPositionDeg()
@@ -643,51 +648,81 @@ class Thread_JointUpdateClass(threading.Thread):
                 " Measure process time "
                 t0 = time.clock()
 
+                self.Jn.Position = self.Jn.GetPositionDeg()
+                self.Jn.PositionStep = self.Jn.GetPositionStep()
+
                 " Detecting New Control Mode"
                 if self.Bridge.Control.Status != self.OldStatus:
                     self.OldStatus = self.Bridge.Control.Status
 
-                    self.Jn.Position = self.Jn.GetPositionDeg()
-
                     if self.Bridge.Control.Status == SPEED_CTRL:
 
-                        print ' J%d Speed Control ' % self.Jn.Num
+                        #print ' J%d Speed Control ' % self.Jn.Num
 
                         " Speed Control, Speed Reference  "
                         command = ["#1y10\r"]
+                        while self.Jn.WriteCmd(command) == False:
+                            time.sleep(0.01)
 
                     elif self.Bridge.Control.Status == POS_CTRL:
 
-                        print ' J%d Position Control ' % self.Jn.Num
-                        # "Position Control - Absolute Position"
-                        # command = ["#1y1\r", "#1p2\r", "#1A\r"]
+                        #print ' J%d Position Control ' % self.Jn.Num
+
                         "Position Control - Relative Position"
                         command = ["#1y3\r", "#1s0\r", "#1A\r"]
+                        while self.Jn.WriteCmd(command) == False:
+                            time.sleep(0.01)
+
+                        # "Position Control - Absolute Position"
+                        # command = ["#1y1\r", "#1p2\r", "#1A\r"]
+
+                    elif self.Bridge.Control.Status == POS_CTRL_ABS:
+
+                        "Position Control - Absolute Position"
+
+                        self.Jn.DriveErrorClear()
+                        self.Jn.SetAbsolutePositionMode()
+                        self.Jn.SetPositionStep(self.Jn.JtargetStep)
 
                     else:
 
-                        print ' J%d Error -> Position Control ' % self.Jn.Num
-                        command = ["#1y3\r", "#1p2\r"]
+                        "Position Control - Relative Position"
 
-                    while self.Jn.WriteCmd(command) == False:
-                        time.sleep(0.01)
+
+
 
                 " If the control is enabled "
+
                 if self.Bridge.Control.Status == SPEED_CTRL:
                     
                     " Set speed "
 
-                    self.Jn.Position = self.Jn.GetPositionDeg()
+                    #self.Jn.Position = self.Jn.GetPositionDeg()
                     self.Jn.SetSpeedHz(self.Jn.deg2step(self.Coord.Jv[self.Jn.Num - 1]))
                     # print (self.Coord.Jv[self.Jn.Num-1] * self.Jn.Ratio/360)
-
                 elif self.Bridge.Control.Status == POS_CTRL:
+                    time.sleep(0.01)
 
-                    self.Jn.Position = self.Jn.GetPositionDeg()
+                    #self.Jn.Position = self.Jn.GetPositionDeg()
 
 
                     #TODO: cosa succede se il sistema e' forzato? "
                     #self.Jn.SetPositionDeg(self.Jn.GetPositionDeg())
+
+                    '#############################'
+                    '# ABSOLUTE POSITION CONTROL #'
+                    '#############################'
+
+                elif self.Bridge.Control.Status == POS_CTRL_ABS:
+
+                    if abs(self.Jn.PositionStep - self.Jn.JtargetStep) > 1:
+                        print 'J%d - In position (%f)' % (self.Jn.Num, self.Jn.PositionStep)
+                        print 'J%d - target position (%f)' % (self.Jn.Num, self.Jn.JtargetStep)
+                    else:
+
+                        #self.Bridge.Control.Status(RUNNING)
+                        self.Jn.TargetDone = True
+
 
                 elapsed_time = time.clock() - t0
 
@@ -697,7 +732,7 @@ class Thread_JointUpdateClass(threading.Thread):
                     time.sleep(self.Period - elapsed_time)
 
             except Exception, e:
-                print '# Error: JointUpdate %d failure. %s' % (self.Jn.Num, str(e))
+                print '# Error: JointUpdate %d failure | %s' % (self.Jn.Num, str(e))
                 self.terminate()
                 break
 
@@ -710,6 +745,8 @@ class Thread_JointUpdateClass(threading.Thread):
             self.Jn.ForceExit = False
         except:
             print "# Flush Port failed | " + str(e)
+
+
 
     def terminate(self):
 

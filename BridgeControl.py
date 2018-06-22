@@ -30,7 +30,8 @@ RUNNING             = 5
 ERROR               = 6
 SPEED_CTRL          = 7
 POS_CTRL            = 8
-RETRIEVE_POSITION   = 9
+POS_CTRL_ABS        = 9
+TARGET_POSITION     = 10
 
 '''
 global file_EndEff0
@@ -58,6 +59,8 @@ class Thread_ControlClass(threading.Thread):
 
         self.CheckWS            = CheckWs
         self.Coord.Jpos         = self.Bridge.Patient.Jrest
+
+
 
     def run(self):
 
@@ -99,12 +102,10 @@ class Thread_ControlClass(threading.Thread):
                     if initThread.Name != "JointInitThread1":
                         initThread.start()
 
-                " TODO: da riscrivere in modo pitonico "
-                " MARTA: da ripristinare per giunto 5 "
-                " MARTA: da ripristinare per giunto 3 "
-                # while self.Bridge.Joints[0].Homed == False or self.Bridge.Joints[1].Homed == False or self.Bridge.Joints[2].Homed == False or self.Bridge.Joints[3].Homed == False or self.Bridge.Joints[4].Homed == False:
-                while self.Bridge.Joints[0].Homed is False or self.Bridge.Joints[1].Homed == False or self.Bridge.Joints[2].Homed == False or self.Bridge.Joints[3].Homed == False:
-                # while self.Bridge.Joints[0].Homed == False or self.Bridge.Joints[1].Homed == False or self.Bridge.Joints[2].Homed == False:
+                #TODO: da riscrivere in modo pitonico "
+
+                while self.Bridge.Joints[0].Homed == False or self.Bridge.Joints[1].Homed == False or self.Bridge.Joints[2].Homed == False or self.Bridge.Joints[3].Homed == False:
+
                     " Keep escape chance "
                     if not self.Running:
                         break
@@ -133,14 +134,14 @@ class Thread_ControlClass(threading.Thread):
             elif self.Bridge.Status == REST_POSITION:
 
                 " Status where the initialization of the system is done, but the ctrl is NOT enabled "
+                #self.Bridge.Control.Status = POS_CTRL_ABS
                 
                 arrigon         = []
                 arrigon_thread  = []
 
                 for i, J in zip(range(0, self.Bridge.JointsNum), self.Bridge.Joints):
-                    print i
                     # arrigon.append(self.Bridge.Joints[i].RestDone)
-                    arrigon_thread.append(Thread_JointRestPositionClass("JointRestPositionThread" + str(i), J))
+                    arrigon_thread.append(Thread_JointTargetPositionClass("JointTargetPositionThread" + str(i), J))
 
                 " Run all the threads "
                 for thread in arrigon_thread:
@@ -161,7 +162,6 @@ class Thread_ControlClass(threading.Thread):
                 wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
                 wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
-
             elif self.Bridge.Status == READY:
                 " Status where the initialization of the system is done, but the ctrl is NOT enabled "
 
@@ -170,6 +170,11 @@ class Thread_ControlClass(threading.Thread):
             elif self.Bridge.Status == RUNNING:
 
                 t0 = time.clock()
+
+                for i in range(0, self.Bridge.JointsNum):
+
+                    if not __debug__:
+                        self.Coord.Jpos[i] = self.Bridge.Joints[i].Position
 
                 #TODO check self.p0_check - da valutare "
                 if self.Bridge.Control.Input == 'Vocal':
@@ -180,19 +185,20 @@ class Thread_ControlClass(threading.Thread):
                     else:
                         self.Bridge.Control.VocalStepsCnt = self.Bridge.Control.VocalStepsCnt+1
 
-                # TODO: ALTRA FLAG ENABLE CONTROL: NON FARE L'IK QUANDO NON DEVE.
-                if all(i == 0 for i in self.Coord.p0):
-                    self.Bridge.Control.Status = POS_CTRL
 
-                else:
-                    self.Bridge.Control.Status = SPEED_CTRL
+                if not self.Bridge.Control.Status == POS_CTRL_ABS:
+
+                    if all(i == 0 for i in self.Coord.p0):
+                        self.Bridge.Control.Status = POS_CTRL
+                    else:
+                        self.Bridge.Control.Status = SPEED_CTRL
 
 
-                    " 2. Run IK algorithm "
-                    self.MartaCtrl()
+                        " 2. Run IK algorithm "
+                        self.MartaCtrl()
 
-                    " Update graphics in main window "
-                    wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
+                        " Update graphics in main window "
+                        wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
 
                 elapsed_time = time.clock() - t0
@@ -204,13 +210,36 @@ class Thread_ControlClass(threading.Thread):
                 else:
                     time.sleep(self.Bridge.Control.ThreadPeriod - elapsed_time)
 
-            elif self.Bridge.Status == RETRIEVE_POSITION:
-                pass
+            elif self.Bridge.Status == TARGET_POSITION:
+
+                print "+ Target Position"
+                for i in range(0, self.Bridge.JointsNum):
+                    self.Bridge.Joints[i].TargetDone = False
+
+                self.Bridge.Control.SetStatus(POS_CTRL_ABS)
+
+                arrigon = [False] * self.Bridge.JointsNum
+
+                while 1 and self.Running:
+
+
+                    for i in range(0, self.Bridge.JointsNum):
+                        arrigon[i] = self.Bridge.Joints[i].TargetDone
+
+                    if all(i == True for i in arrigon):
+                        break
+
+                print arrigon
+
+                print "RETRIEVE POSITION DONE"
+
+                self.Bridge.SetStatus(RUNNING)
+                self.Bridge.Control.SetStatus(POS_CTRL)
+
 
             if self.Bridge.Status != self.Bridge.OldStatus:
                 self.Bridge.OldStatus = self.Bridge.Status
                 wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
-
 
 
         print '- Control Thread Out'
@@ -236,9 +265,6 @@ class Thread_ControlClass(threading.Thread):
         " STEP 1: FK "
 
         for i in range (0,self.Bridge.JointsNum):
-
-            if not __debug__:
-                self.Coord.Jpos[i] = self.Bridge.Joints[i].Position
 
             self.Jpos_rad[i] = self.Coord.Jpos[i]*math.pi/180
 
@@ -487,7 +513,7 @@ class Thread_ControlClass(threading.Thread):
                 if abs(diff[i]) > self.Bridge.Control.MaxDegDispl:
                     print '# Repentine Change'
                     self.Coord.Jdes = JCurrentPos
-                    #self.Bridge.Control.Status = POS_CTRL
+                    self.Bridge.Control.Status = POS_CTRL
 
                 self.Coord.Jv[i] = ((self.Coord.Jdes[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
 
