@@ -41,7 +41,7 @@ class BridgeClass:
         self.Joystick               = JoystickClass(self)
         self.Status                 = NONE
         self.OldStatus              = NONE
-        self.InputList              = ["Joystick", "Vocal", "Visual"]
+        self.InputList              = []
         self.SavedPositions         = []
 
     def SavePosition(self):
@@ -155,8 +155,7 @@ class ControlClass:
        self.StatusList             = ["Idle", "Position", "Speed", "Auto"]
        self.Status                 = IDLE
        self.jarvis_cmd             = ""
-       self.InputList              = ["Joystick", "Visual", "Vocal"]
-       self.Input                  = "Joystick"
+       self.Input                  = "None"
        self.Positions              = [None]
        self.Listen = 1
        self.FIRST_RUN = True
@@ -251,6 +250,9 @@ class BridgeCoordClass:
 
        " Velocita' desiderata dei giunti "
        self.Jv                         = [0]*5
+
+   def Setp0(self, p0):
+       self.p0 = p0
 
 
 class JoystickClass:

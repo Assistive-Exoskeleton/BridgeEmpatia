@@ -6,7 +6,6 @@ import sys
 import time
 import threading
 import datetime
-import pygame
 import numpy
 import math
 
@@ -450,7 +449,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
         if self.Conf.Serial.AllConnected == True:
 
             self.Bridge.SetStatus(IDLE)
-
             " Start Timer for UpdateInputInfo"
             self.StartTimer(self.Conf.InputValuesRefreshTmr)
 
@@ -471,6 +469,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
                             print '- Error: couldn\'t close %s.' % J.CommPort
                 except Exception, e:
                     print 'Error  ' + str(e)
+        self.set_control_interface(event)
 
     def disconnect_command (self, event):
 
