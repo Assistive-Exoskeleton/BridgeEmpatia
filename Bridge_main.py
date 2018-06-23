@@ -326,7 +326,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
         self.joystick_plot.figure.canvas.draw()
         
         for jj in range(0,self.monitorJoint_grid.GetNumberRows()):
-            self.monitorJoint_grid.SetCellValue(jj, 1, str("{0:.3f}".format(round(self.Coord.Jpos[jj],3))))
+            self.monitorJoint_grid.SetCellValue(jj, 1, str("{0:.3f}".format(round(self.Coord.J_current[jj],3))))
             self.monitorCtrl_grid.SetCellValue(jj, 1, str("{0:.3f}".format(round(self.Coord.Jv[jj],3))))
             self.monitorJoint_grid.SetCellValue(jj, 5, str("{0:.3f}".format(round(self.Coord.SavedPos[jj],3))))
         '''

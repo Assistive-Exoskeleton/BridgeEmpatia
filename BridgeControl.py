@@ -38,10 +38,10 @@ global file_EndEff0
 file_EndEff0 = []
 global file_EndEff_des
 file_EndEff_des = []
-global file_Jpos
-file_Jpos = []
-global file_Jdes
-file_Jdes = []
+global file_J_current
+file_J_current = []
+global file_J_des
+file_J_des = []
 global file_p0
 file_p0_ = []
 global file_elbow
@@ -58,13 +58,16 @@ class Thread_ControlClass(threading.Thread):
         self.Bridge             = Bridge
 
         self.CheckWS            = CheckWs
-        self.Coord.Jpos         = self.Bridge.Patient.Jrest
+
 
 
 
     def run(self):
 
         print '* Control Thread Run'
+
+        if __debug__:
+            self.Coord.J_current = self.Bridge.Patient.Jrest
 
         self.Running = True
 
@@ -174,7 +177,7 @@ class Thread_ControlClass(threading.Thread):
                 for i in range(0, self.Bridge.JointsNum):
 
                     if not __debug__:
-                        self.Coord.Jpos[i] = self.Bridge.Joints[i].Position
+                        self.Coord.J_current[i] = self.Bridge.Joints[i].Position
 
                 #TODO check self.p0_check - da valutare "
                 if self.Bridge.Control.Input == 'Vocal':
@@ -246,7 +249,7 @@ class Thread_ControlClass(threading.Thread):
 
     def MartaCtrl(self):
 
-        self.Jpos_rad           = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0])
+        self.Coord.J_current_rad           = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0])
         self.temp_EndEff0       = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0])
         self.WS_is_gay          = False
         self.dq_prev            = numpy.array([0.0, 0.0, 0.0, 0.0, 0.0]) # inizializzazione del primo step
@@ -266,30 +269,30 @@ class Thread_ControlClass(threading.Thread):
 
         for i in range (0,self.Bridge.JointsNum):
 
-            self.Jpos_rad[i] = self.Coord.Jpos[i]*math.pi/180
+            self.Coord.J_current_rad[i] = self.Coord.J_current[i]*math.pi/180
 
         " FK per calcolo di posizione attuale -> Elbow "
 
         # 3 Giunti
-        # self.Coord.Elbow[0] = math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
-        # self.Coord.Elbow[1] = -math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
-        # self.Coord.Elbow[2] = math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
+        # self.Coord.Elbow[0] = math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
+        # self.Coord.Elbow[1] = -math.cos(self.Coord.J_current_rad[1])*math.sin(self.Coord.J_current_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
+        # self.Coord.Elbow[2] = math.sin(self.Coord.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
 
         "4 Joints"
-        self.Coord.Elbow[0]   = self.Bridge.Patient.RJoint3*(math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) - math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[1])) + math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
-        self.Coord.Elbow[1]   = self.Bridge.Patient.RJoint3*(math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) + math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])) - math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
-        self.Coord.Elbow[2]   = math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])
+        self.Coord.Elbow[0]   = self.Bridge.Patient.RJoint3*(math.sin(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[2]) - math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[2])*math.sin(self.Coord.J_current_rad[1])) + math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
+        self.Coord.Elbow[1]   = self.Bridge.Patient.RJoint3*(math.cos(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[2]) + math.cos(self.Coord.J_current_rad[2])*math.sin(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[1])) - math.cos(self.Coord.J_current_rad[1])*math.sin(self.Coord.J_current_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2)
+        self.Coord.Elbow[2]   = math.sin(self.Coord.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Coord.J_current_rad[1])*math.cos(self.Coord.J_current_rad[2])
 
         " FK per calcolo di posizione attuale -> EndEff_current "
         # 3 Giunti
-        # self.Coord.EndEff_current[0] = math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1]) - self.Bridge.Patient.l3*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])
-        # self.Coord.EndEff_current[1] = -math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1]) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0])
-        # self.Coord.EndEff_current[2] = math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[1]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[1])
+        # self.Coord.EndEff_current[0] = math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.cos(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[1]) - self.Bridge.Patient.l3*math.sin(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[2]) + self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[1])*math.cos(self.Coord.J_current_rad[2])
+        # self.Coord.EndEff_current[1] = -math.cos(self.Coord.J_current_rad[1])*math.sin(self.Coord.J_current_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.sin(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[1]) - self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[2]) - self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[1])*math.cos(self.Coord.J_current_rad[2])*math.sin(self.Coord.J_current_rad[0])
+        # self.Coord.EndEff_current[2] = math.sin(self.Coord.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Coord.J_current_rad[1]) + self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[2])*math.sin(self.Coord.J_current_rad[1])
 
         "4 Joints"
-        self.Coord.EndEff_current[0] = self.Bridge.Patient.RJoint3*(math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) - math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[1])) - self.Bridge.Patient.l3*math.sin(self.Jpos_rad[3])*(math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0]) + math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])) + math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[3])
-        self.Coord.EndEff_current[1] = self.Bridge.Patient.RJoint3*(math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) + math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])) - self.Bridge.Patient.l3*math.sin(self.Jpos_rad[3])*(math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2]) - math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])) - math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[3])*math.sin(self.Jpos_rad[0])
-        self.Coord.EndEff_current[2] = math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[3])*math.sin(self.Jpos_rad[1]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])*math.sin(self.Jpos_rad[3])
+        self.Coord.EndEff_current[0] = self.Bridge.Patient.RJoint3*(math.sin(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[2]) - math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[2])*math.sin(self.Coord.J_current_rad[1])) - self.Bridge.Patient.l3*math.sin(self.Coord.J_current_rad[3])*(math.cos(self.Coord.J_current_rad[2])*math.sin(self.Coord.J_current_rad[0]) + math.cos(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[1])*math.sin(self.Coord.J_current_rad[2])) + math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[1])*math.cos(self.Coord.J_current_rad[3])
+        self.Coord.EndEff_current[1] = self.Bridge.Patient.RJoint3*(math.cos(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[2]) + math.cos(self.Coord.J_current_rad[2])*math.sin(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[1])) - self.Bridge.Patient.l3*math.sin(self.Coord.J_current_rad[3])*(math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[2]) - math.sin(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[1])*math.sin(self.Coord.J_current_rad[2])) - math.cos(self.Coord.J_current_rad[1])*math.sin(self.Coord.J_current_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[1])*math.cos(self.Coord.J_current_rad[3])*math.sin(self.Coord.J_current_rad[0])
+        self.Coord.EndEff_current[2] = math.sin(self.Coord.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Coord.J_current_rad[1])*math.cos(self.Coord.J_current_rad[2]) + self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[3])*math.sin(self.Coord.J_current_rad[1]) + self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[1])*math.sin(self.Coord.J_current_rad[2])*math.sin(self.Coord.J_current_rad[3])
 
         " Calculate EndEff_des (only for step-by-step control) "
         # if not self.Coord.GoToSavedPosMainTrigger:
@@ -307,7 +310,7 @@ class Thread_ControlClass(threading.Thread):
         self.WS_is_gay = True # aggiungere funzione check WS
 
 
-        " STEP 3: IK: EndEff_des -> Jdes (valori di giunto che devo raggiungere [deg]) "
+        " STEP 3: IK: EndEff_des -> J_des (valori di giunto che devo raggiungere [deg]) "
         # inizializzazione parametri ciclo IK
         exit         = False # controlla num massimo di iterazioni algoritmo IK
         n            = 0     # counter numero iterazioni algoritmo IK        
@@ -324,30 +327,30 @@ class Thread_ControlClass(threading.Thread):
 
                 # 3 Giunti
                 '''
-                self.Jacob[0,0] = self.Bridge.Patient.RJoint3*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1]) - math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0])
-                self.Jacob[0,1] = - math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1]) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[1])
-                self.Jacob[0,2] = - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0]) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])
-                self.Jacob[1,0] = - math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1]) + self.Bridge.Patient.l3*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])
-                self.Jacob[1,1] = math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])
-                self.Jacob[1,2] = - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2])
+                self.Jacob[0,0] = self.Bridge.Patient.RJoint3*math.sin(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[1]) - math.cos(self.Coord.J_current_rad[1])*math.sin(self.Coord.J_current_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[2]) - self.Bridge.Patient.l3*math.cos(self.Coord.J_current_rad[1])*math.cos(self.Coord.J_current_rad[2])*math.sin(self.Coord.J_current_rad[0])
+                self.Jacob[0,1] = - math.cos(self.Coord.J_current_rad[0])*math.sin(self.Coord.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.cos(self.Coord.J_current_rad[0])*math.cos(self.Coord.J_current_rad[1]) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[1])
+                self.Jacob[0,2] = - self.Bridge.Patient.l3*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0]) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[2])
+                self.Jacob[1,0] = - math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[1]) + self.Bridge.Patient.l3*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[2]) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[2])
+                self.Jacob[1,1] = math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[0]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1])
+                self.Jacob[1,2] = - self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[2]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[2])
                 self.Jacob[2,0] = 0
-                self.Jacob[2,1] = math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.sin(self.Jpos_rad[1]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])
-                self.Jacob[2,2] = -self.Bridge.Patient.l3*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])              
+                self.Jacob[2,1] = math.cos(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.sin(self.J_current_rad[1]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[2])
+                self.Jacob[2,2] = -self.Bridge.Patient.l3*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2])              
                 '''
 
                 # 4 Giunti
-                self.Jacob[0,0]= self.Bridge.Patient.RJoint3 *(math.cos(self.Jpos_rad[0]) *math.sin(self.Jpos_rad[2]) + math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])) - self.Bridge.Patient.l3*math.sin(self.Jpos_rad[3])*(math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2]) - math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])) - math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[3])*math.sin(self.Jpos_rad[0])
-                self.Jacob[0,1]= - math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) -self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2]) -self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[3])*math.sin(self.Jpos_rad[1]) -self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])*math.sin(self.Jpos_rad[3])
-                self.Jacob[0,2]= self.Bridge.Patient.RJoint3*(math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0]) + math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])) + self.Bridge.Patient.l3*math.sin(self.Jpos_rad[3])*(math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) - math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[1]))
-                self.Jacob[0,3]= - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[3])*(math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0]) + math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[3])
-                self.Jacob[1,0]= self.Bridge.Patient.l3*math.sin(self.Jpos_rad[3])*(math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0]) + math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])) - self.Bridge.Patient.RJoint3*(math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) - math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[1])) - math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[3])
-                self.Jacob[1,1]= math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[3])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2])*math.sin(self.Jpos_rad[3])
-                self.Jacob[1,2]= self.Bridge.Patient.RJoint3*(math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2]) - math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])) + self.Bridge.Patient.l3*math.sin(self.Jpos_rad[3])*(math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) + math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1]))
-                self.Jacob[1,3]= self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[3]) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[3])*(math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2]) - math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2]))
+                self.Jacob[0,0]= self.Bridge.Patient.RJoint3 *(math.cos(self.J_current_rad[0]) *math.sin(self.J_current_rad[2]) + math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1])) - self.Bridge.Patient.l3*math.sin(self.J_current_rad[3])*(math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[2]) - math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2])) - math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[3])*math.sin(self.J_current_rad[0])
+                self.Jacob[0,1]= - math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) -self.Bridge.Patient.RJoint3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[2]) -self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[3])*math.sin(self.J_current_rad[1]) -self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[2])*math.sin(self.J_current_rad[3])
+                self.Jacob[0,2]= self.Bridge.Patient.RJoint3*(math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0]) + math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2])) + self.Bridge.Patient.l3*math.sin(self.J_current_rad[3])*(math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[2]) - math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[1]))
+                self.Jacob[0,3]= - self.Bridge.Patient.l3*math.cos(self.J_current_rad[3])*(math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0]) + math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2])) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[3])
+                self.Jacob[1,0]= self.Bridge.Patient.l3*math.sin(self.J_current_rad[3])*(math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0]) + math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2])) - self.Bridge.Patient.RJoint3*(math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[2]) - math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[1])) - math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[3])
+                self.Jacob[1,1]= math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[3])*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[2])*math.sin(self.J_current_rad[3])
+                self.Jacob[1,2]= self.Bridge.Patient.RJoint3*(math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[2]) - math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2])) + self.Bridge.Patient.l3*math.sin(self.J_current_rad[3])*(math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[2]) + math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1]))
+                self.Jacob[1,3]= self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[3]) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[3])*(math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[2]) - math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2]))
                 self.Jacob[2,0]= 0
-                self.Jacob[2,1]= math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[1]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[3]) - self.Bridge.Patient.l3*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])*math.sin(self.Jpos_rad[3]) 
-                self.Jacob[2,2]= self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[3]) - self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])
-                self.Jacob[2,3]= self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[3])*math.sin(self.Jpos_rad[2]) - self.Bridge.Patient.l3*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[3])
+                self.Jacob[2,1]= math.cos(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[1]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[3]) - self.Bridge.Patient.l3*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2])*math.sin(self.J_current_rad[3])
+                self.Jacob[2,2]= self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[3]) - self.Bridge.Patient.RJoint3*math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[2])
+                self.Jacob[2,3]= self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[3])*math.sin(self.J_current_rad[2]) - self.Bridge.Patient.l3*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[3])
 
                 # print 'Jacob ', self.Jacob
                 # Jacobiano moltiplicato per i pesi -> iterazione sulla matrice Jacobiana
@@ -390,12 +393,12 @@ class Thread_ControlClass(threading.Thread):
                         self.Wq[i, i] = self.Bridge.Control.Wq0s + (1 - self.Bridge.Control.Wq0s) * self.ul[i]
                         self.Bridge.Control.Alpha = self.Bridge.Control.Alpha0 * (1 - self.ul[i] ** 2)
                 else:
-                    for i, Jpos, J in zip(range(0, self.Bridge.JointsNum), self.Coord.Jpos, self.Bridge.Joints):
+                    for i, J_current, J in zip(range(0, self.Bridge.JointsNum), self.Coord.J_current, self.Bridge.Joints):
 
                         if self.dq_prev[i] >= 0:
-                            self.dl[i] = J.Jmax - Jpos
+                            self.dl[i] = J.Jmax - J_current
                         else:
-                            self.dl[i] = Jpos - J.Jmin
+                            self.dl[i] = J_current - J.Jmin
 
                         if self.dl[i] < self.Bridge.Control.Dol:
                             self.ul[i] = max(self.ul[i] - self.Bridge.Control.Du, self.dl[i] / self.Bridge.Control.Dol)
@@ -422,31 +425,31 @@ class Thread_ControlClass(threading.Thread):
 
                 " Update dei valori di giunto che voglio raggiungere "
 
-                self.Coord.Jdes[0:self.Bridge.JointsNum] = self.Jpos_rad[0:self.Bridge.JointsNum]*180/math.pi + dq*180/math.pi
+                self.Coord.J_des[0:self.Bridge.JointsNum] = self.J_current_rad[0:self.Bridge.JointsNum]*180/math.pi + dq*180/math.pi
 
                 " ################################### "
                 " 3.4. Aggiornamento valori di giunto "
                 " ################################### "
 
-                # self.Jpos_rad[0:4] = self.Coord.Jdes[0:4]*math.pi/180
-                self.Jpos_rad[0] = self.Coord.Jdes[0]*math.pi/180
-                self.Jpos_rad[1] = self.Coord.Jdes[1]*math.pi/180
-                self.Jpos_rad[2] = self.Coord.Jdes[2]*math.pi/180
-                self.Jpos_rad[3] = self.Coord.Jdes[3]*math.pi/180
+                # self.J_current_rad[0:4] = self.Coord.J_des[0:4]*math.pi/180
+                self.J_current_rad[0] = self.Coord.J_des[0]*math.pi/180
+                self.J_current_rad[1] = self.Coord.J_des[1]*math.pi/180
+                self.J_current_rad[2] = self.Coord.J_des[2]*math.pi/180
+                self.J_current_rad[3] = self.Coord.J_des[3]*math.pi/180
 
                 # 3 Giunti
                 '''
                 p_update    = numpy.array([0.0, 0.0, 0.0]) 
-                p_update[0] = math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1]) - self.Bridge.Patient.l3*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])
-                p_update[1] = -math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1]) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0])
-                p_update[2] = math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[1]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[1])
+                p_update[0] = math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.RJoint3*math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[1]) - self.Bridge.Patient.l3*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[2]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[2])
+                p_update[1] = -math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1]) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[2]) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0])
+                p_update[2] = math.sin(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.J_current_rad[1]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[1])
                 '''
 
                 # 4 Giunti
                 p_update    = numpy.array([0.0, 0.0, 0.0]) 
-                p_update[0] = self.Bridge.Patient.RJoint3*(math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) - math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[1])) - self.Bridge.Patient.l3*math.sin(self.Jpos_rad[3])*(math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0]) + math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])) + math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[3])
-                p_update[1] = self.Bridge.Patient.RJoint3*(math.cos(self.Jpos_rad[0])*math.sin(self.Jpos_rad[2]) + math.cos(self.Jpos_rad[2])*math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])) - self.Bridge.Patient.l3*math.sin(self.Jpos_rad[3])*(math.cos(self.Jpos_rad[0])*math.cos(self.Jpos_rad[2]) - math.sin(self.Jpos_rad[0])*math.sin(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])) - math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[3])*math.sin(self.Jpos_rad[0])
-                p_update[2] = self.Coord.EndEff_current[2] = math.sin(self.Jpos_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.Jpos_rad[1])*math.cos(self.Jpos_rad[2]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[3])*math.sin(self.Jpos_rad[1]) + self.Bridge.Patient.l3*math.cos(self.Jpos_rad[1])*math.sin(self.Jpos_rad[2])*math.sin(self.Jpos_rad[3])
+                p_update[0] = self.Bridge.Patient.RJoint3*(math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[2]) - math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[1])) - self.Bridge.Patient.l3*math.sin(self.J_current_rad[3])*(math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0]) + math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2])) + math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[3])
+                p_update[1] = self.Bridge.Patient.RJoint3*(math.cos(self.J_current_rad[0])*math.sin(self.J_current_rad[2]) + math.cos(self.J_current_rad[2])*math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1])) - self.Bridge.Patient.l3*math.sin(self.J_current_rad[3])*(math.cos(self.J_current_rad[0])*math.cos(self.J_current_rad[2]) - math.sin(self.J_current_rad[0])*math.sin(self.J_current_rad[1])*math.sin(self.J_current_rad[2])) - math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[0])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) - self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[3])*math.sin(self.J_current_rad[0])
+                p_update[2] = self.Coord.EndEff_current[2] = math.sin(self.J_current_rad[1])*(self.Bridge.Patient.l1 + self.Bridge.Patient.l2) + self.Bridge.Patient.RJoint3*math.cos(self.J_current_rad[1])*math.cos(self.J_current_rad[2]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[3])*math.sin(self.J_current_rad[1]) + self.Bridge.Patient.l3*math.cos(self.J_current_rad[1])*math.sin(self.J_current_rad[2])*math.sin(self.J_current_rad[3])
                 
                 " Update errore che devo ridurre con le mie iterazioni (idealmente zero) "
                 dp = self.Coord.EndEff_des[0:3] - p_update
@@ -458,11 +461,11 @@ class Thread_ControlClass(threading.Thread):
                     for i in range(0, self.Bridge.JointsNum):
 
                         if not __debug__:
-                            self.Coord.Jdes[i] = self.Bridge.Joints[i].Position
+                            self.Coord.J_des[i] = self.Bridge.Joints[i].Position
                             #self.Coord.p0 = [0] * 4
                             #self.Bridge.Control.Status = POS_CTRL
                         else:
-                            self.Coord.Jdes[i] = self.Coord.Jpos[i]
+                            self.Coord.J_des[i] = self.Coord.J_current[i]
                             #self.Coord.p0 = [0] * 4
                             #self.Bridge.Control.Status = POS_CTRL
 
@@ -473,18 +476,18 @@ class Thread_ControlClass(threading.Thread):
 
             for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
 
-                if J.Position <= (J.Jmin + self.Bridge.Control.Threshold) and self.Coord.Jdes[i] <= J.Jmin and (self.Coord.Jdes[i] - J.Position) <= 0:
+                if J.Position <= (J.Jmin + self.Bridge.Control.Threshold) and self.Coord.J_des[i] <= J.Jmin and (self.Coord.J_des[i] - J.Position) <= 0:
                     winsound.Beep(550, 500)  # frequency, duration[ms
-                    print '# J%d close to lower limit (Jdes: %f) - (Jpos: %f) - (Jmin: %f)' % (i+1, self.Coord.Jdes[i], J.Position, J.Jmin)
+                    print '# J%d close to lower limit (J_des: %f) - (J_current: %f) - (Jmin: %f)' % (i+1, self.Coord.J_des[i], J.Position, J.Jmin)
                     J.Bounded = True
-                    self.Coord.Jdes[i] = J.Jmin
+                    self.Coord.J_des[i] = J.Jmin
 
 
-                elif J.Position <= (J.Jmax - self.Bridge.Control.Threshold) and self.Coord.Jdes[i] >= J.Jmax and (self.Coord.Jdes[i] - J.Position) >= 0:
+                elif J.Position <= (J.Jmax - self.Bridge.Control.Threshold) and self.Coord.J_des[i] >= J.Jmax and (self.Coord.J_des[i] - J.Position) >= 0:
                     winsound.Beep(330, 500) # frequency, duration[ms]
-                    print '# J%d close to upper limit (Jdes: %f) - (Jpos: %f) - (Jmax: %f)' % (i+1, self.Coord.Jdes[i], J.Position, J.Jmax)
+                    print '# J%d close to upper limit (J_des: %f) - (J_current: %f) - (Jmax: %f)' % (i+1, self.Coord.J_des[i], J.Position, J.Jmax)
                     J.Bounded = True
-                    self.Coord.Jdes[i] = J.Jmax
+                    self.Coord.J_des[i] = J.Jmax
                 else:
                     J.Bounded = False
 
@@ -494,28 +497,28 @@ class Thread_ControlClass(threading.Thread):
                         JCurrentPos.append(J.Position)
                 else:
                     for i in range(0, self.Bridge.JointsNum):
-                        JCurrentPos.append(self.Coord.Jpos[i])
+                        JCurrentPos.append(self.Coord.J_current[i])
 
                 '''
-                diff = [x - y for x, y in zip(JCurrentPos, self.Coord.Jdes)]
+                diff = [x - y for x, y in zip(JCurrentPos, self.Coord.J_des)]
                 for i in diff:
                     if abs(i) > self.Bridge.Control.MaxDegDispl:
                         print 'Repentine Change'
-                        self.Coord.Jdes = JCurrentPos
+                        self.Coord.J_des = JCurrentPos
                         self.Bridge.Control.Status = POS_CTRL
                 '''
                 " Check no repentine change of joints value! "
 
             diff = [0]*5
             for i in range(0, self.Bridge.JointsNum):
-                diff[i] = self.Coord.Jdes[i] - JCurrentPos[i]
+                diff[i] = self.Coord.J_des[i] - JCurrentPos[i]
 
                 if abs(diff[i]) > self.Bridge.Control.MaxDegDispl:
                     print '# Repentine Change'
-                    self.Coord.Jdes = JCurrentPos
+                    self.Coord.J_des = JCurrentPos
                     self.Bridge.Control.Status = POS_CTRL
 
-                self.Coord.Jv[i] = ((self.Coord.Jdes[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
+                self.Coord.Jv[i] = ((self.Coord.J_des[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
 
                 # TODO: valutare cosa fare - "
                 #self.Conf.CtrlEnable =  False
@@ -538,15 +541,15 @@ class Thread_ControlClass(threading.Thread):
 
             for i in range(0,self.Bridge.JointsNum):
                 if __debug__:
-                    self.Coord.Jpos[i] = self.Coord.Jdes[i]
+                    self.Coord.J_current[i] = self.Coord.J_des[i]
                 else:
-                    self.Coord.Jpos[i] = self.Bridge.Joints[i].Position
+                    self.Coord.J_current[i] = self.Bridge.Joints[i].Position
 
             # # monitor variables
-            # #file_Jpos.append(self.Coord.Jpos[0])
-            # file_Jpos.append(self.Coord.Jpos[1])
-            # #file_Jpos.append(self.Coord.Jpos[2])
-            # #file_Jpos.append(self.Coord.Jpos[3])
+            # #file_J_current.append(self.Coord.J_current[0])
+            # file_J_current.append(self.Coord.J_current[1])
+            # #file_J_current.append(self.Coord.J_current[2])
+            # #file_J_current.append(self.Coord.J_current[3])
             # file_p0_.append(self.Coord.p0[0])
             # file_p0_.append(self.Coord.p0[1])
             # file_p0_.append(self.Coord.p0[2])
@@ -557,15 +560,15 @@ class Thread_ControlClass(threading.Thread):
             # #file_EndEff_des.append(self.Coord.EndEff_des[0])
             # #file_EndEff_des.append(self.Coord.EndEff_des[1])
             # file_EndEff_des.append(self.Coord.EndEff_des[2])
-            # # file_Jpos.append(self.Bridge.Joints[0].Position)
-            # # file_Jpos.append(self.Bridge.Joints[1].Position)
-            # # file_Jpos.append(self.Bridge.Joints[2].Position)
-            # # file_Jpos.append(self.Bridge.Joints[3].Position)
+            # # file_J_current.append(self.Bridge.Joints[0].Position)
+            # # file_J_current.append(self.Bridge.Joints[1].Position)
+            # # file_J_current.append(self.Bridge.Joints[2].Position)
+            # # file_J_current.append(self.Bridge.Joints[3].Position)
 
-            # #file_Jdes.append(self.Coord.Jdes[0])
-            # file_Jdes.append(self.Coord.Jdes[1])
-            # #file_Jdes.append(self.Coord.Jdes[2])
-            # #file_Jdes.append(self.Coord.Jdes[3])
+            # #file_J_des.append(self.Coord.J_des[0])
+            # file_J_des.append(self.Coord.J_des[1])
+            # #file_J_des.append(self.Coord.J_des[2])
+            # #file_J_des.append(self.Coord.J_des[3])
             # file_elbow.append(self.Coord.Elbow[2])
 
         else:
@@ -579,14 +582,14 @@ class Thread_ControlClass(threading.Thread):
 
         # text_file_EndEff0 = open("Output_EndEff0.txt", "w")
         # text_file_EndEff_des = open("Output_EndEff_des.txt", "w")
-        # text_file_Jpos = open("Output_Jpos.txt", "w")
-        # text_file_Jdes = open("Output_Jdes.txt", "w")
+        # text_file_J_current = open("Output_J_current.txt", "w")
+        # text_file_J_des = open("Output_J_des.txt", "w")
         # text_file_p0_ = open("Output_p0.txt", "w")
 
         # # scrivo variabili sui file prima di chiudere
         # text_file_EndEff0.write("\n{0}".format(file_EndEff0))
         # text_file_EndEff_des.write("\n{0}".format(file_EndEff_des))
-        # text_file_Jpos.write("\n{0}".format(file_Jpos))
-        # text_file_Jdes.write("\n{0}".format(file_Jdes))
+        # text_file_J_current.write("\n{0}".format(file_J_current))
+        # text_file_J_des.write("\n{0}".format(file_J_des))
         # text_file_p0_.write("\n{0}".format(file_p0_))
 

@@ -240,16 +240,17 @@ class BridgeCoordClass:
        " Usato per plot 3D, ma calcolato nel thread di controllo "
        self.Elbow                      = numpy.array([0.0, 0.0, 0.0])
 
-       " Posizione attuale dei giunti "
-       self.Jpos                       = [0]*5
+       " Current joints position [deg] "
+       self.J_current                  = [0]*5
+
+       " Current joints position [rad] "
+       self.J_current_rad              = [0]*5
 
        " Posizione desiderata dei giunti "
-       self.Jdes                       = [0]*5
+       self.J_des                      = [0]*5
 
        " Velocita' desiderata dei giunti "
        self.Jv                         = [0]*5
-
-       " List of Saved Positions"
 
 
 class JoystickClass:
