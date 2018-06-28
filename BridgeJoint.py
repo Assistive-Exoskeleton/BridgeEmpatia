@@ -280,7 +280,7 @@ class Joint:
 
         try:
             while self.WriteCmd(command) == False:
-                time.sleep(0.01)
+                time.sleep(0.1)
             return True
         except Exception, e:
             print "# Set Absolute Position Mode failed | " + str(e)
@@ -288,11 +288,11 @@ class Joint:
 
     "Set the Relative Position Mode: Profile #3"
     def SetRelativePositionMode(self):
-        command = ["#1y3\r","#1p1\r","#1s0\r","#1A\r"]
+        command = ["#1y3\r","#1s0\r","#1A\r"]
 
         try:
             while self.WriteCmd(command) == False:
-                time.sleep(0.01)
+                time.sleep(0.1)
             return True
         except Exception, e:
             print "# Set Relative Position Mode failed | " + str(e)
@@ -304,7 +304,7 @@ class Joint:
 
         try:
             while self.WriteCmd(command) == False:
-                time.sleep(0.01)
+                time.sleep(0.1)
             return True
         except Exception, e:
             print "# Set Absolute Position Mode failed | " + str(e)
@@ -332,6 +332,17 @@ class Joint:
             return True
         except Exception, e:
             print '# Motor Start failed | ' + str(e)
+            return False
+
+    def MotorStop(self):
+        command = ["#1S\r"]
+
+        try:
+            while self.WriteCmd(command) == False:
+                time.sleep(0.01)
+            return True
+        except Exception, e:
+            print '# Motor Stop failed | ' + str(e)
             return False
 
     "Test the Motor"
@@ -652,6 +663,8 @@ class Thread_JointUpdateClass(threading.Thread):
                 " Detecting New Control Mode"
                 if self.Bridge.Control.Status != self.OldStatus:
                     self.OldStatus = self.Bridge.Control.Status
+
+                    self.Jn.MotorStop()
 
                     if self.Bridge.Control.Status == SPEED_CTRL:
 
