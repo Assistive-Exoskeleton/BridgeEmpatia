@@ -173,7 +173,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
         else:
 
-
             for i, lbl in zip(range(0, len(self.Ctrl_lbl)), self.Ctrl_lbl):
                 if case == i:
 
@@ -247,7 +246,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
             self.JoystickRecallPos_lbl.SetBackgroundColour((242,255,242))
 
         " Force win refresh (background issue) "
-        self.Refresh()
+        #self.Refresh()
 
     def UpdateInputValues (self,msg):
 
@@ -259,19 +258,21 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
     def UpdateJointsInfo (self):
 
-        for i, Joint in zip(range(0,len(self.Bridge.Joints)), self.Bridge.Joints):
+        for i, Joint, Jlabel in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints, self.Jinitialized_lbl ):
+
             if Joint.Homed:
-                self.Jinitialized_lbl[i].SetLabel(u"●")
+                Jlabel.SetLabel(u"●")
             else:
-                self.Jinitialized_lbl[i].SetLabel(u"○")
+                Jlabel.SetLabel(u"○")
+
             if Joint.Bounded:
-                self.Jboundaries_lbl[i].SetLabel(u"●")
+                Jlabel.SetLabel(u"●")
             else:
-                self.Jboundaries_lbl[i].SetLabel(u"○")
-            try:
-                self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
-            except:
-                self.Jvalue_lbl[i].SetLabel("N.A.")
+                Jlabel.SetLabel(u"○")
+            #try:
+               # self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
+            #except:
+              #  self.Jvalue_lbl[i].SetLabel("N.A.")
 
     def UpdateIKparam(self):
 
@@ -437,16 +438,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
             " Check if all COM are Connected "
 
-            if all(i == True for i in self.Conf.Serial.Connected[0:self.Bridge.JointsNum]):
-                self.Conf.Serial.AllConnected = True
-                print "True All Connected"
-            else:
-                self.Conf.Serial.AllConnected = False
-                print "False All Connected"
-        else:
-            self.Conf.Serial.AllConnected = True
-
-        if self.Conf.Serial.AllConnected == True:
+        if all(i == True for i in self.Conf.Serial.Connected[0:self.Bridge.JointsNum]):
 
             self.Bridge.SetStatus(IDLE)
             " Start Timer for UpdateInputInfo"
@@ -469,6 +461,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
                             print '- Error: couldn\'t close %s.' % J.CommPort
                 except Exception, e:
                     print 'Error  ' + str(e)
+
         self.set_control_interface(event)
 
     def disconnect_command (self, event):

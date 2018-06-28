@@ -202,7 +202,7 @@ class ControlClass:
        self.Du         = IKparameters[4]
        self.IterMax    = IKparameters[5]
 
-       print '+ New IK Parameters = ', self.IKparam
+       print '+ New IK Parameters = ', IKparameters
 
    def SetSpeedGain(self, SpeedGain):
 
@@ -539,7 +539,7 @@ class BridgeConfClass:
             Config.add_section(section)
 
             Config.set(section, 'FileName', self.Patient.Filename)
-            Config.set(section, 'HMI', 'Joystick Vocal')
+            Config.set(section, 'HMI', 'Joystick Keyboard')
             Config.set(section, 'COM_J1', self.Serial.COM[0])
             Config.set(section, 'COM_J2', self.Serial.COM[1])
             Config.set(section, 'COM_J3', self.Serial.COM[2])

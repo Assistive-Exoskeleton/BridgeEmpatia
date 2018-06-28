@@ -97,7 +97,7 @@ class Thread_InputClass(threading.Thread):
         for i in range(len(self.Bridge.InputList)):  # InputList is defined a priori in Conf.ini (HMIs to be used)
 
             if self.Bridge.InputList[i] == 'Joystick':
-
+                print '+ Joystick Interface'
                 try:
                     " Init pygame "
                     pygame.init()
@@ -123,7 +123,7 @@ class Thread_InputClass(threading.Thread):
                     return
 
             elif self.Bridge.InputList[i] == 'Vocal':
-
+                print '+ Vocal Interface'
                 " Introduzione controllo vocale "
 
                 try:

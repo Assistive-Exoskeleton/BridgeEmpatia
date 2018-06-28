@@ -72,13 +72,15 @@ class Thread_ControlClass(threading.Thread):
 
         while self.Running:
 
+            " Update graphics in main window "
+            #wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
             " ############# "
             " STATE MACHINE "
             " ############# "
 
             if self.Bridge.Status == IDLE:
-                time.sleep(0.2)
+                time.sleep(0.5)
 
             elif self.Bridge.Status == INIT_SYSTEM:
 
@@ -201,10 +203,6 @@ class Thread_ControlClass(threading.Thread):
                         " 2. Run IK algorithm "
                         self.MartaCtrl()
 
-                        " Update graphics in main window "
-                        wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
-
-
                 elapsed_time = time.clock() - t0
                 # print elapsed_time
 
@@ -241,6 +239,8 @@ class Thread_ControlClass(threading.Thread):
                 self.Bridge.Control.SetStatus(POS_CTRL)
 
 
+
+            #TODO remove and put everything in SetStatus
             if self.Bridge.Status != self.Bridge.OldStatus:
                 self.Bridge.OldStatus = self.Bridge.Status
                 wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
@@ -478,14 +478,14 @@ class Thread_ControlClass(threading.Thread):
             for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
 
                 if J.Position <= (J.Jmin + self.Bridge.Control.Threshold) and self.Coord.J_des[i] <= J.Jmin and (self.Coord.J_des[i] - J.Position) <= 0:
-                    winsound.Beep(550, 500)  # frequency, duration[ms
+                    #winsound.Beep(550, 500)  # frequency, duration[ms
                     print '# J%d close to lower limit (J_des: %f) - (J_current: %f) - (Jmin: %f)' % (i+1, self.Coord.J_des[i], J.Position, J.Jmin)
                     J.Bounded = True
                     self.Coord.J_des[i] = J.Jmin
 
 
                 elif J.Position <= (J.Jmax - self.Bridge.Control.Threshold) and self.Coord.J_des[i] >= J.Jmax and (self.Coord.J_des[i] - J.Position) >= 0:
-                    winsound.Beep(330, 500) # frequency, duration[ms]
+                    #winsound.Beep(330, 500) # frequency, duration[ms]
                     print '# J%d close to upper limit (J_des: %f) - (J_current: %f) - (Jmax: %f)' % (i+1, self.Coord.J_des[i], J.Position, J.Jmax)
                     J.Bounded = True
                     self.Coord.J_des[i] = J.Jmax
