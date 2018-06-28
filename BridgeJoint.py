@@ -288,7 +288,7 @@ class Joint:
 
     "Set the Relative Position Mode: Profile #3"
     def SetRelativePositionMode(self):
-        command = ["#1y3\r","#1p1\r","#1s0\r"  ]
+        command = ["#1y3\r","#1p1\r","#1s0\r","#1A\r"]
 
         try:
             while self.WriteCmd(command) == False:
