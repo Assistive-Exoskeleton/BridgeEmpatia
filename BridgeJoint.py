@@ -288,7 +288,7 @@ class Joint:
 
     "Set the Relative Position Mode: Profile #3"
     def SetRelativePositionMode(self):
-        command = ["#1y3\r","#1p1\r","#1s0\r","#1A\r"]
+        command = ["#1y3\r","#1p1\r","#1s0\r"  ]
 
         try:
             while self.WriteCmd(command) == False:
@@ -637,10 +637,11 @@ class Thread_JointUpdateClass(threading.Thread):
         self.Running   = True
 
         " Position Control, Relative Position, Start"
-        self.Jn.SetRelativePositionMode()
+        #self.Jn.SetRelativePositionMode()
 
         " Get current position "
-        self.Jn.Position = self.Jn.GetPositionDeg()
+        self.Jn.PositionStep = self.Jn.GetPositionStep()
+        self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep)
 
         while self.Running:
 
@@ -648,30 +649,23 @@ class Thread_JointUpdateClass(threading.Thread):
                 " Measure process time "
                 t0 = time.clock()
 
-                self.Jn.Position = self.Jn.GetPositionDeg()
-                self.Jn.PositionStep = self.Jn.GetPositionStep()
-
                 " Detecting New Control Mode"
                 if self.Bridge.Control.Status != self.OldStatus:
                     self.OldStatus = self.Bridge.Control.Status
 
                     if self.Bridge.Control.Status == SPEED_CTRL:
 
+                        self.Jn.SetSpeedMode()
                         #print ' J%d Speed Control ' % self.Jn.Num
 
-                        " Speed Control, Speed Reference  "
-                        command = ["#1y10\r"]
-                        while self.Jn.WriteCmd(command) == False:
-                            time.sleep(0.01)
+                    if self.Bridge.Control.Status == POS_CTRL:
 
-                    elif self.Bridge.Control.Status == POS_CTRL:
+                        self.Jn.SetRelativePositionMode()
 
-                        #print ' J%d Position Control ' % self.Jn.Num
-
-                        "Position Control - Relative Position"
-                        command = ["#1y3\r", "#1s0\r", "#1A\r"]
-                        while self.Jn.WriteCmd(command) == False:
-                            time.sleep(0.01)
+                        # "Position Control - Relative Position"
+                        # command = ["#1y3\r", "#1s0\r", "#1A\r"]
+                        # while self.Jn.WriteCmd(command) == False:
+                        #     time.sleep(0.01)
 
                         # "Position Control - Absolute Position"
                         # command = ["#1y1\r", "#1p2\r", "#1A\r"]
@@ -689,7 +683,8 @@ class Thread_JointUpdateClass(threading.Thread):
                         "Position Control - Relative Position"
 
 
-
+                self.Jn.PositionStep = self.Jn.GetPositionStep()
+                self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep)
 
                 " If the control is enabled "
 
@@ -697,14 +692,11 @@ class Thread_JointUpdateClass(threading.Thread):
                     
                     " Set speed "
 
-                    #self.Jn.Position = self.Jn.GetPositionDeg()
                     self.Jn.SetSpeedHz(self.Jn.deg2step(self.Coord.Jv[self.Jn.Num - 1]))
-                    # print (self.Coord.Jv[self.Jn.Num-1] * self.Jn.Ratio/360)
+
                 elif self.Bridge.Control.Status == POS_CTRL:
-                    time.sleep(0.01)
 
-                    #self.Jn.Position = self.Jn.GetPositionDeg()
-
+                    self.Jn.Position = self.Jn.GetPositionDeg()
 
                     #TODO: cosa succede se il sistema e' forzato? "
                     #self.Jn.SetPositionDeg(self.Jn.GetPositionDeg())
@@ -719,9 +711,7 @@ class Thread_JointUpdateClass(threading.Thread):
                         print 'J%d - In position (%f)' % (self.Jn.Num, self.Jn.PositionStep)
                         print 'J%d - target position (%f)' % (self.Jn.Num, self.Jn.JtargetStep)
                     else:
-
-                        #self.Bridge.Control.Status(RUNNING)
-                        self.Jn.TargetDone = True
+                       self.Jn.TargetDone = True
 
 
                 elapsed_time = time.clock() - t0
@@ -736,17 +726,8 @@ class Thread_JointUpdateClass(threading.Thread):
                 self.terminate()
                 break
 
-
         " Flush COM Port"
-
-        try:
-            while self.Jn.FlushPort() == False:
-                time.sleep(0.1)
-            self.Jn.ForceExit = False
-        except:
-            print "# Flush Port failed | " + str(e)
-
-
+        self.Jn.FlushPort()
 
     def terminate(self):
 
