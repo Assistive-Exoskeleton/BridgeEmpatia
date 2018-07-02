@@ -44,11 +44,10 @@ class BridgeClass:
         self.InputList              = []
         self.SavedPositions         = []
 
-    def SavePosition(self):
+    def SavePosition(self,name):
         "Save Actual Position"
         try:
-            num = len(self.SavedPositions)
-            name = "Position "+ str(num)
+
             New_Position = PositionClass(self,name,[None]*self.JointsNum)
             for i in range(0, self.JointsNum):
                 New_Position.Jtarget[i] = self.Joints[i].PositionStep
@@ -56,13 +55,12 @@ class BridgeClass:
         except Exception, e:
             print "#Error: Save Position failed |" + str(e)
         finally:
-            print " + New Position Saved = " + str(self.SavedPositions[num].Jtarget)
+            print " + New Position Saved : " + self.SavedPositions[len(self.SavedPositions)-1].Name + " " + str(self.SavedPositions[len(self.SavedPositions)-1].Jtarget)
 
     def GoToPosition(self,num):
         "Go To Saved Position"
 
         try:
-
             for i in range(0, self.JointsNum):
                 self.Joints[i].SetJtarget(self.SavedPositions[num].Jtarget[i])
                 self.Joints[i].RestDone = False
@@ -70,7 +68,8 @@ class BridgeClass:
         except Exception, e:
             print "#Error: Go To Position failed |" + str(e)
         finally:
-            print " + New Position Recalled = " + str(self.SavedPositions[num].Jtarget)
+            print " + New Position Recalled : " + self.SavedPositions[num].Name + " " + str(self.SavedPositions[num].Jtarget)
+
 
     def SetStatus(self,case):
 
@@ -152,9 +151,7 @@ class ControlClass:
    def __init__(self, Bridge):
 
        self.Bridge                 = Bridge
-       self.StatusList             = ["Idle", "Position", "Speed", "Auto"]
        self.Status                 = IDLE
-       self.jarvis_cmd             = ""
        self.Input                  = "None"
        self.Positions              = [None]
        self.Listen = 1
@@ -162,8 +159,8 @@ class ControlClass:
 
        " Timing Parameters"
        self.ThreadPeriod           = 0.5
-       self.Time                   = 0.5
-       self.MaxDegDispl            = 5
+       self.Time                   = 0.3
+       self.MaxDegDispl            = 3
 
        " Max Speed [m/s]"
        self.S                      = 0.04

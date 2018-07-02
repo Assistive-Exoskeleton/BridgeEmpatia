@@ -269,10 +269,13 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 Jlabel.SetLabel(u"●")
             else:
                 Jlabel.SetLabel(u"○")
-            #try:
-               # self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
-            #except:
-              #  self.Jvalue_lbl[i].SetLabel("N.A.")
+            try:
+                self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
+                self.Jmin_lbl[i].SetLabel(str(int(Joint.Jmin)))
+                self.Jmax_lbl[i].SetLabel(str(int(Joint.Jmax)))
+            except:
+                self.Jvalue_lbl[i].SetLabel("N.A.")
+
 
     def UpdateIKparam(self):
 
@@ -286,9 +289,8 @@ class MainWindow(BridgeGUI.BridgeWindow):
         " Update Saved Positions "
 
         self.SavedPositions_list.Clear()
-        for i, pos in zip(range(0,len(self.Bridge.SavedPositions)), self.Bridge.SavedPositions):
-            appended = "Position " + str(i)
-            self.SavedPositions_list.Append(appended)
+        for i, Position in zip(range(0,len(self.Bridge.SavedPositions)), self.Bridge.SavedPositions):
+            self.SavedPositions_list.Append(Position.Name)
             self.SavedPositions_list.SetSelection(i)
 
 
@@ -438,7 +440,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
             " Check if all COM are Connected "
 
-        if all(i == True for i in self.Conf.Serial.Connected[0:self.Bridge.JointsNum]):
+        if all(i == True for i in self.Conf.Serial.Connected[0:self.Bridge.JointsNum]) or  __debug__:
 
             self.Bridge.SetStatus(IDLE)
             " Start Timer for UpdateInputInfo"
@@ -519,14 +521,12 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
     def enable_control_command (self, event):
 
+        " Verifica ROM giunti paziente & Run update threads "
+        for i in range(0, self.Bridge.JointsNum):
+            self.Bridge.Joints[i].Jmin = self.Bridge.Patient.Jmin[i]
+            self.Bridge.Joints[i].Jmax = self.Bridge.Patient.Jmax[i]
 
         if not __debug__:
-
-            " Verifica ROM giunti paziente & Run update threads "
-            for i in range(0,self.Bridge.JointsNum):
-                self.Bridge.Joints[i].Jmin = self.Bridge.Patient.Jmin[i]
-                self.Bridge.Joints[i].Jmax = self.Bridge.Patient.Jmax[i]
-
             " Run JointUpdateThreads "
             if not self.Bridge.UpdateThreadsInitialization():
                 dialog = DialogError(self, "Error: Threads initialization failed.")
@@ -570,15 +570,8 @@ class MainWindow(BridgeGUI.BridgeWindow):
             else:
                 self.Bridge.Joystick.Mode = 0
 
-        elif self.Bridge.Control.Input == 'Vocal':
-            print '+ Vocal Button'
-            if self.Bridge.Control.Listen == 0:
-                self.Bridge.Control.Listen = 1
-
         " Update input info in main window "
         wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
-
-
 
     def exit (self,event):
         " Kill all the threads except MainThread "
@@ -681,7 +674,8 @@ class MainWindow(BridgeGUI.BridgeWindow):
             return
 
     def save_position_command(self, event):
-            self.Bridge.SavePosition()
+
+            self.Bridge.SavePosition("GUI "+str(len(self.Bridge.SavedPositions)))
             self.UpdateSavedPositions()
 
 " ############## "

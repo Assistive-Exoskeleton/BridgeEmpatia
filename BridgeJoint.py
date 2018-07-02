@@ -651,8 +651,7 @@ class Thread_JointUpdateClass(threading.Thread):
         #self.Jn.SetRelativePositionMode()
 
         " Get current position "
-        self.Jn.PositionStep = self.Jn.GetPositionStep()
-        self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep)
+
 
         while self.Running:
 
@@ -660,11 +659,15 @@ class Thread_JointUpdateClass(threading.Thread):
                 " Measure process time "
                 t0 = time.clock()
 
+                self.Jn.PositionStep = self.Jn.GetPositionStep()
+                self.Jn.Position     = self.Jn.GetPositionDeg()  # self.Jn.step2deg(self.Jn.PositionStep)
+
                 " Detecting New Control Mode"
                 if self.Bridge.Control.Status != self.OldStatus:
                     self.OldStatus = self.Bridge.Control.Status
 
                     self.Jn.MotorStop()
+                    self.Jn.DriveErrorClear()
 
                     if self.Bridge.Control.Status == SPEED_CTRL:
 
@@ -687,7 +690,6 @@ class Thread_JointUpdateClass(threading.Thread):
 
                         "Position Control - Absolute Position"
 
-                        self.Jn.DriveErrorClear()
                         self.Jn.SetAbsolutePositionMode()
                         self.Jn.SetPositionStep(self.Jn.JtargetStep)
 
@@ -696,8 +698,8 @@ class Thread_JointUpdateClass(threading.Thread):
                         "Position Control - Relative Position"
 
 
-                self.Jn.PositionStep = self.Jn.GetPositionStep()
-                self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep)
+                #self.Jn.PositionStep = self.Jn.GetPositionStep()
+                #self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep)
 
                 " If the control is enabled "
 
@@ -709,7 +711,7 @@ class Thread_JointUpdateClass(threading.Thread):
 
                 elif self.Bridge.Control.Status == POS_CTRL:
 
-                    self.Jn.Position = self.Jn.GetPositionDeg()
+                    #self.Jn.Position = self.Jn.GetPositionDeg()
 
                     #TODO: cosa succede se il sistema e' forzato? "
                     #self.Jn.SetPositionDeg(self.Jn.GetPositionDeg())

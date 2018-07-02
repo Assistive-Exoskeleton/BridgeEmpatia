@@ -67,13 +67,22 @@ class Thread_ControlClass(threading.Thread):
 
         if __debug__:
             self.Coord.J_current = self.Bridge.Patient.Jrest
+            print self.Coord.J_current
+            for i in range(0, self.Bridge.JointsNum):
+                self.Bridge.Joints[i].Position = self.Coord.J_current[i]
+                print self.Bridge.Joints[i].Position
 
+        else:
+            for i in range(0, self.Bridge.JointsNum):
+                self.Coord.J_current[i] = self.Bridge.Joints[i].Position
+
+        " Update graphics in main window "
+        wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
         self.Running = True
 
         while self.Running:
 
-            " Update graphics in main window "
-            #wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
+
 
             " ############# "
             " STATE MACHINE "
@@ -137,6 +146,7 @@ class Thread_ControlClass(threading.Thread):
 
             elif self.Bridge.Status == REST_POSITION:
 
+
                 " Status where the initialization of the system is done, but the ctrl is NOT enabled "
                 #self.Bridge.Control.Status = POS_CTRL_ABS
                 
@@ -172,6 +182,8 @@ class Thread_ControlClass(threading.Thread):
                 time.sleep(0.1)
 
             elif self.Bridge.Status == RUNNING:
+                " Update graphics in main window "
+                wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
                 t0 = time.clock()
 
@@ -181,6 +193,10 @@ class Thread_ControlClass(threading.Thread):
                         self.Coord.J_current[i] = self.Bridge.Joints[i].Position
                     else:
                         self.Bridge.Joints[i].Position = self.Coord.J_current[i]
+
+
+
+
 
                 #TODO check self.p0_check - da valutare "
                 if self.Bridge.Control.Input == 'Vocal':
@@ -202,6 +218,10 @@ class Thread_ControlClass(threading.Thread):
 
                         " 2. Run IK algorithm "
                         self.MartaCtrl()
+
+                        for i in range(0, self.Bridge.JointsNum):
+                            if __debug__:
+                                self.Coord.J_current[i] = self.Coord.J_des[i]
 
                 elapsed_time = time.clock() - t0
                 # print elapsed_time
@@ -237,6 +257,8 @@ class Thread_ControlClass(threading.Thread):
 
                 self.Bridge.SetStatus(RUNNING)
                 self.Bridge.Control.SetStatus(POS_CTRL)
+
+
 
 
 
@@ -483,8 +505,7 @@ class Thread_ControlClass(threading.Thread):
                     J.Bounded = True
                     self.Coord.J_des[i] = J.Jmin
 
-
-                elif J.Position <= (J.Jmax - self.Bridge.Control.Threshold) and self.Coord.J_des[i] >= J.Jmax and (self.Coord.J_des[i] - J.Position) >= 0:
+                if J.Position >= (J.Jmax - self.Bridge.Control.Threshold) and self.Coord.J_des[i] >= J.Jmax and (self.Coord.J_des[i] - J.Position) >= 0:
                     #winsound.Beep(330, 500) # frequency, duration[ms]
                     print '# J%d close to upper limit (J_des: %f) - (J_current: %f) - (Jmax: %f)' % (i+1, self.Coord.J_des[i], J.Position, J.Jmax)
                     J.Bounded = True
@@ -493,8 +514,7 @@ class Thread_ControlClass(threading.Thread):
                     J.Bounded = False
 
                 JCurrentPos = []
-                if not __debug__:
-                    for J in self.Bridge.Joints:
+                for J in self.Bridge.Joints:
                         JCurrentPos.append(J.Position)
                 else:
                     for i in range(0, self.Bridge.JointsNum):
@@ -535,42 +555,7 @@ class Thread_ControlClass(threading.Thread):
                 else:
             '''
 
-            # print 'Jv ', self.Coord.Jv
-            # for i in range(0,self.Bridge.JointsNum):
-            #   print
-            #   print str(i) + ' ' + str(self.Coord.Jv[i])
 
-            for i in range(0,self.Bridge.JointsNum):
-                if __debug__:
-                    self.Coord.J_current[i] = self.Coord.J_des[i]
-                else:
-                    self.Coord.J_current[i] = self.Bridge.Joints[i].Position
-
-            # # monitor variables
-            # #file_J_current.append(self.Coord.J_current[0])
-            # file_J_current.append(self.Coord.J_current[1])
-            # #file_J_current.append(self.Coord.J_current[2])
-            # #file_J_current.append(self.Coord.J_current[3])
-            # file_p0_.append(self.Coord.p0[0])
-            # file_p0_.append(self.Coord.p0[1])
-            # file_p0_.append(self.Coord.p0[2])
-            # file_p0_.append(self.Coord.p0[3])
-            # #file_EndEff0.append(self.Coord.EndEff_current[0])
-            # #file_EndEff0.append(self.Coord.EndEff_current[1])
-            # file_EndEff0.append(self.Coord.EndEff_current[2])
-            # #file_EndEff_des.append(self.Coord.EndEff_des[0])
-            # #file_EndEff_des.append(self.Coord.EndEff_des[1])
-            # file_EndEff_des.append(self.Coord.EndEff_des[2])
-            # # file_J_current.append(self.Bridge.Joints[0].Position)
-            # # file_J_current.append(self.Bridge.Joints[1].Position)
-            # # file_J_current.append(self.Bridge.Joints[2].Position)
-            # # file_J_current.append(self.Bridge.Joints[3].Position)
-
-            # #file_J_des.append(self.Coord.J_des[0])
-            # file_J_des.append(self.Coord.J_des[1])
-            # #file_J_des.append(self.Coord.J_des[2])
-            # #file_J_des.append(self.Coord.J_des[3])
-            # file_elbow.append(self.Coord.Elbow[2])
 
         else:
             self.Coord.Jv = [0]*5
@@ -581,16 +566,5 @@ class Thread_ControlClass(threading.Thread):
         self.Running = False
         self.Bridge.Status = NONE
 
-        # text_file_EndEff0 = open("Output_EndEff0.txt", "w")
-        # text_file_EndEff_des = open("Output_EndEff_des.txt", "w")
-        # text_file_J_current = open("Output_J_current.txt", "w")
-        # text_file_J_des = open("Output_J_des.txt", "w")
-        # text_file_p0_ = open("Output_p0.txt", "w")
 
-        # # scrivo variabili sui file prima di chiudere
-        # text_file_EndEff0.write("\n{0}".format(file_EndEff0))
-        # text_file_EndEff_des.write("\n{0}".format(file_EndEff_des))
-        # text_file_J_current.write("\n{0}".format(file_J_current))
-        # text_file_J_des.write("\n{0}".format(file_J_des))
-        # text_file_p0_.write("\n{0}".format(file_p0_))
 
