@@ -634,7 +634,7 @@ class Thread_JointUpdateClass(threading.Thread):
         self.Name           = Name
         self.Running        = False
         self.Jn             = Jj
-        " TODO: valutare tempi meno stringenti (originale 0.1) "
+        #TODO: valutare tempi meno stringenti (originale 0.1) "
         self.Period         = 0.2
         self.StopPosition   = None
         self.OldStatus      = IDLE

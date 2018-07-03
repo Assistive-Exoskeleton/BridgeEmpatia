@@ -159,7 +159,7 @@ class ControlClass:
 
        " Timing Parameters"
        self.ThreadPeriod           = 0.5
-       self.Time                   = 0.3
+       self.Time                   = 0.5
        self.MaxDegDispl            = 3
 
        " Max Speed [m/s]"

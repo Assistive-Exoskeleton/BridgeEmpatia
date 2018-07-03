@@ -257,10 +257,9 @@ class Thread_InputClass(threading.Thread):
             elif self.Bridge.Control.Input == "Vocal":
 
                 if self.Bridge.Control.FIRST_RUN:
-                    # TODO: SISTEMARE VOCAL
+
                     " Introduzione controllo vocale "
                     winsound.PlaySound(self.AudioPath + 'Jarvis.wav', winsound.SND_FILENAME)
-
                     # au_file = audio_file+'Jarvis.wav'
                     # return_code = subprocess.call(["afplay", au_file])
 
@@ -548,7 +547,6 @@ class Thread_InputClass(threading.Thread):
                 #cmd = self.r.record(source, duration=2)
                 self.Bridge.Control.SetStatus(POS_CTRL)
 
-                # TODO: evitare deadlock "
                 # metto al massimo il numero di step fatti così interrompo il ciclo
                 #ALE
                 self.Bridge.Control.VocalStepsCnt = self.Bridge.Control.VocalSteps

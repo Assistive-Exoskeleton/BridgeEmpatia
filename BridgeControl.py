@@ -189,9 +189,9 @@ class Thread_ControlClass(threading.Thread):
 
                 for i in range(0, self.Bridge.JointsNum):
 
-                    if not __debug__:
-                        self.Coord.J_current[i] = self.Bridge.Joints[i].Position
-                    else:
+                    self.Coord.J_current[i] = self.Bridge.Joints[i].Position
+
+                    if __debug__:
                         self.Bridge.Joints[i].Position = self.Coord.J_current[i]
 
 
@@ -513,12 +513,8 @@ class Thread_ControlClass(threading.Thread):
                 else:
                     J.Bounded = False
 
-                JCurrentPos = []
-                for J in self.Bridge.Joints:
-                        JCurrentPos.append(J.Position)
-                else:
-                    for i in range(0, self.Bridge.JointsNum):
-                        JCurrentPos.append(self.Coord.J_current[i])
+
+                self.Coord.J_current[i] = J.Position
 
                 '''
                 diff = [x - y for x, y in zip(JCurrentPos, self.Coord.J_des)]
@@ -532,14 +528,14 @@ class Thread_ControlClass(threading.Thread):
 
             diff = [0]*5
             for i in range(0, self.Bridge.JointsNum):
-                diff[i] = self.Coord.J_des[i] - JCurrentPos[i]
+                diff[i] = self.Coord.J_des[i] - self.Coord.J_current[i]
 
                 if abs(diff[i]) > self.Bridge.Control.MaxDegDispl:
                     print '# Repentine Change'
-                    self.Coord.J_des = JCurrentPos
+                    self.Coord.J_des = self.Coord.J_current
                     self.Bridge.Control.Status = POS_CTRL
 
-                self.Coord.Jv[i] = ((self.Coord.J_des[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
+                self.Coord.Jv[i] = ((self.Coord.J_des[i] - self.Coord.J_current[i]) / self.Bridge.Control.Time)
 
                 # TODO: valutare cosa fare - "
                 #self.Conf.CtrlEnable =  False

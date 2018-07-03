@@ -15,7 +15,7 @@ from BridgeDialog      import *
 from BridgeControl     import *
 from BridgeJoint       import *
 from BridgeInput       import *
-
+from BridgeRecorder     import Thread_RecordClass
 import wx
 from wx.lib.wordwrap import wordwrap
 #from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
@@ -532,6 +532,11 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 dialog = DialogError(self, "Error: Threads initialization failed.")
                 dialog.ShowModal()
                 return
+
+        " Start Saving Thread "
+
+        self.RecordThread = Thread_RecordClass("RecordThread", self.Bridge, self.Coord)
+        self.RecordThread.start()
 
         " Set Status "
         self.Bridge.SetStatus(RUNNING)
