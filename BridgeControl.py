@@ -67,6 +67,7 @@ class Thread_ControlClass(threading.Thread):
 
         if __debug__:
             self.Coord.J_current = self.Bridge.Patient.Jrest
+
             print self.Coord.J_current
             for i in range(0, self.Bridge.JointsNum):
                 self.Bridge.Joints[i].Position = self.Coord.J_current[i]
@@ -75,6 +76,8 @@ class Thread_ControlClass(threading.Thread):
         else:
             for i in range(0, self.Bridge.JointsNum):
                 self.Coord.J_current[i] = self.Bridge.Joints[i].Position
+
+        self.Coord.J_des = self.Coord.J_current
 
         " Update graphics in main window "
         wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
@@ -142,6 +145,7 @@ class Thread_ControlClass(threading.Thread):
                 wx.CallAfter(Publisher.sendMessage, "ShowDonningDialog")
 
             elif self.Bridge.Status == DONNING:
+
                 time.sleep(0.5)
 
             elif self.Bridge.Status == REST_POSITION:
@@ -182,21 +186,20 @@ class Thread_ControlClass(threading.Thread):
                 time.sleep(0.1)
 
             elif self.Bridge.Status == RUNNING:
+
                 " Update graphics in main window "
                 wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
                 t0 = time.clock()
 
-                for i in range(0, self.Bridge.JointsNum):
+                self.Coord.J_current = []
+                for i, J in zip(range(0, self.Bridge.JointsNum), self.Bridge.Joints):
 
-                    self.Coord.J_current[i] = self.Bridge.Joints[i].Position
-
-                    if __debug__:
+                    if not __debug__:
+                        self.Coord.J_current.append(J.Position)
+                    else:
+                        self.Coord.J_current.append(self.Coord.J_des[i])
                         self.Bridge.Joints[i].Position = self.Coord.J_current[i]
-
-
-
-
 
                 #TODO check self.p0_check - da valutare "
                 if self.Bridge.Control.Input == 'Vocal':
@@ -218,12 +221,6 @@ class Thread_ControlClass(threading.Thread):
 
                         " 2. Run IK algorithm "
                         self.MartaCtrl()
-
-                        for i in range(0, self.Bridge.JointsNum):
-                            if __debug__:
-                                self.Coord.J_current[i] = self.Coord.J_des[i]
-                            else:
-                                self.Coord.J_current[i] = self.Bridge.Joints[i].Position
 
                 elapsed_time = time.clock() - t0
                 # print elapsed_time
@@ -499,8 +496,7 @@ class Thread_ControlClass(threading.Thread):
 
             " Verifico che la soluzione trovata rispetti i limiti di giunto altrimenti li limito all'estremo più vicino --> riporto errore "
 
-            diff = [0] * 5
-
+            self.Coord.J_current = []
             for i, J in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints):
 
                 if J.Position <= (J.Jmin + self.Bridge.Control.Threshold) and self.Coord.J_des[i] <= J.Jmin and (self.Coord.J_des[i] - J.Position) <= 0:
@@ -517,13 +513,14 @@ class Thread_ControlClass(threading.Thread):
                 else:
                     J.Bounded = False
 
-            JCurrentPos = []
-            if not __debug__:
-                for J in self.Bridge.Joints:
-                    JCurrentPos.append(J.Position)
-            else:
-                for i in range(0, self.Bridge.JointsNum):
-                    JCurrentPos.append(self.Coord.J_current[i])
+                if not __debug__:
+                    self.Coord.J_current.append(J.Position)
+                else:
+                    self.Coord.J_current.append(self.Coord.J_des[i])
+                    self.Bridge.Joints[i].Position = self.Coord.J_current[i]
+
+
+
 
                 '''
                 diff = [x - y for x, y in zip(JCurrentPos, self.Coord.J_des)]
@@ -540,14 +537,15 @@ class Thread_ControlClass(threading.Thread):
                 '''
             diff = [0] * 5
             for i in range(0, self.Bridge.JointsNum):
-                diff[i] = self.Coord.J_des[i] - JCurrentPos[i]
+                diff[i] = self.Coord.J_des[i] - self.Coord.J_current[i]
 
                 if abs(diff[i]) > self.Bridge.Control.MaxDegDispl:
                     print '# Repentine Change'
-                    self.Coord.J_des = JCurrentPos
-                    self.Bridge.Control.Status = POS_CTRL
+                    self.Bridge.Control.SetStatus(POS_CTRL)
+                    self.Coord.J_des = self.Coord.J_current
 
-                self.Coord.Jv[i] = ((self.Coord.J_des[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
+
+                self.Coord.Jv[i] = ((self.Coord.J_des[i] - self.Coord.J_current[i]) / self.Bridge.Control.Time)
 
         else:
             self.Coord.Jv = [0]*5
