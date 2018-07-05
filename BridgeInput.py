@@ -8,7 +8,7 @@ import keyboard
 import math
 
 from Bridge import *
-from BridgeDialog import *
+#from BridgeDialog import *
 import winsound     # Audio Feedback
 import subprocess
 #from BridgeDialog import *
