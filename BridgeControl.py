@@ -67,10 +67,8 @@ class Thread_ControlClass(threading.Thread):
         if __debug__:
             self.Coord.J_current = self.Bridge.Patient.Jrest
 
-            print self.Coord.J_current
             for i in range(0, self.Bridge.JointsNum):
                 self.Bridge.Joints[i].Position = self.Coord.J_current[i]
-                print self.Bridge.Joints[i].Position
 
         else:
             for i in range(0, self.Bridge.JointsNum):
@@ -80,6 +78,7 @@ class Thread_ControlClass(threading.Thread):
 
         " Update graphics in main window "
         wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
+        wx.CallAfter(Publisher.sendMessage, "Animate")
         self.Running = True
 
         while self.Running:
@@ -221,7 +220,6 @@ class Thread_ControlClass(threading.Thread):
                         self.MartaCtrl()
 
                 elapsed_time = time.clock() - t0
-                # print elapsed_time
 
                 if elapsed_time > self.Bridge.Control.ThreadPeriod:
                     elapsed_time = self.Bridge.Control.ThreadPeriod
@@ -483,11 +481,9 @@ class Thread_ControlClass(threading.Thread):
 
                         if not __debug__:
                             self.Coord.J_des[i] = self.Bridge.Joints[i].Position
-                            #self.Coord.p0 = [0] * 4
                             #self.Bridge.Control.Status = POS_CTRL
                         else:
                             self.Coord.J_des[i] = self.Coord.J_current[i]
-                            #self.Coord.p0 = [0] * 4
                             #self.Bridge.Control.Status = POS_CTRL
 
 
@@ -502,13 +498,19 @@ class Thread_ControlClass(threading.Thread):
                     #winsound.Beep(550, 500)  # frequency, duration[ms
                     print '# J%d close to lower limit (J_des: %f) - (J_current: %f) - (Jmin: %f)' % (i+1, self.Coord.J_des[i], J.Position, J.Jmin)
                     J.Bounded = True
-                    self.Coord.J_des[i] = J.Jmin
+                    if J.Position <= J.Jmin:
+                        self.Coord.J_des[i] = J.Jmin
+                    else:
+                        self.Coord.J_des[i] = J.Position
 
                 if J.Position >= (J.Jmax - self.Bridge.Control.Threshold) and self.Coord.J_des[i] >= J.Jmax and (self.Coord.J_des[i] - J.Position) >= 0:
                     #winsound.Beep(330, 500) # frequency, duration[ms]
                     print '# J%d close to upper limit (J_des: %f) - (J_current: %f) - (Jmax: %f)' % (i+1, self.Coord.J_des[i], J.Position, J.Jmax)
                     J.Bounded = True
-                    self.Coord.J_des[i] = J.Jmax
+                    if J.Position >= J.Jmax:
+                        self.Coord.J_des[i] = J.Jmax
+                    else:
+                        self.Coord.J_des[i] = J.Position
                 else:
                     J.Bounded = False
 
@@ -539,8 +541,8 @@ class Thread_ControlClass(threading.Thread):
 
                 if abs(diff[i]) > self.Bridge.Control.MaxDegDispl:
                     print '# Repentine Change'
-                    self.Coord.J_des = JCurrentPos
-                    self.Bridge.Control.Status = POS_CTRL
+                    self.Coord.J_des[i] = JCurrentPos[i]
+                    self.Bridge.Control.SetStatus(POS_CTRL)
 
                 self.Coord.Jv[i] = ((self.Coord.J_des[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
 

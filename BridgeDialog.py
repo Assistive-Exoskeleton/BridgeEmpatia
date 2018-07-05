@@ -20,26 +20,10 @@ from Bridge import *
 from BridgeJoint import *
 from BridgeInput import *
 
-" Search available Serial Ports "
 
-
-def availableSerialPort():
-    suffixes = "S", "USB", "ACM", "AMA"
-    nameList = ["COM"] + ["/dev/tty%s" % suffix for suffix in suffixes]
-    portList = []
-    for name in nameList:
-        for number in range(48):
-            portName = "%s%s" % (name, number)
-            try:
-                serial.Serial(portName).close()
-                portList.append(portName)
-            except IOError:
-                pass
-    return tuple(portList)
-
-
-" Dialog exo setup "
-
+" ######################## "
+" Dialog Exoskeleton Setup "
+" ######################## "
 
 class DialogExoSetup(BridgeGUI.DialogExoSetup):
     def __init__(self, parent, Conf, Bridge):
@@ -49,32 +33,26 @@ class DialogExoSetup(BridgeGUI.DialogExoSetup):
         self.Bridge = Bridge
         self.Error = False
 
-        self.Jmin_entry_list = [self.J1min_entry, self.J2min_entry, self.J3min_entry, self.J4min_entry,
-                                self.J5min_entry]
-        self.Jmax_entry_list = [self.J1max_entry, self.J2max_entry, self.J3max_entry, self.J4max_entry,
-                                self.J5max_entry]
-        self.Joffset_entry_list = [self.J1offset_entry, self.J2offset_entry, self.J3offset_entry, self.J4offset_entry,
-                                   self.J5offset_entry]
-        self.Jratio_entry_list = [self.J1ratio_entry, self.J2ratio_entry, self.J3ratio_entry, self.J4ratio_entry,
-                                  self.J5ratio_entry]
+        self.Jmin_entry_list = [self.J1min_entry, self.J2min_entry, self.J3min_entry, self.J4min_entry, self.J5min_entry]
+        self.Jmax_entry_list = [self.J1max_entry, self.J2max_entry, self.J3max_entry, self.J4max_entry, self.J5max_entry]
+        self.Joffset_entry_list = [self.J1offset_entry, self.J2offset_entry, self.J3offset_entry, self.J4offset_entry, self.J5offset_entry]
+        self.Jratio_entry_list = [self.J1ratio_entry, self.J2ratio_entry, self.J3ratio_entry, self.J4ratio_entry, self.J5ratio_entry]
 
         " Motor plot choice "
-        self.choice_COM_list = [self.choice_COM_M1, self.choice_COM_M2, self.choice_COM_M3, self.choice_COM_M4,
-                                self.choice_COM_M5]
+        self.choice_COM_list = [self.choice_COM_M1, self.choice_COM_M2, self.choice_COM_M3, self.choice_COM_M4, self.choice_COM_M5]
 
         " Test button list "
-        self.test_button_list = [self.J1test_butt, self.J2test_butt, self.J3test_butt, self.J4test_butt,
-                                 self.J5test_butt]
+        self.test_button_list = [self.J1test_butt, self.J2test_butt, self.J3test_butt, self.J4test_butt, self.J5test_butt]
 
         for i, but in zip(range(0, len(self.test_button_list)), self.test_button_list):
             " Set widget name - Index number "
             but.Name = str(i)
 
         " Get available serial port "
-        self.portList = availableSerialPort()
+        self.portList = self.Conf.Serial.availableSerialPort()
 
         if len(self.portList) < 5:
-            self.error_lbl.SetLabel("# ERROR: not enough serial COM (%d found)" % len(self.portList))
+            self.error_lbl.SetLabel("Error: not enough serial COM" % len(self.portList))
             self.Error = True
 
         for i, choice in zip(range(0, 6), self.choice_COM_list):
@@ -175,18 +153,18 @@ class DialogExoSetup(BridgeGUI.DialogExoSetup):
             dialog.ShowModal()
 
 
-" Dialog patient setup "
-
+" #################### "
+" Dialog Patient Setup "
+" #################### "
 
 class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
-    def __init__(self, parent, Conf, Bridge):
+    def __init__(self, parent, Bridge, Conf):
         BridgeGUI.Dialog_PatientSetup.__init__(self, parent)
 
-        self.Conf = Conf
         self.Filename = None
         self.Bridge = Bridge
+        self.Conf   = Conf
 
-        self.J1min_entry.Name = 'AA'
         self.Jmin_entry_list = [self.J1min_entry, self.J2min_entry, self.J3min_entry, self.J4min_entry,
                                 self.J5min_entry]
         self.Jmax_entry_list = [self.J1max_entry, self.J2max_entry, self.J3max_entry, self.J4max_entry,
@@ -196,65 +174,63 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
         self.Jrest_entry_list = [self.J1rest_entry, self.J2rest_entry, self.J3rest_entry, self.J4rest_entry,
                                  self.J5rest_entry]
 
-        self.l_entry_list = [self.l1_lbl, self.l2_lbl, self.l3_lbl]
+        self.joystick_list = [self.joystick_forward_lbl, self.joystick_backward_lbl, self.joystick_left_lbl, self.joystick_right_lbl]
 
-        if self.Conf.Patient.Loaded:
+        if self.Bridge.Patient.Loaded:
 
-            self.patientName_entry.SetValue(self.Conf.Patient.Name)
+            self.patientName_entry.SetValue(self.Bridge.Patient.Name)
 
             for i, Jmin, Jmax, Jdef, Jrest in zip(range(0, 5), self.Jmin_entry_list, self.Jmax_entry_list,
                                                   self.Jdef_entry_list, self.Jrest_entry_list):
-                Jmin.SetValue(str(self.Conf.Patient.Jmin[i]))
-                Jmax.SetValue(str(self.Conf.Patient.Jmax[i]))
-                Jdef.SetValue(str(self.Conf.Patient.Jdef[i]))
-                Jrest.SetValue(str(self.Conf.Patient.Jrest[i]))
+                Jmin.SetValue(str(self.Bridge.Patient.Jmin[i]))
+                Jmax.SetValue(str(self.Bridge.Patient.Jmax[i]))
+                Jdef.SetValue(str(self.Bridge.Patient.Jdef[i]))
+                Jrest.SetValue(str(self.Bridge.Patient.Jrest[i]))
 
-            self.l1_lbl.SetValue(str(self.Conf.Patient.l1))
-            self.l2_lbl.SetValue(str(self.Conf.Patient.l2))
-            self.l3_lbl.SetValue(str(self.Conf.Patient.l3))
+            for i, Joystick in zip(range(0,4),self.joystick_list):
+                Joystick.SetValue(str(self.Bridge.Patient.JoystickCalibration[i]))
 
-            self.ft_lbl.SetValue(str(self.Conf.Patient.FixationTime))
+            self.l1_lbl.SetValue(str(self.Bridge.Patient.l1))
+            self.l2_lbl.SetValue(str(self.Bridge.Patient.l2))
+            self.l3_lbl.SetValue(str(self.Bridge.Patient.l3))
+
+
+
 
         else:
             for Jmin, Jmax, Jdef, Jrest in zip(self.Jmin_entry_list, self.Jmax_entry_list, self.Jdef_entry_list,
                                                self.Jrest_entry_list):
-                Jmin.SetValue('0')
-                Jmax.SetValue('0')
-                Jdef.SetValue('0')
-                Jrest.SetValue('0')
+                Jmin.SetValue('N.A.')
+                Jmax.SetValue('N.A.')
+                Jdef.SetValue('N.A.')
+                Jrest.SetValue('N.A.')
 
             for l in self.l_entry_list:
-                l.SetValue('0')
+                l.SetValue('N.A.')
 
-            self.ft_lbl.SetValue('0')
+        Publisher.subscribe(self.UpdateJoystickCalibrationInfo, "UpdateJoystickCalibrationInfo")
 
     def ok_command(self, event):
 
         for isig, Jmin, Jmax, Jdef, Jrest in zip(range(0, 5), self.Jmin_entry_list, self.Jmax_entry_list,
                                                  self.Jdef_entry_list, self.Jrest_entry_list):
             " Remove accents and get values "
-            self.Conf.Patient.Jmin[isig] = float(
-                unicodedata.normalize('NFKD', Jmin.GetValue()).encode("ascii", "ignore"))
-            self.Conf.Patient.Jmax[isig] = float(
-                unicodedata.normalize('NFKD', Jmax.GetValue()).encode("ascii", "ignore"))
-            self.Conf.Patient.Jdef[isig] = float(
-                unicodedata.normalize('NFKD', Jdef.GetValue()).encode("ascii", "ignore"))
-            self.Conf.Patient.Jrest[isig] = float(
-                unicodedata.normalize('NFKD', Jrest.GetValue()).encode("ascii", "ignore"))
+            self.Bridge.Patient.Jmin[isig]  = int(unicodedata.normalize('NFKD', Jmin.GetValue()).encode("ascii", "ignore"))
+            self.Bridge.Patient.Jmax[isig]  = int(unicodedata.normalize('NFKD', Jmax.GetValue()).encode("ascii", "ignore"))
+            self.Bridge.Patient.Jdef[isig]  = int(unicodedata.normalize('NFKD', Jdef.GetValue()).encode("ascii", "ignore"))
+            self.Bridge.Patient.Jrest[isig] = int(unicodedata.normalize('NFKD', Jrest.GetValue()).encode("ascii", "ignore"))
 
-        self.Conf.Patient.l1 = float(unicodedata.normalize('NFKD', self.l1_lbl.GetValue()).encode("ascii", "ignore"))
-        self.Conf.Patient.l2 = float(unicodedata.normalize('NFKD', self.l2_lbl.GetValue()).encode("ascii", "ignore"))
-        self.Conf.Patient.l3 = float(unicodedata.normalize('NFKD', self.l3_lbl.GetValue()).encode("ascii", "ignore"))
+        self.Bridge.Patient.l1 = float(unicodedata.normalize('NFKD', self.l1_lbl.GetValue()).encode("ascii", "ignore"))
+        self.Bridge.Patient.l2 = float(unicodedata.normalize('NFKD', self.l2_lbl.GetValue()).encode("ascii", "ignore"))
+        self.Bridge.Patient.l3 = float(unicodedata.normalize('NFKD', self.l3_lbl.GetValue()).encode("ascii", "ignore"))
 
-        self.Conf.Patient.FixationTime = float(
-            unicodedata.normalize('NFKD', self.ft_lbl.GetValue()).encode("ascii", "ignore"))
+
 
         " Save patient name "
-        self.Conf.Patient.Name = unicodedata.normalize('NFKD', self.patientName_entry.GetValue()).encode("ascii",
+        self.Bridge.Patient.Name = unicodedata.normalize('NFKD', self.patientName_entry.GetValue()).encode("ascii",
                                                                                                          "ignore")
-
         " Save patient input "
-        self.Conf.Patient.Loaded = True
+        self.Bridge.Patient.Loaded = True
 
         self.EndModal(wx.ID_OK)
         self.Destroy()
@@ -275,23 +251,23 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
             for isig, Jmin, Jmax, Jdef, Jrest in zip(range(0, 5), self.Jmin_entry_list, self.Jmax_entry_list,
                                                      self.Jdef_entry_list, self.Jrest_entry_list):
                 " Remove accents and get values "
-                Patient.Jmin[isig] = int(unicodedata.normalize('NFKD', Jmin.GetValue()).encode("ascii", "ignore"))
-                Patient.Jmax[isig] = int(unicodedata.normalize('NFKD', Jmax.GetValue()).encode("ascii", "ignore"))
-                Patient.Jdef[isig] = int(unicodedata.normalize('NFKD', Jdef.GetValue()).encode("ascii", "ignore"))
+                Patient.Jmin[isig]  = int(unicodedata.normalize('NFKD', Jmin.GetValue()).encode("ascii", "ignore"))
+                Patient.Jmax[isig]  = int(unicodedata.normalize('NFKD', Jmax.GetValue()).encode("ascii", "ignore"))
+                Patient.Jdef[isig]  = int(unicodedata.normalize('NFKD', Jdef.GetValue()).encode("ascii", "ignore"))
                 Patient.Jrest[isig] = int(unicodedata.normalize('NFKD', Jrest.GetValue()).encode("ascii", "ignore"))
 
             Patient.l1 = float(unicodedata.normalize('NFKD', self.l1_lbl.GetValue()).encode("ascii", "ignore"))
             Patient.l2 = float(unicodedata.normalize('NFKD', self.l2_lbl.GetValue()).encode("ascii", "ignore"))
             Patient.l3 = float(unicodedata.normalize('NFKD', self.l3_lbl.GetValue()).encode("ascii", "ignore"))
 
-            Patient.FixationTime = float(
-                unicodedata.normalize('NFKD', self.ft_lbl.GetValue()).encode("ascii", "ignore"))
+            for isig, Joystick in zip(range(0,4), self.joystick_list):
+                Patient.JoystickCalibration[isig] = float(unicodedata.normalize('NFKD', Joystick.GetValue()).encode("ascii", "ignore"))
 
             " get patient name "
             Patient.Name = unicodedata.normalize('NFKD', self.patientName_entry.GetValue()).encode("ascii", "ignore")
 
-            " Save nre patient file"
-            self.Conf.SavePatient(self.Filename, Patient)
+            " Save patient file"
+            self.Bridge.Patient.SavePatient(self.Filename, Patient)
             self.Conf.SavePath(self.Filename)
 
     def cancel_command(self, event):
@@ -310,8 +286,8 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
             self.Conf.SavePath(self.Filename)
 
             try:
-                Patient = PatientClass()
-                Patient = self.Conf.ParsePatientFile(self.Filename)
+
+                Patient = self.Bridge.Patient.ParsePatientFile(self.Filename)
 
                 self.patientName_entry.SetValue(Patient.Name)
 
@@ -326,10 +302,11 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
                 self.l2_lbl.SetValue(str(Patient.l2))
                 self.l3_lbl.SetValue(str(Patient.l3))
 
-                self.ft_lbl.SetValue(str(Patient.FixationTime))
+                for i, Joystick in zip(range(0, 4), self.joystick_list):
+                    Joystick.SetValue(str(Patient.JoystickCalibration[i]))
 
             except Exception, e:
-                print 'Error ' + str(e)
+                print '# Error ' + str(e)
                 self.Filename = None
                 pass
 
@@ -352,6 +329,18 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
         '''
         pass
 
+    def UpdateJoystickCalibrationInfo(self):
+        try:
+            for i, Joystick in zip(range(0, 4), self.joystick_list):
+                Joystick.SetValue(str(self.Bridge.Patient.JoystickCalibration[i]))
+        except Exception, e:
+            print "# Error | " + str(e)
+
+
+
+" ########################### "
+" Dialog Joystick Calibration "
+" ########################### "
 
 class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
 
@@ -381,16 +370,16 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
         if self.Bridge.Control.Input == 'Joystick':
 
             if direction == 0:
-                self.dialog = DialogAlert(self, 'Please, push the joystick to the right as much as you can')
-            elif direction == 1:
-                self.dialog = DialogAlert(self, 'Please, push the joystick to the left as much as you can')
-            elif direction == 2:
                 self.dialog = DialogAlert(self, 'Please, push the joystick forward as much as you can')
-            else:
+            elif direction == 1:
                 self.dialog = DialogAlert(self, 'Please, push the joystick backward as much as you can')
+            elif direction == 2:
+                self.dialog = DialogAlert(self, 'Please, push the joystick left as much as you can')
+            else:
+                self.dialog = DialogAlert(self, 'Please, push the joystick right as much as you can')
 
 
-            print "Start Calibration"
+            print "* Calibrating Joystick ..."
 
             self.Bridge.Joystick.Calibration(direction)
 
@@ -406,14 +395,19 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
             dialog.ShowModal()
 
     def end_calibration(self, msg):
-
-        self.Bridge.Joystick.CalibrationThread.terminate()
-        self.timer.Stop()
         try:
+            self.Bridge.Joystick.CalibrationThread.terminate()
+            self.timer.Stop()
             self.dialog.Destroy()
         except Exception, e:
             print "#Error | " + str(e)
 
+    def ok_command(self,event):
+        try:
+            self.dialog.Destroy()
+            wx.CallAfter(Publisher.sendMessage, "UpdateJoystickCalibrationInfo")
+        except Exception, e:
+            print "# Error | " + str(e)
 
     def UpdateJoystickCalibrationInfo (self):
 
@@ -423,11 +417,9 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
                 self.JoystickCalibrationValues_lbl[i].SetLabel(str(self.Bridge.Patient.JoystickCalibration[i]))
 
 
-
 " ############ "
 " Dialog Error "
 " ############ "
-
 
 class DialogError(BridgeGUI.Dialog_Error):
     def __init__(self, parent, error):
@@ -442,7 +434,6 @@ class DialogError(BridgeGUI.Dialog_Error):
 " Dialog Alert "
 " ############ "
 
-
 class DialogAlert(BridgeGUI.Dialog_Alert):
 
     def __init__(self, parent, message):
@@ -456,7 +447,6 @@ class DialogAlert(BridgeGUI.Dialog_Alert):
 " ############ "
 " Dialog Joint "
 " ############ "
-
 
 class DialogJoint(BridgeGUI.Dialog_Joint):
     def __init__(self, parent, Num, Joint, Status):
@@ -507,10 +497,10 @@ class DialogJoint(BridgeGUI.Dialog_Joint):
         self.Destroy()
 
 
+
 " ############## "
 " Dialog Donning "
 " ############## "
-
 
 class DialogDonning(BridgeGUI.DialogDonning):
     def      __init__(self, parent):

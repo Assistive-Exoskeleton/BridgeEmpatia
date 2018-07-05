@@ -3,13 +3,13 @@
 import threading
 import tables
 import time
-import numpy as np
-#from Bridge import *
+import os
+#from Bridge import PatientClass
 
 class Record(tables.IsDescription):
-    J_current   = tables.Float32Col(5)
-    J_des       = tables.Float32Col(5)
-    Jv          = tables.Float32Col(5)
+    J_current   = tables.Float32Col(4)
+    J_des       = tables.Float32Col(4)
+    Jv          = tables.Float32Col(4)
     p0          = tables.Float32Col(4)
     timestamp   = tables.Float64Col(1)
 
@@ -26,7 +26,15 @@ class Thread_RecordClass(threading.Thread):
 
         self.Bridge = Bridge
         self.Coord  = Coord
-        self.filename = self.Bridge.Patient.Name + '_' + time.strftime("%Y%m%d_%H%M.h5", time.localtime())
+
+        directory = os.getcwd() + '\\Records\\' + self.Bridge.Patient.Name
+        try:
+            os.stat(directory)
+        except:
+            os.mkdir(directory)
+
+        self.filename =  directory + '\\' + time.strftime("%Y%m%d_%H%M.h5", time.localtime())
+
 
         self.Running = False
 
@@ -61,10 +69,10 @@ class Thread_RecordClass(threading.Thread):
                 # Get a shortcut to the record object in table
 
                 self.record['timestamp']        = t0
-                self.record['p0']               = self.Coord.p0
-                self.record['J_current']        = self.Coord.J_current
-                self.record['J_des']            = self.Coord.J_des
-                self.record['Jv']               = self.Coord.Jv
+                self.record['p0']               = [self.Coord.p0[0], self.Coord.p0[1], self.Coord.p0[2], self.Coord.p0[3]]
+                self.record['J_current']        = [self.Bridge.Joints[0].Position, self.Bridge.Joints[1].Position,self.Bridge.Joints[2].Position,self.Bridge.Joints[3].Position]
+                self.record['J_des']            = [self.Coord.J_des[0], self.Coord.J_des[1], self.Coord.J_des[2], self.Coord.J_des[3]]
+                self.record['Jv']               = [self.Coord.Jv[0],self.Coord.Jv[1],self.Coord.Jv[2],self.Coord.Jv[3]]
 
                 self.record.append()
 

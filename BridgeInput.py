@@ -6,6 +6,7 @@ import time
 import pygame
 import keyboard
 import math
+import os
 
 from Bridge import *
 #from BridgeDialog import *
@@ -193,8 +194,9 @@ class Thread_InputClass(threading.Thread):
                                 winsound.Beep(440, 500)
 
                         if self.PyJoystick.get_button(2):
+                            self.Bridge.Joystick.SavePosition = self.PyJoystick.get_button(3)
                             try:
-                                num = len(self.SavedPositions)
+                                num = len(self.Bridge.SavedPositions)
                                 name = "Joystick " + str(num)
                                 self.Bridge.SavePosition(name)
                                 wx.CallAfter(Publisher.sendMessage, "UpdateSavedPositions")
@@ -202,22 +204,20 @@ class Thread_InputClass(threading.Thread):
                                 print "#Error Save Position Failed | " + str(e)
 
                         if self.PyJoystick.get_button(3):
+                            self.Bridge.Joystick.GotoSavedPosition = self.PyJoystick.get_button(3)
                             try:
                                 self.Bridge.GoToPosition(len(self.Bridge.SavedPositions)-1)
                             except Exception, e:
                                 print "#Error Go To Position Failed | " + str(e)
 
-                        #if self.PyJoystick.get_button(2):
-                        #self.Bridge.Joystick.GotoSavedPosition    = self.PyJoystick.get_button(3)
-                        #self.Bridge.Joystick.Alarm                = self.PyJoystick.get_button(4)
 
                     elif event.type == pygame.JOYAXISMOTION:
 
                         for i in range (0,2):
-                            axis = ( - self.PyJoystick.get_axis(i) + self.Bridge.Joystick.AxisOffset[i])
-
+                            axis = - ( self.PyJoystick.get_axis(i) - self.Bridge.Joystick.AxisOffset[i])
+                            #axis = self.PyJoystick.get_axis(i)
                             " Remove Deadband"
-                            if abs(axis) < 0.05:
+                            if abs(axis) < 0.01:
                                 axis = 0.0
 
                             " Calibrated Joystick Acquisition " # 0:Forward 1:Backward 2:Right 3:Left
@@ -244,10 +244,10 @@ class Thread_InputClass(threading.Thread):
                                     else:
                                         self.Coord.p0[0] = axis/self.Bridge.Patient.JoystickCalibration[1]  # Backward
                                 else: # Y axis
-                                    if axis > 0:
+                                    if axis < 0:
                                         self.Coord.p0[1] = -axis/self.Bridge.Patient.JoystickCalibration[2] # Left
                                     else:
-                                        self.Coord.p0[1] = -axis/self.Bridge.Patient.JoystickCalibration[3]  # Right
+                                        self.Coord.p0[1] = -axis/self.Bridge.Patient.JoystickCalibration[3] # Right
 
                                 self.Coord.p0[2] = 0.0
                                 self.Coord.p0[3] = 0.0
@@ -586,21 +586,26 @@ class Thread_JoystickCalibrationClass(threading.Thread):
 
     def __init__(self, Name, Bridge, direction):
 
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name = Name)
         self.Running                = False
         self.Bridge                 = Bridge
-        self.direction              = direction # 0:Forward 1:Backward 2:Right 3:Left
+        self.direction              = direction
+        self.direction_list         = ["Forward", "Backward", "Left", "Right"]
 
     def run(self):
 
         self.Running = True
 
+
+
         if self.direction <= 1:
             i=1
         else:
             i=0
+        print self.direction
 
-        self.Bridge.Patient.JoystickCalibration[self.direction] = 0
+        #self.Bridge.Patient.JoystickCalibration[self.direction] = 0
+        temp = 0
 
         try:
 
@@ -609,17 +614,17 @@ class Thread_JoystickCalibrationClass(threading.Thread):
 
             while self.Running:
 
-                axis = ( - self.PyJoystick.get_axis(i) + self.Bridge.Joystick.AxisOffset[i])
+                axis = - (self.PyJoystick.get_axis(i) - self.Bridge.Joystick.AxisOffset[i])
 
+                if abs(axis) > temp:
 
-                if abs(axis) > self.Bridge.Patient.JoystickCalibration[self.direction]:
+                    temp = abs(axis)
 
-                    self.Bridge.Patient.JoystickCalibration[self.direction] = abs(axis)
-                    print axis
+            print self.direction_list[self.direction] + ': ' + str(temp)
+            self.Bridge.Patient.JoystickCalibration[self.direction] = temp
 
-            print str(self.direction) + ': ' + str(self.Bridge.Patient.JoystickCalibration[self.direction])
+            self.Bridge.Patient.SavePatient(self.Bridge.Patient.Filename, self.Bridge.Patient)
 
-            #self.Conf.SavePatient(self.Bridge.Patient.Filename, self.Bridge.Patient)
             wx.CallAfter(Publisher.sendMessage, "UpdateJoystickCalibrationInfo")
 
         except Exception, e:

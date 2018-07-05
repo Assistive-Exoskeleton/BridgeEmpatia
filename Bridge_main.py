@@ -15,7 +15,9 @@ from BridgeDialog      import *
 from BridgeControl     import *
 from BridgeJoint       import *
 from BridgeInput       import *
-#from BridgeRecorder    import Thread_RecordClass
+
+from BridgeRecorder    import Thread_RecordClass
+
 import wx
 from wx.lib.wordwrap import wordwrap
 #from wx.lib.pubsub import setuparg1 #evita problemi con py2exe
@@ -66,9 +68,13 @@ class MainWindow(BridgeGUI.BridgeWindow):
         self.Bridge = BridgeClass(self)
         self.Conf   = BridgeConfClass(self.Bridge)
 
+        if self.Bridge.Patient.ReadPatientFile(self.Bridge.Patient.Filename):
+            self.Bridge.Patient.Loaded = True
+        else:
+            self.Bridge.Patient.Loaded = False
 
         " Initialize plots "
-        self.exo3d_plot     = CreatePlot3DExo(self.exo3d_container,self.Conf)
+        self.exo3d_plot     = CreatePlot3DExo(self.exo3d_container,self.Bridge)
         self.ani            = animation.FuncAnimation(self.exo3d_plot.figure, self.Animate, fargs=[], interval = 500)
 
         " Initialize plots "
@@ -245,6 +251,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
         else:
             self.JoystickRecallPos_lbl.SetBackgroundColour((242,255,242))
 
+
         " Force win refresh (background issue) "
         #self.Refresh()
 
@@ -258,17 +265,17 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
     def UpdateJointsInfo (self):
 
-        for i, Joint, Jlabel in zip(range(0,self.Bridge.JointsNum), self.Bridge.Joints, self.Jinitialized_lbl ):
+        for i, Joint in zip( range(0,self.Bridge.JointsNum), self.Bridge.Joints ):
 
             if Joint.Homed:
-                Jlabel.SetLabel(u"●")
+                self.Jinitialized_lbl[i].SetLabel(u"●")
             else:
-                Jlabel.SetLabel(u"○")
+                self.Jinitialized_lbl[i].SetLabel(u"○")
 
             if Joint.Bounded:
-                Jlabel.SetLabel(u"●")
+                self.Jboundaries_lbl[i].SetLabel(u"●")
             else:
-                Jlabel.SetLabel(u"○")
+                self.Jboundaries_lbl[i].SetLabel(u"○")
             try:
                 self.Jvalue_lbl[i].SetLabel(str(int(Joint.Position)))
                 self.Jmin_lbl[i].SetLabel(str(int(Joint.Jmin)))
@@ -339,12 +346,12 @@ class MainWindow(BridgeGUI.BridgeWindow):
         for i in range(0, self.Bridge.JointsNum):
             self.Bridge.Joints[i]   = Joint(i+1,
                                             self.Conf.Serial.COM[i],
-                                            self.Conf.Patient,
+                                            self.Bridge.Patient,
                                             self.Conf.Exo,
                                             self.Coord)
 
         " Copy patient to Bridge "
-        self.Bridge.Patient         = self.Conf.Patient
+        #self.Bridge.Patient         = self.Conf.Patient
 
         return True
 
@@ -360,14 +367,14 @@ class MainWindow(BridgeGUI.BridgeWindow):
             self.Conf.Serial.Error = False
 
     def patient_setup_command (self, event):
-        dialog = DialogPatientSetup(self, self.Conf, self.Bridge)
+        dialog = DialogPatientSetup(self, self.Bridge, self.Conf)
 
         if dialog.ShowModal() == wx.ID_OK:
             " Update joint values "
             for i, Jmin, Jmax, Jdef in zip(range(0,5), self.Jmin_lbl, self.Jmax_lbl, self.Jdef_lbl):
-                Jmin.SetLabel(str(self.Conf.Patient.Jmin[i]))
-                Jmax.SetLabel(str(self.Conf.Patient.Jmax[i]))
-                Jdef.SetLabel(str(self.Conf.Patient.Jdef[i]))
+                Jmin.SetLabel(str(self.Bridge.Patient.Jmin[i]))
+                Jmax.SetLabel(str(self.Bridge.Patient.Jmax[i]))
+                Jdef.SetLabel(str(self.Bridge.Patient.Jdef[i]))
 
             if self.Conf.Serial.AllConnected:
 	            " Update patient ROM values "
@@ -397,7 +404,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
     def connect_command(self, event):
 
         " Verifico che le il file paziente sia stato caricato "
-        if not self.Conf.Patient.Loaded:
+        if not self.Bridge.Patient.Loaded:
             dialog = DialogError(self, "Patient not loaded.")
             dialog.ShowModal()
             return
@@ -536,7 +543,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
         " Start Saving Thread "
 
         self.RecordThread = Thread_RecordClass("RecordThread", self.Bridge, self.Coord)
-        #self.RecordThread.start()
+        self.RecordThread.start()
 
         " Set Status "
         self.Bridge.SetStatus(RUNNING)
@@ -620,7 +627,18 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
         self.Bridge.MainWindow.timer.Stop()
 
+    def save_position_command(self, event):
+        " Save Position"
+        try:
+            self.Bridge.SavePosition("GUI "+str(len(self.Bridge.SavedPositions)))
+            self.UpdateSavedPositions()
+        except Exception, e:
+            dialog = DialogError(self, "Save Position failed.")
+            dialog.ShowModal()
+            print "#Error Save Position Failed|" + str(e)
+
     def goto_position_command (self, event):
+        "GoTo Position"
         try:
             Selection = self.SavedPositions_list.GetSelection()
             if Selection == -1:
@@ -633,17 +651,14 @@ class MainWindow(BridgeGUI.BridgeWindow):
             dialog.ShowModal()
             print "#Error Go To Position Failed|" + str(e)
 
-
     def open_jointDialog_command (self, event):
 
         widget = event.GetEventObject()
-
-        #if not self.Conf.Patient.Loaded:
         dialog = DialogJoint(self, int(widget.GetName()), self.Bridge.Joints[int(widget.GetName())], self.Bridge.Status)
         dialog.ShowModal()
 
     def set_control_interface (self,event):
-
+        "Set Control Interface "
         try:
             self.Bridge.Control.SetHMI(self.input_choice.GetSelection())
             self.UpdateInputInfo()
@@ -669,6 +684,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
             return
 
     def save_ik_parameters( self, event ):
+        "Set IK Parameters"
         IKparam = [None]*len(self.IKparam_list)
         try:
             for i, lbl in zip(range(0, len(self.IKparam_list)), self.IKparam_list):
@@ -678,10 +694,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
             print '#Error: Set IK parameters failed |' + str(e)
             return
 
-    def save_position_command(self, event):
 
-            self.Bridge.SavePosition("GUI "+str(len(self.Bridge.SavedPositions)))
-            self.UpdateSavedPositions()
 
 " ############## "
 " #PLOT 3D EXO # "
@@ -689,10 +702,10 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
 class CreatePlot3DExo(wx.Panel):
 
-    def __init__(self, parent, Conf):
+    def __init__(self, parent, Bridge):
         wx.Panel.__init__(self, parent)
 
-        self.Conf = Conf
+        self.Bridge = Bridge
         self.dpi = 75
         self.dim_pan = parent.GetSize()
         self.figure = Figure(figsize=(self.dim_pan[0] * 1.0 / self.dpi, (self.dim_pan[1]) * 1.0 / self.dpi),
@@ -711,12 +724,12 @@ class CreatePlot3DExo(wx.Panel):
         self.ax = self.figure.add_subplot(1, 1, 1, projection='3d')
         self.ax.axis('equal')
 
-        self.ax.set_xlim3d(-(self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3),
-                           (self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3))
-        self.ax.set_ylim3d(-(self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3),
-                           (self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3))
-        self.ax.set_zlim3d(-(self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3),
-                           (self.Conf.Patient.l1 + self.Conf.Patient.l2 + self.Conf.Patient.l3))
+        self.ax.set_xlim3d(-(self.Bridge.Patient.l1 + self.Bridge.Patient.l2 + self.Bridge.Patient.l3),
+                           (self.Bridge.Patient.l1 + self.Bridge.Patient.l2 + self.Bridge.Patient.l3))
+        self.ax.set_ylim3d(-(self.Bridge.Patient.l1 + self.Bridge.Patient.l2 + self.Bridge.Patient.l3),
+                           (self.Bridge.Patient.l1 + self.Bridge.Patient.l2 + self.Bridge.Patient.l3))
+        self.ax.set_zlim3d(-(self.Bridge.Patient.l1 + self.Bridge.Patient.l2 + self.Bridge.Patient.l3),
+                           (self.Bridge.Patient.l1 + self.Bridge.Patient.l2 + self.Bridge.Patient.l3))
 
         marker_style = dict(linestyle='-', color=[0.2, 0.2, 0.2], markersize=20)
         self.line = self.ax.plot([], [], [], marker='o', **marker_style)[0]

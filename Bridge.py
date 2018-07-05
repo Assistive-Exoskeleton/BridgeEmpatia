@@ -12,6 +12,7 @@ from wx.lib.pubsub import pub as Publisher
 
 from BridgeInput import *
 from BridgeControl import *
+from BridgePatient import *
 
 NONE                = -1
 IDLE                = 0
@@ -69,7 +70,6 @@ class BridgeClass:
             print "#Error: Go To Position failed |" + str(e)
         finally:
             print " + New Position Recalled : " + self.SavedPositions[num].Name + " " + str(self.SavedPositions[num].Jtarget)
-
 
     def SetStatus(self,case):
 
@@ -158,18 +158,18 @@ class ControlClass:
        self.FIRST_RUN = True
 
        " Timing Parameters"
-       self.ThreadPeriod           = 0.5
-       self.Time                   = 0.5
-       self.MaxDegDispl            = 10
+       self.ThreadPeriod           = 0.4
+       self.Time                   = 0.6
+       self.MaxDegDispl            = 5
 
        " Max Speed [m/s]"
        self.S                      = 0.04
 
        " Tollerance sull'errore cartesiano nella cinematica inversa "
-       self.Tollerance             = 1e-2
-       self.Eps                    = 0.1
+       self.Tollerance             = 1e-2 #5e-3
+       self.Eps                    = 0.5 #0.2
        " Peso per smorzare la velocita' di giunto vicino alle singolarita'/limiti WS - NB massimo valore 1 "
-       self.Wq0s                   = 0.1 #0.2
+       self.Wq0s                   = 0.05 #0.2
 
        " IK parameters "
        self.Dol                    = 5     # gradi di distanza da ROM
@@ -177,7 +177,7 @@ class ControlClass:
        self.Alpha                  = 1
        self.Alpha0                 = 1
        self.IterMax                = 1000
-       self.Threshold              = 5    # deg di tolleranza
+       self.Threshold              = 3   # deg di tolleranza
 
        self.IKparam = [self.Tollerance, self.Eps, self.Wq0s, self.Dol, self.Du, self.IterMax]
 
@@ -251,7 +251,6 @@ class BridgeCoordClass:
    def Setp0(self, p0):
        self.p0 = p0
 
-
 class JoystickClass:
    def __init__(self, Bridge):
        " 0: Normale - 1: Advanced "
@@ -286,22 +285,19 @@ class SerialClass:
        " Errore dovuto a un numero non sufficiente di porte seriali o configurazione mancante/sbagliata "
        self.Error          = True
 
-class PatientClass:
-   def __init__(self):
-       self.Name           = 'Name'
-       self.Jmin           = [0]*5
-       self.Jmax           = [0]*5
-       self.Jrest          = [0]*5
-       self.Jdef           = [0]*5
-       self.l1             = 1 #None      # [m]
-       self.l2             = 1 #None      # [m]
-       self.l3             = 1 #None      # [m]
-       self.FixationTime   = None      # [samples]
-       self.RJoint3        = 0.07     # [m]
-       self.Loaded         = False
-       self.Filename       = ''
-       self.Input          = ''
-       self.JoystickCalibration = [1.0]*4
+   def availableSerialPort(self):
+       suffixes = "S", "USB", "ACM", "AMA"
+       nameList = ["COM"] + ["/dev/tty%s" % suffix for suffix in suffixes]
+       portList = []
+       for name in nameList:
+           for number in range(48):
+               portName = "%s%s" % (name, number)
+               try:
+                   serial.Serial(portName).close()
+                   portList.append(portName)
+               except IOError:
+                   pass
+       return tuple(portList)
 
 class ExoClass:
    def __init__(self):
@@ -318,7 +314,6 @@ class BridgeConfClass:
        self.version                = '1.0'
        self.exo_file               = 'Conf.ini'
        self.Serial                 = SerialClass()
-       self.Patient                = PatientClass()
        self.Exo                    = ExoClass()
 
        " Input values timer in milliseconds "
@@ -331,10 +326,6 @@ class BridgeConfClass:
 
        self.ReadConfFile(self.Bridge)
 
-       self.ReadPatientFile(self.Patient.Filename)
-       print '* Reading Patient File ...'
-
-
     def ReadConfFile (self,Bridge):
         self.Bridge = Bridge
         print '* Reading Configuration File ...'
@@ -343,8 +334,8 @@ class BridgeConfClass:
             Config.read(self.exo_file)
             section = Config.sections()
 
-            self.Patient.Filename      = Config.get(section[0],"FileName")
-            self.Bridge.InputList     = Config.get(section[0],"HMI").split(" ")
+            self.Bridge.Patient.Filename      = Config.get(section[0],"FileName")
+            self.Bridge.InputList      = Config.get(section[0],"HMI").split(" ")
             self.Serial.COM[0]         = Config.get(section[0],"COM_J1")
             self.Serial.COM[1]         = Config.get(section[0],"COM_J2")
             self.Serial.COM[2]         = Config.get(section[0],"COM_J3")
@@ -379,53 +370,6 @@ class BridgeConfClass:
             print '# Error: ReadConfFile failed | ' + str(e)
             # Read conf failed -> create a new configuration file
 
-    def ReadPatientFile(self, filename):
-        try:
-            Config = ConfigParser.ConfigParser()
-            Config.read(filename)
-            section = Config.sections()
-
-            self.Patient.Name               = Config.get(section[0],"Name")
-            #self.Patient.Input              = Config.get(section[0],"Input")
-            self.Patient.Jmin[0]            = int(Config.get(section[0],"J1_min"))
-            self.Patient.Jmin[1]            = int(Config.get(section[0],"J2_min"))
-            self.Patient.Jmin[2]            = int(Config.get(section[0],"J3_min"))
-            self.Patient.Jmin[3]            = int(Config.get(section[0],"J4_min"))
-            self.Patient.Jmin[4]            = int(Config.get(section[0],"J5_min"))
-
-            self.Patient.Jmax[0]            = int(Config.get(section[0],"J1_max"))
-            self.Patient.Jmax[1]            = int(Config.get(section[0],"J2_max"))
-            self.Patient.Jmax[2]            = int(Config.get(section[0],"J3_max"))
-            self.Patient.Jmax[3]            = int(Config.get(section[0],"J4_max"))
-            self.Patient.Jmax[4]            = int(Config.get(section[0],"J5_max"))
-
-            self.Patient.Jdef[0]            = int(Config.get(section[0],"J1_default"))
-            self.Patient.Jdef[1]            = int(Config.get(section[0],"J2_default"))
-            self.Patient.Jdef[2]            = int(Config.get(section[0],"J3_default"))
-            self.Patient.Jdef[3]            = int(Config.get(section[0],"J4_default"))
-            self.Patient.Jdef[4]            = int(Config.get(section[0],"J5_default"))
-
-            self.Patient.Jrest[0]           = int(Config.get(section[0],"J1_rest"))
-            self.Patient.Jrest[1]           = int(Config.get(section[0],"J2_rest"))
-            self.Patient.Jrest[2]           = int(Config.get(section[0],"J3_rest"))
-            self.Patient.Jrest[3]           = int(Config.get(section[0],"J4_rest"))
-            self.Patient.Jrest[4]           = int(Config.get(section[0],"J5_rest"))
-
-            self.Patient.l1                 = float(Config.get(section[0],"l1"))
-            self.Patient.l2                 = float(Config.get(section[0],"l2"))
-            self.Patient.l3                 = float(Config.get(section[0],"l3"))
-
-            self.Patient.FixationTime       = float(Config.get(section[0],"fixation_time"))
-
-            self.Patient.Loaded             = True
-
-            return True
-
-        except Exception, e:
-            print '# Error: ReadPatientFile failed | ' + str(e)
-            # Read conf failed -> create a new configuration file
-            return False
-
     def SavePath(self, filename):
 
         Config = ConfigParser.ConfigParser()
@@ -436,55 +380,6 @@ class BridgeConfClass:
         cfgfile = open(self.exo_file,'w')
         Config.write(cfgfile)
         cfgfile.close()
-
-    def ParsePatientFile (self, filename):
-
-        try:
-
-            Patient     = PatientClass()
-            Config      = ConfigParser.ConfigParser()
-            Config.read(filename)
-            section     = Config.sections()
-
-            Patient.Name               = Config.get(section[0],"Name")
-            #Patient.Input              = Config.get(section[0],"Input")
-            Patient.Jmin[0]            = int(Config.get(section[0],"J1_min"))
-            Patient.Jmin[1]            = int(Config.get(section[0],"J2_min"))
-            Patient.Jmin[2]            = int(Config.get(section[0],"J3_min"))
-            Patient.Jmin[3]            = int(Config.get(section[0],"J4_min"))
-            Patient.Jmin[4]            = int(Config.get(section[0],"J5_min"))
-
-            Patient.Jmax[0]            = int(Config.get(section[0],"J1_max"))
-            Patient.Jmax[1]            = int(Config.get(section[0],"J2_max"))
-            Patient.Jmax[2]            = int(Config.get(section[0],"J3_max"))
-            Patient.Jmax[3]            = int(Config.get(section[0],"J4_max"))
-            Patient.Jmax[4]            = int(Config.get(section[0],"J5_max"))
-
-            Patient.Jdef[0]            = int(Config.get(section[0],"J1_default"))
-            Patient.Jdef[1]            = int(Config.get(section[0],"J2_default"))
-            Patient.Jdef[2]            = int(Config.get(section[0],"J3_default"))
-            Patient.Jdef[3]            = int(Config.get(section[0],"J4_default"))
-            Patient.Jdef[4]            = int(Config.get(section[0],"J5_default"))
-
-            Patient.Jrest[0]           = int(Config.get(section[0],"J1_rest"))
-            Patient.Jrest[1]           = int(Config.get(section[0],"J2_rest"))
-            Patient.Jrest[2]           = int(Config.get(section[0],"J3_rest"))
-            Patient.Jrest[3]           = int(Config.get(section[0],"J4_rest"))
-            Patient.Jrest[4]           = int(Config.get(section[0],"J5_rest"))
-
-            Patient.l1                 = float(Config.get(section[0],"l1"))
-            Patient.l2                 = float(Config.get(section[0],"l2"))
-            Patient.l3                 = float(Config.get(section[0],"l3"))
-
-            Patient.FixationTime       = float(Config.get(section[0],"fixation_time"))
-
-            return Patient
-
-        except Exception, e:
-            print '# Error: ReadPatientFile failed | ' + str(e)
-            # Read conf failed -> create a new configuration file
-            return False
-
 
     def ParseExoFile (self, filename):
         try:
@@ -524,7 +419,6 @@ class BridgeConfClass:
             # Read conf failed -> create a new configuration file
             return False
 
-
     def WriteConfFile (self):
 
         print 'WriteConfFile called.'
@@ -535,7 +429,7 @@ class BridgeConfClass:
             section = 'BRIDGE'
             Config.add_section(section)
 
-            Config.set(section, 'FileName', self.Patient.Filename)
+            Config.set(section, 'FileName', self.Bridge.Patient.Filename)
             Config.set(section, 'HMI', 'Joystick Keyboard')
             Config.set(section, 'COM_J1', self.Serial.COM[0])
             Config.set(section, 'COM_J2', self.Serial.COM[1])
@@ -579,7 +473,7 @@ class BridgeConfClass:
 
     def SavePatient (self, Filename, Patient):
 
-        print '* Saving Patient Configuration File'
+        print '* Saving Patient Configuration File ...'
 
         try:
             Config = ConfigParser.ConfigParser()
@@ -588,7 +482,6 @@ class BridgeConfClass:
             Config.add_section(section)
 
             Config.set(section, 'Name', Patient.Name)
-            #Config.set(section, 'Input', Patient.Input)
 
             Config.set(section, 'J1_min', Patient.Jmin[0])
             Config.set(section, 'J2_min', Patient.Jmin[1])
@@ -618,15 +511,13 @@ class BridgeConfClass:
             Config.set(section, 'l2', Patient.l2)
             Config.set(section, 'l3', Patient.l3)
 
-            Config.set(section, 'fixation_time', Patient.FixationTime)
-
             cfgfile = open(Filename,'w')
             Config.write(cfgfile)
             cfgfile.close()
 
             return True
         except Exception, e:
-            print '# Error: couldn\'t save patient configuration | ' + str(e)
+            print '# Error: Saving Patient failed | ' + str(e)
             return False
 
 

@@ -49,10 +49,6 @@ class BridgeWindow ( wx.Frame ):
 		self.m_patient.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_REPORT_VIEW, wx.ART_TOOLBAR ) )
 		self.Tools.AppendItem( self.m_patient )
 		
-		self.m_joystick_calibration = wx.MenuItem( self.Tools, wx.ID_ANY, u"Joystick Calibration", wx.EmptyString, wx.ITEM_NORMAL )
-		self.m_joystick_calibration.SetBitmap( wx.ArtProvider.GetBitmap( wx.ART_GO_FORWARD, wx.ART_TOOLBAR ) )
-		self.Tools.AppendItem( self.m_joystick_calibration )
-		
 		self.m_menubar1.Append( self.Tools, u"Tools" ) 
 		
 		self.SetMenuBar( self.m_menubar1 )
@@ -1298,7 +1294,6 @@ class BridgeWindow ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.exit, id = self.m_menuItem2.GetId() )
 		self.Bind( wx.EVT_MENU, self.exo_setup_command, id = self.m_preferences.GetId() )
 		self.Bind( wx.EVT_MENU, self.patient_setup_command, id = self.m_patient.GetId() )
-		self.Bind( wx.EVT_MENU, self.joystick_calibration_command, id = self.m_joystick_calibration.GetId() )
 		self.input_choice.Bind( wx.EVT_CHOICE, self.set_control_interface )
 		self.displacement_entry.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.set_displacement )
 		self.speed_gain_entry.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.set_speed_gain )
@@ -1327,9 +1322,6 @@ class BridgeWindow ( wx.Frame ):
 		event.Skip()
 	
 	def patient_setup_command( self, event ):
-		event.Skip()
-	
-	def joystick_calibration_command( self, event ):
 		event.Skip()
 	
 	def set_control_interface( self, event ):
@@ -1439,7 +1431,7 @@ class DialogDonning ( wx.Dialog ):
 class DialogExoSetup ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Exo setup", pos = wx.DefaultPosition, size = wx.Size( 396,549 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Exo setup", pos = wx.DefaultPosition, size = wx.Size( 396,605 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
@@ -1794,7 +1786,7 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		bSizer171 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.error_lbl = wx.StaticText( self.m_panel4, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.error_lbl = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Error", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.error_lbl.Wrap( -1 )
 		self.error_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
 		self.error_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
@@ -1908,7 +1900,7 @@ class DialogExoSetup ( wx.Dialog ):
 class Dialog_PatientSetup ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BridgEmpatia - Patient Setup", pos = wx.DefaultPosition, size = wx.Size( 385,472 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BridgEmpatia - Patient Setup", pos = wx.DefaultPosition, size = wx.Size( 384,565 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
@@ -1923,6 +1915,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText150 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Patient Name", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText150.Wrap( -1 )
+		self.m_staticText150.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		self.m_staticText150.SetMinSize( wx.Size( 100,-1 ) )
 		
 		bSizer90.Add( self.m_staticText150, 1, wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -1943,38 +1936,39 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		bSizer901 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_staticText1501 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"JOINT", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.m_staticText1501 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joint", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText1501.Wrap( -1 )
 		self.m_staticText1501.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1501.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		self.m_staticText1501.SetMinSize( wx.Size( 50,-1 ) )
 		
 		bSizer901.Add( self.m_staticText1501, 0, wx.ALL, 5 )
 		
-		self.m_staticText161 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MIN", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.m_staticText161 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Min", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText161.Wrap( -1 )
 		self.m_staticText161.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
-		self.m_staticText161.SetMinSize( wx.Size( 60,-1 ) )
+		self.m_staticText161.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer901.Add( self.m_staticText161, 0, wx.ALL, 5 )
 		
-		self.m_staticText162 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MAX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.m_staticText162 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Max", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText162.Wrap( -1 )
 		self.m_staticText162.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
-		self.m_staticText162.SetMinSize( wx.Size( 60,-1 ) )
+		self.m_staticText162.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer901.Add( self.m_staticText162, 0, wx.ALL, 5 )
 		
-		self.m_staticText163 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"DEFAULT", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.m_staticText163 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Donning", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText163.Wrap( -1 )
 		self.m_staticText163.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
-		self.m_staticText163.SetMinSize( wx.Size( 60,-1 ) )
+		self.m_staticText163.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer901.Add( self.m_staticText163, 0, wx.ALL, 5 )
 		
-		self.m_staticText167 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"REST", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.m_staticText167 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Rest", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText167.Wrap( -1 )
 		self.m_staticText167.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
-		self.m_staticText167.SetMinSize( wx.Size( 60,-1 ) )
+		self.m_staticText167.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer901.Add( self.m_staticText167, 0, wx.ALL, 5 )
 		
@@ -1990,21 +1984,23 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		bSizer9011.Add( self.m_staticText15011, 0, wx.ALL, 5 )
 		
 		self.J1min_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J1min_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J1min_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9011.Add( self.J1min_entry, 0, wx.ALL, 5 )
 		
 		self.J1max_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J1max_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J1max_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9011.Add( self.J1max_entry, 0, wx.ALL, 5 )
 		
 		self.J1def_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J1def_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J1def_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9011.Add( self.J1def_entry, 0, wx.ALL, 5 )
 		
-		self.J1rest_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.J1rest_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		self.J1rest_entry.SetMinSize( wx.Size( 70,-1 ) )
+		
 		bSizer9011.Add( self.J1rest_entry, 0, wx.ALL, 5 )
 		
 		
@@ -2019,21 +2015,23 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		bSizer9012.Add( self.m_staticText15012, 0, wx.ALL, 5 )
 		
 		self.J2min_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J2min_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J2min_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9012.Add( self.J2min_entry, 0, wx.ALL, 5 )
 		
 		self.J2max_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J2max_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J2max_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9012.Add( self.J2max_entry, 0, wx.ALL, 5 )
 		
 		self.J2def_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J2def_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J2def_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9012.Add( self.J2def_entry, 0, wx.ALL, 5 )
 		
 		self.J2rest_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.J2rest_entry.SetMinSize( wx.Size( 70,-1 ) )
+		
 		bSizer9012.Add( self.J2rest_entry, 0, wx.ALL, 5 )
 		
 		
@@ -2048,21 +2046,23 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		bSizer9013.Add( self.m_staticText15013, 0, wx.ALL, 5 )
 		
 		self.J3min_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J3min_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J3min_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9013.Add( self.J3min_entry, 0, wx.ALL, 5 )
 		
 		self.J3max_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J3max_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J3max_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9013.Add( self.J3max_entry, 0, wx.ALL, 5 )
 		
 		self.J3def_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J3def_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J3def_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9013.Add( self.J3def_entry, 0, wx.ALL, 5 )
 		
 		self.J3rest_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.J3rest_entry.SetMinSize( wx.Size( 70,-1 ) )
+		
 		bSizer9013.Add( self.J3rest_entry, 0, wx.ALL, 5 )
 		
 		
@@ -2077,21 +2077,23 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		bSizer9014.Add( self.m_staticText15014, 0, wx.ALL, 5 )
 		
 		self.J4min_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J4min_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J4min_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9014.Add( self.J4min_entry, 0, wx.ALL, 5 )
 		
 		self.J4max_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J4max_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J4max_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9014.Add( self.J4max_entry, 0, wx.ALL, 5 )
 		
 		self.J4def_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J4def_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J4def_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer9014.Add( self.J4def_entry, 0, wx.ALL, 5 )
 		
 		self.J4rest_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.J4rest_entry.SetMinSize( wx.Size( 70,-1 ) )
+		
 		bSizer9014.Add( self.J4rest_entry, 0, wx.ALL, 5 )
 		
 		
@@ -2105,22 +2107,24 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		bSizer90141.Add( self.m_staticText150141, 0, wx.ALL, 5 )
 		
-		self.J5min_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J5min_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J5min_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, u"N.A.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.J5min_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer90141.Add( self.J5min_entry, 0, wx.ALL, 5 )
 		
-		self.J5max_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J5max_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J5max_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, u"N.A.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.J5max_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer90141.Add( self.J5max_entry, 0, wx.ALL, 5 )
 		
-		self.J5def_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.J5def_entry.SetMinSize( wx.Size( 60,-1 ) )
+		self.J5def_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, u"N.A.", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.J5def_entry.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer90141.Add( self.J5def_entry, 0, wx.ALL, 5 )
 		
-		self.J5rest_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.J5rest_entry = wx.TextCtrl( self.m_panel6, wx.ID_ANY, u"N.A.", wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.J5rest_entry.SetMinSize( wx.Size( 70,-1 ) )
+		
 		bSizer90141.Add( self.J5rest_entry, 0, wx.ALL, 5 )
 		
 		
@@ -2136,51 +2140,130 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText1631 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"L1", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1631.Wrap( -1 )
+		self.m_staticText1631.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
 		bSizer99.Add( self.m_staticText1631, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
 		self.l1_lbl = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.l1_lbl.SetMinSize( wx.Size( 70,-1 ) )
+		
 		bSizer99.Add( self.l1_lbl, 0, wx.ALL, 5 )
 		
 		self.m_staticText164 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"L2", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText164.Wrap( -1 )
+		self.m_staticText164.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
 		bSizer99.Add( self.m_staticText164, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
 		self.l2_lbl = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.l2_lbl.SetMinSize( wx.Size( 70,-1 ) )
+		
 		bSizer99.Add( self.l2_lbl, 0, wx.ALL, 5 )
 		
 		self.m_staticText165 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"L3", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText165.Wrap( -1 )
+		self.m_staticText165.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
 		bSizer99.Add( self.m_staticText165, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
 		self.l3_lbl = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.l3_lbl.SetMinSize( wx.Size( 70,-1 ) )
+		
 		bSizer99.Add( self.l3_lbl, 0, wx.ALL, 5 )
 		
 		
 		bSizer99.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
-		bSizer95.Add( bSizer99, 1, wx.EXPAND, 5 )
+		bSizer95.Add( bSizer99, 0, wx.EXPAND, 5 )
 		
 		self.m_staticline1411 = wx.StaticLine( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		bSizer95.Add( self.m_staticline1411, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer901411 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.m_staticText1501411 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joystick ", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.m_staticText1501411.Wrap( -1 )
+		self.m_staticText1501411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1501411.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
+		self.m_staticText1501411.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
+		
+		bSizer901411.Add( self.m_staticText1501411, 1, wx.ALL, 5 )
+		
+		
+		bSizer95.Add( bSizer901411, 0, wx.EXPAND, 5 )
 		
 		bSizer991 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		
 		bSizer991.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.m_staticText16311 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Visual Control: Fixation Time", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText16311 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Forward", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
 		self.m_staticText16311.Wrap( -1 )
+		self.m_staticText16311.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
 		bSizer991.Add( self.m_staticText16311, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
-		self.ft_lbl = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
-		bSizer991.Add( self.ft_lbl, 0, wx.ALL, 5 )
+		self.joystick_forward_lbl = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.joystick_forward_lbl.SetMinSize( wx.Size( 70,-1 ) )
+		
+		bSizer991.Add( self.joystick_forward_lbl, 0, wx.ALL, 5 )
+		
+		
+		bSizer991.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText1641 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Backward", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
+		self.m_staticText1641.Wrap( -1 )
+		self.m_staticText1641.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
+		bSizer991.Add( self.m_staticText1641, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		self.joystick_backward_lbl = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.joystick_backward_lbl.SetMinSize( wx.Size( 70,-1 ) )
+		
+		bSizer991.Add( self.joystick_backward_lbl, 0, wx.ALL, 5 )
 		
 		
 		bSizer991.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
-		bSizer95.Add( bSizer991, 1, wx.EXPAND, 5 )
+		bSizer95.Add( bSizer991, 0, wx.EXPAND, 5 )
+		
+		bSizer9911 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer9911.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText163111 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Left", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
+		self.m_staticText163111.Wrap( -1 )
+		self.m_staticText163111.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
+		bSizer9911.Add( self.m_staticText163111, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		self.joystick_left_lbl = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.joystick_left_lbl.SetMinSize( wx.Size( 70,-1 ) )
+		
+		bSizer9911.Add( self.joystick_left_lbl, 0, wx.ALL, 5 )
+		
+		
+		bSizer9911.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_staticText16411 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Right", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
+		self.m_staticText16411.Wrap( -1 )
+		self.m_staticText16411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		
+		bSizer9911.Add( self.m_staticText16411, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		self.joystick_right_lbl = wx.TextCtrl( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 60,-1 ), 0 )
+		self.joystick_right_lbl.SetMinSize( wx.Size( 70,-1 ) )
+		
+		bSizer9911.Add( self.joystick_right_lbl, 0, wx.ALL, 5 )
+		
+		
+		bSizer9911.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
+		bSizer95.Add( bSizer9911, 0, wx.EXPAND, 5 )
 		
 		bSizer118 = wx.BoxSizer( wx.HORIZONTAL )
 		
@@ -2192,45 +2275,44 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		bSizer118.Add( self.m_staticText179, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		self.joystick_calibration_butt = wx.Button( self.m_panel6, wx.ID_ANY, u"Calibration", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer118.Add( self.joystick_calibration_butt, 0, wx.ALL, 5 )
+		bSizer118.Add( self.joystick_calibration_butt, 1, wx.ALL, 5 )
 		
 		
 		bSizer118.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
-		bSizer95.Add( bSizer118, 1, wx.EXPAND, 5 )
+		bSizer95.Add( bSizer118, 0, wx.EXPAND, 5 )
 		
-		
-		bSizer95.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
-		
-		bSizer1161 = wx.BoxSizer( wx.HORIZONTAL )
-		
-		self.m_staticText136 = wx.StaticText( self.m_panel6, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
-		self.m_staticText136.Wrap( -1 )
-		self.m_staticText136.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
-		self.m_staticText136.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
-		
-		bSizer1161.Add( self.m_staticText136, 1, wx.ALL, 5 )
-		
-		
-		bSizer95.Add( bSizer1161, 1, wx.EXPAND, 5 )
+		self.m_staticline1412 = wx.StaticLine( self.m_panel6, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer95.Add( self.m_staticline1412, 0, wx.EXPAND |wx.ALL, 5 )
 		
 		bSizer116 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		
 		bSizer116.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
-		self.m_button25 = wx.Button( self.m_panel6, wx.ID_ANY, u"Load", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer116.Add( self.m_button25, 0, wx.ALL, 5 )
+		self.load_butt = wx.Button( self.m_panel6, wx.ID_ANY, u"Load", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.load_butt.SetMaxSize( wx.Size( 80,-1 ) )
+		
+		bSizer116.Add( self.load_butt, 0, wx.ALL, 5 )
 		
 		self.save_butt = wx.Button( self.m_panel6, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.save_butt.SetMaxSize( wx.Size( 80,-1 ) )
+		
 		bSizer116.Add( self.save_butt, 0, wx.ALL, 5 )
 		
 		self.ok_butt = wx.Button( self.m_panel6, wx.ID_ANY, u"Ok", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.ok_butt.SetMaxSize( wx.Size( 80,-1 ) )
+		
 		bSizer116.Add( self.ok_butt, 0, wx.ALL, 5 )
 		
 		self.cancel_butt = wx.Button( self.m_panel6, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.cancel_butt.SetMaxSize( wx.Size( 80,-1 ) )
+		
 		bSizer116.Add( self.cancel_butt, 0, wx.ALL, 5 )
+		
+		
+		bSizer116.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
 		bSizer95.Add( bSizer116, 1, wx.EXPAND, 5 )
@@ -2264,7 +2346,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		self.J5max_entry.Bind( wx.EVT_TEXT, self.onText_command )
 		self.J5def_entry.Bind( wx.EVT_TEXT, self.onText_command )
 		self.joystick_calibration_butt.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
-		self.m_button25.Bind( wx.EVT_BUTTON, self.load_command )
+		self.load_butt.Bind( wx.EVT_BUTTON, self.load_command )
 		self.save_butt.Bind( wx.EVT_BUTTON, self.save_command )
 		self.ok_butt.Bind( wx.EVT_BUTTON, self.ok_command )
 		self.cancel_butt.Bind( wx.EVT_BUTTON, self.cancel_command )
@@ -2649,7 +2731,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer122 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_staticText82 = wx.StaticText( self, wx.ID_ANY, u"Right:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText82 = wx.StaticText( self, wx.ID_ANY, u"Left:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText82.Wrap( -1 )
 		self.m_staticText82.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		
@@ -2679,7 +2761,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer123 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_staticText83 = wx.StaticText( self, wx.ID_ANY, u"Left:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText83 = wx.StaticText( self, wx.ID_ANY, u"Right:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText83.Wrap( -1 )
 		self.m_staticText83.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
 		
@@ -2712,13 +2794,14 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		bSizer171 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.error_lbl = wx.StaticText( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
-		self.error_lbl.Wrap( -1 )
-		self.error_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
-		self.error_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
-		self.error_lbl.SetMinSize( wx.Size( 40,-1 ) )
 		
-		bSizer171.Add( self.error_lbl, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		bSizer171.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		self.m_button34 = wx.Button( self, wx.ID_ANY, u"Ok ", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer171.Add( self.m_button34, 0, wx.ALL, 5 )
+		
+		
+		bSizer171.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
 		bSizer11.Add( bSizer171, 0, wx.EXPAND, 5 )
@@ -2732,9 +2815,10 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		# Connect Events
 		self.calib_butt1.Bind( wx.EVT_BUTTON, self.joystick_calibration_command_axis )
-		self.calib_butt2.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
-		self.calib_butt3.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
-		self.calib_butt4.Bind( wx.EVT_BUTTON, self.joystick_calibration_command )
+		self.calib_butt2.Bind( wx.EVT_BUTTON, self.joystick_calibration_command_axis )
+		self.calib_butt3.Bind( wx.EVT_BUTTON, self.joystick_calibration_command_axis )
+		self.calib_butt4.Bind( wx.EVT_BUTTON, self.joystick_calibration_command_axis )
+		self.m_button34.Bind( wx.EVT_BUTTON, self.ok_command )
 	
 	def __del__( self ):
 		pass
@@ -2744,9 +2828,10 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 	def joystick_calibration_command_axis( self, event ):
 		event.Skip()
 	
-	def joystick_calibration_command( self, event ):
+	
+	
+	
+	def ok_command( self, event ):
 		event.Skip()
-	
-	
 	
 
