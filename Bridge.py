@@ -158,26 +158,26 @@ class ControlClass:
        self.FIRST_RUN = True
 
        " Timing Parameters"
-       self.ThreadPeriod           = 0.4
-       self.Time                   = 0.6
+       self.ThreadPeriod           = 0.5
+       self.Time                   = 0.5
        self.MaxDegDispl            = 10
 
        " Max Speed [m/s]"
        self.S                      = 0.04
 
        " Tollerance sull'errore cartesiano nella cinematica inversa "
-       self.Tollerance             = 5e-3
+       self.Tollerance             = 1e-2
        self.Eps                    = 0.1
        " Peso per smorzare la velocita' di giunto vicino alle singolarita'/limiti WS - NB massimo valore 1 "
-       self.Wq0s                   = 0.2
+       self.Wq0s                   = 0.1 #0.2
 
        " IK parameters "
-       self.Dol                    = 10     # gradi di distanza da ROM
-       self.Du                     = 0.5 # step to increase/decrease joint limit ramps
+       self.Dol                    = 5     # gradi di distanza da ROM
+       self.Du                     = 0.5    # step to increase/decrease joint limit ramps
        self.Alpha                  = 1
        self.Alpha0                 = 1
        self.IterMax                = 1000
-       self.Threshold              = 3    # deg di tolleranza
+       self.Threshold              = 5    # deg di tolleranza
 
        self.IKparam = [self.Tollerance, self.Eps, self.Wq0s, self.Dol, self.Du, self.IterMax]
 
@@ -288,14 +288,14 @@ class SerialClass:
 
 class PatientClass:
    def __init__(self):
-       self.Name           = ''
+       self.Name           = 'Name'
        self.Jmin           = [0]*5
        self.Jmax           = [0]*5
        self.Jrest          = [0]*5
        self.Jdef           = [0]*5
-       self.l1             = 1#None      # [m]
-       self.l2             = 1#None      # [m]
-       self.l3             = 1#None      # [m]
+       self.l1             = 1 #None      # [m]
+       self.l2             = 1 #None      # [m]
+       self.l3             = 1 #None      # [m]
        self.FixationTime   = None      # [samples]
        self.RJoint3        = 0.07     # [m]
        self.Loaded         = False

@@ -4,7 +4,7 @@ import threading
 import tables
 import time
 import numpy as np
-from Bridge import *
+#from Bridge import *
 
 class Record(tables.IsDescription):
     J_current   = tables.Float32Col(5)
