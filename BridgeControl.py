@@ -31,20 +31,6 @@ POS_CTRL            = 8
 POS_CTRL_ABS        = 9
 TARGET_POSITION     = 10
 
-'''
-global file_EndEff0
-file_EndEff0 = []
-global file_EndEff_des
-file_EndEff_des = []
-global file_J_current
-file_J_current = []
-global file_J_des
-file_J_des = []
-global file_p0
-file_p0_ = []
-global file_elbow
-file_elbow = []
-'''
 
 class Thread_ControlClass(threading.Thread):
     def __init__(self, Name, Bridge, Coord, Conf, CheckWs=False):
@@ -56,9 +42,6 @@ class Thread_ControlClass(threading.Thread):
         self.Bridge             = Bridge
 
         self.CheckWS            = CheckWs
-
-
-
 
     def run(self):
 
@@ -90,7 +73,7 @@ class Thread_ControlClass(threading.Thread):
             " ############# "
 
             if self.Bridge.Status == IDLE:
-                time.sleep(0.5)
+                time.sleep(0.1)
 
             elif self.Bridge.Status == INIT_SYSTEM:
 
@@ -486,29 +469,24 @@ class Thread_ControlClass(threading.Thread):
                     #winsound.Beep(550, 500)  # frequency, duration[ms
                     print '# J%d close to lower limit (J_des: %f) - (J_current: %f) - (Jmin: %f)' % (i+1, self.Coord.J_des[i], J.Position, J.Jmin)
                     J.Bounded = True
-                    if J.Position <= J.Jmin:
-                        self.Coord.J_des[i] = J.Jmin
-                    else:
-                        self.Coord.J_des[i] = J.Position
+                    self.Coord.J_des[i] = J.Jmin
 
-                if J.Position >= (J.Jmax - self.Bridge.Control.Threshold) and self.Coord.J_des[i] >= J.Jmax and (self.Coord.J_des[i] - J.Position) >= 0:
+
+                elif J.Position >= (J.Jmax - self.Bridge.Control.Threshold) and self.Coord.J_des[i] >= J.Jmax and (self.Coord.J_des[i] - J.Position) >= 0:
                     #winsound.Beep(330, 500) # frequency, duration[ms]
                     print '# J%d close to upper limit (J_des: %f) - (J_current: %f) - (Jmax: %f)' % (i+1, self.Coord.J_des[i], J.Position, J.Jmax)
                     J.Bounded = True
-                    if J.Position >= J.Jmax:
-                        self.Coord.J_des[i] = J.Jmax
-                    else:
-                        self.Coord.J_des[i] = J.Position
+                    self.Coord.J_des[i] = J.Jmax
                 else:
                     J.Bounded = False
 
                 JCurrentPos = []
-                for J in self.Bridge.Joints:
-                    JCurrentPos.append(J.Position)
+                if not __debug__:
+                    for J in self.Bridge.Joints:
+                        JCurrentPos.append(J.Position)
                 else:
                     for i in range(0, self.Bridge.JointsNum):
                         JCurrentPos.append(self.Coord.J_current[i])
-
 
                 '''
                 diff = [x - y for x, y in zip(JCurrentPos, self.Coord.J_des)]
@@ -516,21 +494,18 @@ class Thread_ControlClass(threading.Thread):
                     if abs(i) > self.Bridge.Control.MaxDegDispl:
                         print 'Repentine Change'
                         self.Coord.J_des = JCurrentPos
-                        self.Bridge.Control.Status = POS_CTRL  
-                
+                        self.Bridge.Control.Status = POS_CTRL
+                '''
                 " Check no repentine change of joints value! "
 
-                diff = [0]*5
-                
-                '''
-            diff = [0] * 5
+            diff = [0]*5
             for i in range(0, self.Bridge.JointsNum):
                 diff[i] = self.Coord.J_des[i] - JCurrentPos[i]
 
                 if abs(diff[i]) > self.Bridge.Control.MaxDegDispl:
                     print '# Repentine Change'
-                    self.Coord.J_des[i] = JCurrentPos[i]
-                    self.Bridge.Control.SetStatus(POS_CTRL)
+                    self.Coord.J_des = JCurrentPos
+                    self.Bridge.Control.Status = POS_CTRL
 
                 self.Coord.Jv[i] = ((self.Coord.J_des[i] - JCurrentPos[i]) / self.Bridge.Control.Time)
 

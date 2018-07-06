@@ -262,8 +262,8 @@ class Joint:
         try:
             if self.Port.isOpen():
                 self.Port.flush()
-                self.Port.flushInput()
-                self.Port.flushOutput()
+                #self.Port.flushInput()
+                #self.Port.flushOutput()
             return True
 
         except Exception, e:
@@ -276,7 +276,9 @@ class Joint:
 
     "Set the Absolute Position Mode: Profile #1"
     def SetAbsolutePositionMode(self):
-        command = ["#1y1\r","#1p2\r"]
+        targetspeed = '#1o%d\r' % int(4*self.Ratio)
+        print targetspeed
+        command = ["#1y1\r","#1p2\r",targetspeed]
 
         try:
             while self.WriteCmd(command) == False:
@@ -462,6 +464,7 @@ class Joint:
             command = ["#1S\r"]
             self.WriteCmd(command)
             time.sleep(0.01)
+            print "low speed"
             return False, -1
 
     def HomingQuery(self):
@@ -565,6 +568,8 @@ class Thread_JointInitClass(threading.Thread):
             self.Jn.SetPositionDeg(self.Jn.Jdef)
      
             while abs(self.Jn.Position - self.Jn.Jdef) > 0.5:
+                if self.Running == False:
+                    break
                 self.Jn.Position = self.Jn.GetPositionDeg()
                 #print '**** Sto andando a target position, J%d - %d' % (self.Jn.Num, self.Jn.Position)
                 time.sleep(0.5)
@@ -659,9 +664,6 @@ class Thread_JointUpdateClass(threading.Thread):
                 " Measure process time "
                 t0 = time.clock()
 
-                self.Jn.PositionStep = self.Jn.GetPositionStep()
-                self.Jn.Position     = self.Jn.GetPositionDeg()  # self.Jn.step2deg(self.Jn.PositionStep)
-
                 " Detecting New Control Mode"
                 if self.Bridge.Control.Status != self.OldStatus:
                     self.OldStatus = self.Bridge.Control.Status
@@ -670,9 +672,7 @@ class Thread_JointUpdateClass(threading.Thread):
                     self.Jn.DriveErrorClear()
 
                     if self.Bridge.Control.Status == SPEED_CTRL:
-
                         self.Jn.SetSpeedMode()
-                        #print ' J%d Speed Control ' % self.Jn.Num
 
                     if self.Bridge.Control.Status == POS_CTRL:
 
@@ -697,16 +697,14 @@ class Thread_JointUpdateClass(threading.Thread):
 
                         "Position Control - Relative Position"
 
-
-                #self.Jn.PositionStep = self.Jn.GetPositionStep()
-                #self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep)
+                self.Jn.PositionStep = self.Jn.GetPositionStep()
+                self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep)
 
                 " If the control is enabled "
 
                 if self.Bridge.Control.Status == SPEED_CTRL:
                     
                     " Set speed "
-
                     self.Jn.SetSpeedHz(self.Jn.deg2step(self.Coord.Jv[self.Jn.Num - 1]))
 
                 elif self.Bridge.Control.Status == POS_CTRL:

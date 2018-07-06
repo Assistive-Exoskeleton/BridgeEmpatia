@@ -162,21 +162,21 @@ class ControlClass:
        self.MaxDegDispl            = 5
 
        " Max Speed [m/s]"
-       self.S                      = 0.04
+       self.S                      = 0.02
 
        " Tollerance sull'errore cartesiano nella cinematica inversa "
        self.Tollerance             = 1e-2 #5e-3
        self.Eps                    = 0.5 #0.2
        " Peso per smorzare la velocita' di giunto vicino alle singolarita'/limiti WS - NB massimo valore 1 "
-       self.Wq0s                   = 0.05 #0.2
+       self.Wq0s                   = 0.005 #0.2
 
        " IK parameters "
        self.Dol                    = 5     # gradi di distanza da ROM
-       self.Du                     = 0.5    # step to increase/decrease joint limit ramps
+       self.Du                     = 0.05    # step to increase/decrease joint limit ramps
        self.Alpha                  = 1
        self.Alpha0                 = 1
        self.IterMax                = 1000
-       self.Threshold              = 3   # deg di tolleranza
+       self.Threshold              = 5   # deg di tolleranza
 
        self.IKparam = [self.Tollerance, self.Eps, self.Wq0s, self.Dol, self.Du, self.IterMax]
 

@@ -470,12 +470,12 @@ class DialogJoint(BridgeGUI.Dialog_Joint):
             self.error_lbl.SetLabel('System status error')
         else:
             self.Joint.SetAbsolutePositionMode()
-            self.Joint.SetPositionDeg(self.angle)
+            if self.Joint.SetPositionDeg(self.angle):
 
-            while abs(self.Joint.GetPositionDeg() - self.angle) > 0.5:
-                print '**** I am going to the requested position, J%d - %d' % (
-                self.Joint.Num, self.Joint.GetPositionDeg())
-                time.sleep(1)
+                while abs(self.Joint.GetPositionDeg() - self.angle) > 0.5:
+                    print '**** I am going to the requested position, J%d - %d' % (
+                    self.Joint.Num, self.Joint.GetPositionDeg())
+                    time.sleep(1)
 
             self.Joint.Position = self.Joint.GetPositionDeg()
             wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
