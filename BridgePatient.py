@@ -25,7 +25,6 @@ class PatientClass:
         try:
             Config = ConfigParser.ConfigParser()
             Config.read(filename)
-            print filename
 
             section = Config.sections()
 

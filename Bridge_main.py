@@ -50,7 +50,7 @@ ERROR               = 6
 SPEED_CTRL          = 7
 POS_CTRL            = 8
 POS_CTRL_ABS        = 9
-RETRIEVE_POSITION   = 10
+RECALL_POSITION   = 10
 
 
 
@@ -206,7 +206,14 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 self.connect_butt.Disable()
                 self.init_butt.Disable()
                 self.disconnect_butt.Enable()
-                self.enableCtrl_butt.Enable()
+                self.enableCtrl_butt.Disable()
+                print "+ New Status = INITIALIZATION"
+
+            elif case == DONNING:
+                self.connect_butt.Disable()
+                self.init_butt.Disable()
+                self.disconnect_butt.Enable()
+                self.enableCtrl_butt.Disable()
                 print "+ New Status = INITIALIZATION"
 
 
@@ -219,7 +226,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 self.savePos_butt.Enable()
                 self.gotoPos_butt.Enable()
                 print "+ New Status = RUNNING"
-
 
             elif case == READY:
                 self.enableCtrl_butt.Enable()

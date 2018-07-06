@@ -36,7 +36,7 @@ ERROR               = 6
 SPEED_CTRL          = 7
 POS_CTRL            = 8
 POS_CTRL_ABS        = 9
-RETRIEVE_POSITION   = 10
+RECALL_POSITION   = 10
 
 
 " ################################ "
@@ -77,7 +77,7 @@ class Thread_InputClass(threading.Thread):
         self.VOCAL_SAVE_POSITION        = 5
         self.VOCAL_SAVE_POSITION_NAME   = 6
         self.VOCAL_CONFIRM_POSITION_NAME= 7
-        self.VOCAL_RETRIEVE_POSITION    = 8
+        self.VOCAL_RECALL_POSITION    = 8
 
         self.VocalStatus                = self.VOCAL_IDLE
 
@@ -192,6 +192,12 @@ class Thread_InputClass(threading.Thread):
                                 self.Bridge.Joystick.Mode = 1
                                 print '* Change Plane Button: Z'
                                 winsound.Beep(440, 500)
+
+                            if self.Bridge.Status == RECALL_POSITION:
+                                self.Bridge.SetStatus(RUNNING)
+                                self.Bridge.Control.SetStatus(POS_CTRL)
+                                for i in range(0, self.Bridge.JointsNum):
+                                    self.Bridge.Joints[i].TargetDone = True
 
                         if self.PyJoystick.get_button(2):
                             self.Bridge.Joystick.SavePosition = self.PyJoystick.get_button(3)
@@ -350,7 +356,7 @@ class Thread_InputClass(threading.Thread):
 
                         elif 'richiama' in self.VocalCmd:
                             winsound.PlaySound(self.AudioPath + 'RipetiNuovaPosizione1.wav', winsound.SND_FILENAME)
-                            self.VocalStatus = self.VOCAL_RETRIEVE_POSITION
+                            self.VocalStatus = self.VOCAL_RECALL_POSITION
 
                             " Parse command "
                         elif not self.VocalCmd == "":
@@ -390,7 +396,7 @@ class Thread_InputClass(threading.Thread):
                         self.VocalStatus = self.VOCAL_RUNNING
 
 
-                    elif self.VocalStatus == self.VOCAL_RETRIEVE_POSITION:
+                    elif self.VocalStatus == self.VOCAL_RECALL_POSITION:
 
                         for i, Position in zip(range(0, len(self.Bridge.SavedPositions)), self.Bridge.SavedPositions):
                             if Position.Name.lower() in self.VocalCmd:

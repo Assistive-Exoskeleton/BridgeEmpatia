@@ -157,9 +157,9 @@ class ControlClass:
        self.FIRST_RUN = True
 
        " Timing Parameters"
-       self.ThreadPeriod           = 0.4
-       self.Time                   = 0.6
-       self.MaxDegDispl            = 5
+       self.ThreadPeriod           = 0.5
+       self.Time                   = 0.2
+       self.MaxDegDispl            = 3
 
        " Max Speed [m/s]"
        self.S                      = 0.02
@@ -172,7 +172,7 @@ class ControlClass:
 
        " IK parameters "
        self.Dol                    = 5     # gradi di distanza da ROM
-       self.Du                     = 0.05    # step to increase/decrease joint limit ramps
+       self.Du                     = 0.1   # step to increase/decrease joint limit ramps
        self.Alpha                  = 1
        self.Alpha0                 = 1
        self.IterMax                = 1000

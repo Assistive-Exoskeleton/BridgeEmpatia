@@ -464,7 +464,6 @@ class Joint:
             command = ["#1S\r"]
             self.WriteCmd(command)
             time.sleep(0.01)
-            print "low speed"
             return False, -1
 
     def HomingQuery(self):
@@ -698,7 +697,7 @@ class Thread_JointUpdateClass(threading.Thread):
                         "Position Control - Relative Position"
 
                 self.Jn.PositionStep = self.Jn.GetPositionStep()
-                self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep)
+                self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep) + self.Jn.Offset
 
                 " If the control is enabled "
 
@@ -746,7 +745,7 @@ class Thread_JointUpdateClass(threading.Thread):
 
         " Exit the thread "
         self.Running = False
-        self.Jn.ForceExit = True
+        #self.Jn.ForceExit = True
 
 
 

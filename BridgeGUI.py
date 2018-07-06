@@ -1598,6 +1598,9 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		bSizer901 = wx.BoxSizer( wx.HORIZONTAL )
 		
+		
+		bSizer901.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
 		self.m_staticText1501 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"JOINT", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText1501.Wrap( -1 )
 		self.m_staticText1501.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
@@ -1634,9 +1637,15 @@ class DialogExoSetup ( wx.Dialog ):
 		bSizer901.Add( self.m_staticText167, 0, wx.ALL, 5 )
 		
 		
+		bSizer901.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
 		bSizer95.Add( bSizer901, 0, wx.EXPAND, 5 )
 		
 		bSizer9011 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer9011.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.m_staticText15011 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"J1", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText15011.Wrap( -1 )
@@ -1665,9 +1674,15 @@ class DialogExoSetup ( wx.Dialog ):
 		bSizer9011.Add( self.J1ratio_entry, 0, wx.ALL, 5 )
 		
 		
+		bSizer9011.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
 		bSizer95.Add( bSizer9011, 0, wx.EXPAND, 5 )
 		
 		bSizer9012 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer9012.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.m_staticText15012 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"J2", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText15012.Wrap( -1 )
@@ -1696,9 +1711,15 @@ class DialogExoSetup ( wx.Dialog ):
 		bSizer9012.Add( self.J2ratio_entry, 0, wx.ALL, 5 )
 		
 		
+		bSizer9012.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
 		bSizer95.Add( bSizer9012, 0, wx.EXPAND, 5 )
 		
 		bSizer9013 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer9013.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.m_staticText15013 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"J3", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText15013.Wrap( -1 )
@@ -1727,9 +1748,15 @@ class DialogExoSetup ( wx.Dialog ):
 		bSizer9013.Add( self.J3ratio_entry, 0, wx.ALL, 5 )
 		
 		
+		bSizer9013.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
 		bSizer95.Add( bSizer9013, 0, wx.EXPAND, 5 )
 		
 		bSizer9014 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer9014.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.m_staticText15014 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"J4", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText15014.Wrap( -1 )
@@ -1758,9 +1785,15 @@ class DialogExoSetup ( wx.Dialog ):
 		bSizer9014.Add( self.J4ratio_entry, 0, wx.ALL, 5 )
 		
 		
+		bSizer9014.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
 		bSizer95.Add( bSizer9014, 0, wx.EXPAND, 5 )
 		
 		bSizer90141 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		
+		bSizer90141.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.m_staticText150141 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"J5", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText150141.Wrap( -1 )
@@ -1789,6 +1822,9 @@ class DialogExoSetup ( wx.Dialog ):
 		bSizer90141.Add( self.J5ratio_entry, 0, wx.ALL, 5 )
 		
 		
+		bSizer90141.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
+		
 		bSizer95.Add( bSizer90141, 0, wx.EXPAND, 5 )
 		
 		
@@ -1799,7 +1835,7 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		bSizer171 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.error_lbl = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Error", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
+		self.error_lbl = wx.StaticText( self.m_panel4, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.error_lbl.Wrap( -1 )
 		self.error_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
 		self.error_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )

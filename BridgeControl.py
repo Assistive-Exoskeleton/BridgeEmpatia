@@ -29,7 +29,7 @@ ERROR               = 6
 SPEED_CTRL          = 7
 POS_CTRL            = 8
 POS_CTRL_ABS        = 9
-TARGET_POSITION     = 10
+RECALL_POSITION     = 10
 
 
 class Thread_ControlClass(threading.Thread):
@@ -208,7 +208,7 @@ class Thread_ControlClass(threading.Thread):
                 else:
                     time.sleep(self.Bridge.Control.ThreadPeriod - elapsed_time)
 
-            elif self.Bridge.Status == TARGET_POSITION:
+            elif self.Bridge.Status == RECALL_POSITION:
 
                 print "+ Target Position"
                 for i in range(0, self.Bridge.JointsNum):
