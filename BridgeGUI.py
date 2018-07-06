@@ -72,7 +72,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		bSizer2311112.Add( self.m_staticText62, 0, wx.ALL, 5 )
 		
-		self.inputDescription_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Joystick", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
+		self.inputDescription_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"None", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
 		self.inputDescription_lbl.Wrap( -1 )
 		self.inputDescription_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 93, 90, False, wx.EmptyString ) )
 		
@@ -346,7 +346,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		bSizer1061.Add( self.m_speed_gain, 0, wx.ALL|wx.EXPAND, 5 )
 		
-		self.speed_gain_entry = wx.Slider( self.m_control_settings, wx.ID_ANY, 5, 1, 20, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL )
+		self.speed_gain_entry = wx.Slider( self.m_control_settings, wx.ID_ANY, 2, 1, 5, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL )
 		bSizer1061.Add( self.speed_gain_entry, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		
@@ -597,6 +597,9 @@ class BridgeWindow ( wx.Frame ):
 		
 		bSizer24 = wx.BoxSizer( wx.HORIZONTAL )
 		
+		
+		bSizer24.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
 		self.J1min_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MIN", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J1min_lbl.Wrap( -1 )
 		self.J1min_lbl.SetToolTipString( u"Min" )
@@ -607,9 +610,6 @@ class BridgeWindow ( wx.Frame ):
 		self.m_staticText19 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"|", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText19.Wrap( -1 )
 		bSizer24.Add( self.m_staticText19, 0, wx.ALL, 5 )
-		
-		
-		bSizer24.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.J1max_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MAX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J1max_lbl.Wrap( -1 )
@@ -627,6 +627,9 @@ class BridgeWindow ( wx.Frame ):
 		self.J1def_lbl.SetToolTipString( u"Default" )
 		
 		bSizer24.Add( self.J1def_lbl, 0, wx.ALL, 5 )
+		
+		
+		bSizer24.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
 		bSizer23.Add( bSizer24, 0, wx.EXPAND, 5 )
@@ -727,6 +730,9 @@ class BridgeWindow ( wx.Frame ):
 		
 		bSizer241 = wx.BoxSizer( wx.HORIZONTAL )
 		
+		
+		bSizer241.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
 		self.J2min_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MIN", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J2min_lbl.Wrap( -1 )
 		self.J2min_lbl.SetToolTipString( u"Min" )
@@ -737,9 +743,6 @@ class BridgeWindow ( wx.Frame ):
 		self.m_staticText191 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"|", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText191.Wrap( -1 )
 		bSizer241.Add( self.m_staticText191, 0, wx.ALL, 5 )
-		
-		
-		bSizer241.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.J2max_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MAX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J2max_lbl.Wrap( -1 )
@@ -757,6 +760,9 @@ class BridgeWindow ( wx.Frame ):
 		self.J2def_lbl.SetToolTipString( u"Default" )
 		
 		bSizer241.Add( self.J2def_lbl, 0, wx.ALL, 5 )
+		
+		
+		bSizer241.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
 		bSizer231.Add( bSizer241, 0, wx.EXPAND, 5 )
@@ -857,6 +863,9 @@ class BridgeWindow ( wx.Frame ):
 		
 		bSizer2411 = wx.BoxSizer( wx.HORIZONTAL )
 		
+		
+		bSizer2411.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
 		self.J3min_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MIN", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J3min_lbl.Wrap( -1 )
 		self.J3min_lbl.SetToolTipString( u"Min" )
@@ -867,9 +876,6 @@ class BridgeWindow ( wx.Frame ):
 		self.m_staticText1911 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"|", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1911.Wrap( -1 )
 		bSizer2411.Add( self.m_staticText1911, 0, wx.ALL, 5 )
-		
-		
-		bSizer2411.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.J3max_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MAX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J3max_lbl.Wrap( -1 )
@@ -887,6 +893,9 @@ class BridgeWindow ( wx.Frame ):
 		self.J3def_lbl.SetToolTipString( u"Default" )
 		
 		bSizer2411.Add( self.J3def_lbl, 0, wx.ALL, 5 )
+		
+		
+		bSizer2411.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
 		bSizer2311.Add( bSizer2411, 0, wx.EXPAND, 5 )
@@ -987,6 +996,9 @@ class BridgeWindow ( wx.Frame ):
 		
 		bSizer24111 = wx.BoxSizer( wx.HORIZONTAL )
 		
+		
+		bSizer24111.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
 		self.J4min_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MIN", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J4min_lbl.Wrap( -1 )
 		self.J4min_lbl.SetToolTipString( u"Min" )
@@ -997,9 +1009,6 @@ class BridgeWindow ( wx.Frame ):
 		self.m_staticText19111 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"|", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText19111.Wrap( -1 )
 		bSizer24111.Add( self.m_staticText19111, 0, wx.ALL, 5 )
-		
-		
-		bSizer24111.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.J4max_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MAX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J4max_lbl.Wrap( -1 )
@@ -1017,6 +1026,9 @@ class BridgeWindow ( wx.Frame ):
 		self.J4def_lbl.SetToolTipString( u"Default" )
 		
 		bSizer24111.Add( self.J4def_lbl, 0, wx.ALL, 5 )
+		
+		
+		bSizer24111.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
 		bSizer23111.Add( bSizer24111, 0, wx.EXPAND, 5 )
@@ -1117,6 +1129,9 @@ class BridgeWindow ( wx.Frame ):
 		
 		bSizer241111 = wx.BoxSizer( wx.HORIZONTAL )
 		
+		
+		bSizer241111.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
+		
 		self.J5min_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MIN", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J5min_lbl.Wrap( -1 )
 		self.J5min_lbl.SetToolTipString( u"Min" )
@@ -1127,9 +1142,6 @@ class BridgeWindow ( wx.Frame ):
 		self.m_staticText191111 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"|", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText191111.Wrap( -1 )
 		bSizer241111.Add( self.m_staticText191111, 0, wx.ALL, 5 )
-		
-		
-		bSizer241111.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		self.J5max_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MAX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J5max_lbl.Wrap( -1 )
@@ -1147,6 +1159,9 @@ class BridgeWindow ( wx.Frame ):
 		self.J5def_lbl.SetToolTipString( u"Default" )
 		
 		bSizer241111.Add( self.J5def_lbl, 0, wx.ALL, 5 )
+		
+		
+		bSizer241111.AddSpacer( ( 0, 0), 1, wx.EXPAND, 5 )
 		
 		
 		bSizer231111.Add( bSizer241111, 0, wx.EXPAND, 5 )
@@ -1305,7 +1320,7 @@ class BridgeWindow ( wx.Frame ):
 		self.disableCtrl_butt.Bind( wx.EVT_BUTTON, self.disable_control_command )
 		self.savePos_butt.Bind( wx.EVT_BUTTON, self.save_position_command )
 		self.gotoPos_butt.Bind( wx.EVT_BUTTON, self.goto_position_command )
-		self.stop_butt.Bind( wx.EVT_BUTTON, self.stop_command )
+		self.stop_butt.Bind( wx.EVT_BUTTON, self.exit )
 	
 	def __del__( self ):
 		pass
@@ -1355,8 +1370,6 @@ class BridgeWindow ( wx.Frame ):
 	def goto_position_command( self, event ):
 		event.Skip()
 	
-	def stop_command( self, event ):
-		event.Skip()
 	
 
 ###########################################################################
@@ -1366,7 +1379,7 @@ class BridgeWindow ( wx.Frame ):
 class DialogDonning ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Donning", pos = wx.DefaultPosition, size = wx.Size( 645,238 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Bridge - Donning", pos = wx.DefaultPosition, size = wx.Size( 645,238 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
@@ -1431,7 +1444,7 @@ class DialogDonning ( wx.Dialog ):
 class DialogExoSetup ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Exo setup", pos = wx.DefaultPosition, size = wx.Size( 396,605 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Bridge - Exoskeleton Setup", pos = wx.DefaultPosition, size = wx.Size( 396,605 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
@@ -1900,7 +1913,7 @@ class DialogExoSetup ( wx.Dialog ):
 class Dialog_PatientSetup ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BridgEmpatia - Patient Setup", pos = wx.DefaultPosition, size = wx.Size( 384,565 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Bridge - Patient Setup", pos = wx.DefaultPosition, size = wx.Size( 384,565 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
@@ -2396,7 +2409,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 class Dialog_Alert ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Alert", pos = wx.DefaultPosition, size = wx.Size( 400,160 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Bridge - Alert", pos = wx.DefaultPosition, size = wx.Size( 400,160 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
@@ -2454,7 +2467,7 @@ class Dialog_Alert ( wx.Dialog ):
 class Dialog_Error ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Error", pos = wx.DefaultPosition, size = wx.Size( 400,160 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Bridge - Error", pos = wx.DefaultPosition, size = wx.Size( 400,160 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
@@ -2552,7 +2565,7 @@ class BridgeTerminal ( wx.Frame ):
 class Dialog_Joint ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Joint", pos = wx.DefaultPosition, size = wx.Size( 249,203 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Bridge - Joint", pos = wx.DefaultPosition, size = wx.Size( 249,203 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
@@ -2663,7 +2676,7 @@ class Dialog_Joint ( wx.Dialog ):
 class Dialog_JoystickCalibration ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"BRIDGE - Joystick Calibration", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Bridge - Joystick Calibration", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		

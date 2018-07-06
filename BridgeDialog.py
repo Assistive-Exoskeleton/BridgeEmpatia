@@ -187,15 +187,12 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
                 Jdef.SetValue(str(self.Bridge.Patient.Jdef[i]))
                 Jrest.SetValue(str(self.Bridge.Patient.Jrest[i]))
 
-            for i, Joystick in zip(range(0,4),self.joystick_list):
-                Joystick.SetValue(str(self.Bridge.Patient.JoystickCalibration[i]))
-
             self.l1_lbl.SetValue(str(self.Bridge.Patient.l1))
             self.l2_lbl.SetValue(str(self.Bridge.Patient.l2))
             self.l3_lbl.SetValue(str(self.Bridge.Patient.l3))
 
-
-
+            for i, Joystick in zip(range(0,4),self.joystick_list):
+                Joystick.SetValue("%.4f" % self.Bridge.Patient.JoystickCalibration[i])
 
         else:
             for Jmin, Jmax, Jdef, Jrest in zip(self.Jmin_entry_list, self.Jmax_entry_list, self.Jdef_entry_list,
@@ -303,7 +300,7 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
                 self.l3_lbl.SetValue(str(Patient.l3))
 
                 for i, Joystick in zip(range(0, 4), self.joystick_list):
-                    Joystick.SetValue(str(Patient.JoystickCalibration[i]))
+                    Joystick.SetValue("%.4f" % Patient.JoystickCalibration[i])
 
             except Exception, e:
                 print '# Error ' + str(e)
@@ -320,19 +317,10 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
             dialog = DialogAlert(self, "# Warning: Joystick not initialized")
             dialog.ShowModal()
 
-    def onText_command(self, event):
-        " Check values "
-        '''
-        print 'la'
-        widget = event.GetEventObject()
-        print widget.GetName()
-        '''
-        pass
-
     def UpdateJoystickCalibrationInfo(self):
         try:
             for i, Joystick in zip(range(0, 4), self.joystick_list):
-                Joystick.SetValue(str(self.Bridge.Patient.JoystickCalibration[i]))
+                Joystick.SetValue("%.4f" % self.Bridge.Patient.JoystickCalibration[i])
         except Exception, e:
             print "# Error | " + str(e)
 
@@ -341,7 +329,6 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
 " ########################### "
 " Dialog Joystick Calibration "
 " ########################### "
-
 class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
 
     def __init__(self, parent, Conf, Bridge):
@@ -404,7 +391,7 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
 
     def ok_command(self,event):
         try:
-            self.dialog.Destroy()
+            self.Destroy()
             wx.CallAfter(Publisher.sendMessage, "UpdateJoystickCalibrationInfo")
         except Exception, e:
             print "# Error | " + str(e)
@@ -414,7 +401,7 @@ class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
         for i in range(0,len(self.Bridge.Patient.JoystickCalibration)):
             if self.Bridge.Patient.JoystickCalibration[i] != 1.0:
                 self.JoystickCalibration_lbl[i].SetLabel(u"●")
-                self.JoystickCalibrationValues_lbl[i].SetLabel(str(self.Bridge.Patient.JoystickCalibration[i]))
+                self.JoystickCalibrationValues_lbl[i].SetLabel("%.4f" % self.Bridge.Patient.JoystickCalibration[i])
 
 
 " ############ "

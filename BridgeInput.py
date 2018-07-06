@@ -84,7 +84,7 @@ class Thread_InputClass(threading.Thread):
         " Variabili per controllo 'step' "
         self.VocalSteps                 = self.Bridge.Control.VocalMaxSteps
         self.Step_Param                  = [1, 5, 20]
-        self.Speed_Param                 = [0.01, 0.04, 0.06]
+        self.Speed_Param                 = [0.01, 0.02, 0.04]
 
         self.var_mem                    = ['','','','','']
         self.NumVarMem                  = 0

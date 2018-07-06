@@ -131,15 +131,13 @@ class Thread_ControlClass(threading.Thread):
 
                 
                 " All the joints are initialized and in home position - change control status "
-                self.Bridge.Status = DONNING
+                self.Bridge.SetStatus(DONNING)
 
                 time.sleep(0.1)
 
                 " Update graphics in main window "
                 wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
-
-                " Call donning dialog "
-                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
+                " Call Donning Dialog "
                 wx.CallAfter(Publisher.sendMessage, "ShowDonningDialog")
 
             elif self.Bridge.Status == DONNING:
@@ -172,9 +170,9 @@ class Thread_ControlClass(threading.Thread):
                     if self.Bridge.Joints[0].RestDone == True and self.Bridge.Joints[1].RestDone == True and self.Bridge.Joints[2].RestDone == True:
                         break
 
-                    time.sleep(0.5)
+                    time.sleep(0.1)
                     
-                self.Bridge.Status = READY
+                self.Bridge.SetStatus(READY)
                 wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
                 wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
 
@@ -252,16 +250,6 @@ class Thread_ControlClass(threading.Thread):
 
                 self.Bridge.SetStatus(RUNNING)
                 self.Bridge.Control.SetStatus(POS_CTRL)
-
-
-
-
-
-            #TODO remove and put everything in SetStatus
-            if self.Bridge.Status != self.Bridge.OldStatus:
-                self.Bridge.OldStatus = self.Bridge.Status
-                wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
-
 
         print '- Control Thread Out'
 

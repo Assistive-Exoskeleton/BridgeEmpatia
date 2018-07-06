@@ -176,6 +176,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
 
             " Update statubar "
             self.statusbar.SetStatusText('Disconnected', 0)
+            print "+ New Status = NONE"
 
         else:
 
@@ -199,12 +200,15 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 self.disconnect_butt.Enable()
                 self.init_butt.Enable()
                 self.enableCtrl_butt.Enable()
+                print "+ New Status = IDLE"
 
             elif case == INIT_SYSTEM:
                 self.connect_butt.Disable()
                 self.init_butt.Disable()
                 self.disconnect_butt.Enable()
                 self.enableCtrl_butt.Enable()
+                print "+ New Status = INITIALIZATION"
+
 
             elif case == RUNNING:
                 self.connect_butt.Disable()
@@ -214,14 +218,19 @@ class MainWindow(BridgeGUI.BridgeWindow):
                 self.disableCtrl_butt.Enable()
                 self.savePos_butt.Enable()
                 self.gotoPos_butt.Enable()
+                print "+ New Status = RUNNING"
+
 
             elif case == READY:
                 self.enableCtrl_butt.Enable()
+                self.disableCtrl_butt.Disable()
                 self.connect_butt.Disable()
                 self.disconnect_butt.Enable()
                 self.init_butt.Disable()
                 self.savePos_butt.Disable()
                 self.gotoPos_butt.Disable()
+                print "+ New Status = READY"
+
 
             " Update statubar "
             self.statusbar.SetStatusText('Connected', 0)
@@ -622,10 +631,6 @@ class MainWindow(BridgeGUI.BridgeWindow):
             print "Closed"
         except Exception, e:
             print "# Error closing | " + str(e)
-
-        self.Bridge.SetStatus(NONE)
-
-        self.Bridge.MainWindow.timer.Stop()
 
     def save_position_command(self, event):
         " Save Position"

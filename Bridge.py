@@ -75,7 +75,6 @@ class BridgeClass:
 
         "Set Status"
         self.Status = case
-        print "+ New Status = " + str(case)
         try:
             wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case=case)
         except Exception, e:
