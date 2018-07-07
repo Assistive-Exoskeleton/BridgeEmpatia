@@ -19,15 +19,17 @@ POS_CTRL_ABS        = 9
 
 class Joint:
 
-    def __init__(self, Num, COM, Patient, Exo, Coord):
+    def __init__(self, Num, COM, Bridge, Exo, Coord):
 
+        self.Bridge         = Bridge
         self.Num            = Num
         self.CommPort       = ""
         self.Ratio          = Exo.Jratio[Num-1]         # reduction ratio
         self.Offset         = Exo.Joffset[Num-1]        # home (0 step) position (deg)
-        self.Jdef           = Patient.Jdef[Num-1]       # lo uso come target iniziale
+        self.Jdef           = self.Bridge.Patient.Jdef[Num-1]       # lo uso come target iniziale
         self.StepDegrees    = 1.8
-        self.Jtarget        = Patient.Jrest[Num - 1]      # lo uso come posizione di rest post donning
+        self.Jtarget        = self.Bridge.Patient.Jrest[Num-1]      # lo uso come posizione di rest post donning
+        self.Jrest          = self.Bridge.Patient.Jrest[Num-1]
         self.JtargetStep    = self.deg2step(self.Jtarget)
         self.JminExo        = Exo.Jmin[Num-1]           # min joint angular position
         self.JmaxExo        = Exo.Jmax[Num-1]           # max joint angular position
@@ -35,7 +37,7 @@ class Joint:
         self.Jmax           = 0                         # patient max
         self.InitError      = False
 
-        if not self.SetRange(Patient.Jmin[Num-1], Patient.Jmax[Num-1]):
+        if not self.SetRange(self.Bridge.Patient.Jmin[Num-1], self.Bridge.Patient.Jmax[Num-1]):
             self.InitError = True
 
         " Degrees value of one step "
@@ -543,35 +545,33 @@ class Thread_JointInitClass(threading.Thread):
 
         self.Running = True
 
-        print 'J%d - Homing start' % self.Jn.Num
+        print '* J%d Homing ...' % self.Jn.Num
 
         if self.Jn.HomingQuery() == False:
 
-            print '# ERROR: J%d HomingQuery() failed' % self.Jn.Num
+            print '# Error: J%d HomingQuery failed' % self.Jn.Num
             return False
 
-
         " Get encoder position "
-
         self.Jn.PositionStep = self.Jn.GetPositionStep()
         self.Jn.Position = self.Jn.GetPositionDeg()
 
-        print 'J%d - Homing position (deg: %d | step: %d):' % (self.Jn.Num, self.Jn.Position, self.Jn.PositionStep)
+        print '+ J%d Homing position (deg: %d | step: %d)' % (self.Jn.Num, self.Jn.Position, self.Jn.PositionStep)
         
         time.sleep(0.5)
 
+        " Set the Absolute Mode"
         self.Jn.SetAbsolutePositionMode()
 
         " Set the donning position "
-        if self.Jn.Num != 1:         
-            self.Jn.SetPositionDeg(self.Jn.Jdef)
-     
-            while abs(self.Jn.Position - self.Jn.Jdef) > 0.5:
-                if self.Running == False:
-                    break
-                self.Jn.Position = self.Jn.GetPositionDeg()
-                #print '**** Sto andando a target position, J%d - %d' % (self.Jn.Num, self.Jn.Position)
-                time.sleep(0.5)
+        self.Jn.SetPositionDeg(self.Jn.Jdef)
+
+        while abs(self.Jn.Position - self.Jn.Jdef) > 0.5:
+            if self.Running == False:
+                break
+            self.Jn.Position = self.Jn.GetPositionDeg()
+            self.Jn.PositionStep = self.Jn.GetPositionStep()
+            time.sleep(0.1)
 
         self.Jn.Position = self.Jn.GetPositionDeg()
 
@@ -580,16 +580,16 @@ class Thread_JointInitClass(threading.Thread):
         " Set home flag "
         self.Jn.Homed = True
 
-        print 'J%d - Default position (deg: %d | step: %d):' % (self.Jn.Num, self.Jn.Position, self.Jn.PositionStep)
+        print '+ J%d Default position (deg: %d | step: %d):' % (self.Jn.Num, self.Jn.Position, self.Jn.PositionStep)
         print 'J%d - target position (%f)' % (self.Jn.Num, self.Jn.Jdef)
 
     def terminate(self):
         " Exit the thread "
         self.Running = False
 
-" ################################# "
-"  JOINT INIT REST POSITION THREAD  "
-" ################################# "
+" ############################## "
+"  JOINT TARGET POSITION THREAD  "
+" ############################## "
 class Thread_JointTargetPositionClass(threading.Thread):
 
     def __init__(self, Name, Jj):
@@ -601,27 +601,29 @@ class Thread_JointTargetPositionClass(threading.Thread):
     def run(self):
 
         self.Running = True
+        self.Jn.RestDone = False
 
-        #" Get Position in Step "
-        #currentPosition = str(self.Jn.ReadCmd("#1I\r"))
-        #self.Jn.Position = self.Jn.GetPositionDeg()
+        " Read Position"
+        self.Jn.Position = self.Jn.GetPositionDeg()
+
+        " Set Absolute Mode "
+        self.Jn.SetAbsolutePositionMode()
 
         " Motor Error Reset "
         self.Jn.DriveErrorClear()
 
-        self.Jn.SetAbsolutePositionMode()
-
         " Set the Target position "
-        self.Jn.SetPositionDeg(self.Jn.Jtarget)
+        self.Jn.SetPositionDeg(self.Jn.Jrest)
 
-        while abs(self.Jn.Position - self.Jn.Jtarget) > 0.5:
+        while abs(self.Jn.GetPositionDeg() - self.Jn.Jrest) > 0.5:
+            if self.Running == False:
+                break
             self.Jn.Position = self.Jn.GetPositionDeg()
-            # print '**** Sto andando a target position, J%d - %d' % (self.Jn.Num, self.Jn.GetPositionDeg())
-            time.sleep(0.5)
+            time.sleep(0.1)
 
         self.Jn.Position = self.Jn.GetPositionDeg()
 
-        print 'J%d - In position (%f)' % (self.Jn.Num, self.Jn.GetPositionDeg())
+        print '+ J%d Rest position (%f -> %f)' % (self.Jn.Num, self.Jn.Jrest, self.Jn.Position)
 
         self.Jn.RestDone = True
         
@@ -697,7 +699,7 @@ class Thread_JointUpdateClass(threading.Thread):
                         "Position Control - Relative Position"
 
                 self.Jn.PositionStep = self.Jn.GetPositionStep()
-                self.Jn.Position = self.Jn.step2deg(self.Jn.PositionStep) + self.Jn.Offset
+                self.Jn.Position = self.Jn.GetPositionDeg()
 
                 " If the control is enabled "
 

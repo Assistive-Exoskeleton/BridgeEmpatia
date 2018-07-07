@@ -129,35 +129,34 @@ class Thread_ControlClass(threading.Thread):
 
             elif self.Bridge.Status == REST_POSITION:
 
-
                 " Status where the initialization of the system is done, but the ctrl is NOT enabled "
-                #self.Bridge.Control.Status = POS_CTRL_ABS
-                
-                arrigon         = []
-                arrigon_thread  = []
+
+                threads_list = []
 
                 for i, J in zip(range(0, self.Bridge.JointsNum), self.Bridge.Joints):
-                    # arrigon.append(self.Bridge.Joints[i].RestDone)
-                    arrigon_thread.append(Thread_JointTargetPositionClass("JointTargetPositionThread" + str(i), J))
+                    threads_list.append(Thread_JointTargetPositionClass("JointTargetPositionThread" + str(i), J))
 
                 " Run all the threads "
-                for thread in arrigon_thread:
+                for thread in threads_list:
                     thread.start()
 
+                RestDone  = [False] * self.Bridge.JointsNum
+
                 while 1 and self.Running:
-                    ''' MARTA: da ripristinare per Giunto 3
-                    " Wait for all flags to be true - molto pitonico! "
-                    if all(i == True for i in arrigon):
-                        break
-                    '''
-                    if self.Bridge.Joints[0].RestDone == True and self.Bridge.Joints[1].RestDone == True and self.Bridge.Joints[2].RestDone == True:
+
+                    for i in range(0, self.Bridge.JointsNum):
+                        RestDone[i] = self.Bridge.Joints[i].RestDone
+
+                    if all(i == True for i in RestDone):
+                        print RestDone
                         break
 
+                    wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
                     time.sleep(0.1)
                     
                 self.Bridge.SetStatus(READY)
                 wx.CallAfter(Publisher.sendMessage, "UpdateControlInfo", case = self.Bridge.Status)
-                wx.CallAfter(Publisher.sendMessage, "UpdateJointsInfo")
+
 
             elif self.Bridge.Status == READY:
                 " Status where the initialization of the system is done, but the ctrl is NOT enabled "
@@ -210,26 +209,22 @@ class Thread_ControlClass(threading.Thread):
 
             elif self.Bridge.Status == RECALL_POSITION:
 
-                print "+ Target Position"
                 for i in range(0, self.Bridge.JointsNum):
                     self.Bridge.Joints[i].TargetDone = False
 
                 self.Bridge.Control.SetStatus(POS_CTRL_ABS)
 
-                arrigon = [False] * self.Bridge.JointsNum
+                TargetDone  = [False] * self.Bridge.JointsNum
 
-                while 1 and self.Running:
-
+                while self.Running:
 
                     for i in range(0, self.Bridge.JointsNum):
-                        arrigon[i] = self.Bridge.Joints[i].TargetDone
+                        TargetDone[i] = self.Bridge.Joints[i].TargetDone
 
-                    if all(i == True for i in arrigon):
+                    if all(i == True for i in TargetDone):
                         break
 
-                print arrigon
-
-                print "RETRIEVE POSITION DONE"
+                    time.sleep(0.1)
 
                 self.Bridge.SetStatus(RUNNING)
                 self.Bridge.Control.SetStatus(POS_CTRL)

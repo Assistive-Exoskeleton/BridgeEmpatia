@@ -157,8 +157,8 @@ class ControlClass:
        self.FIRST_RUN = True
 
        " Timing Parameters"
-       self.ThreadPeriod           = 0.5
-       self.Time                   = 0.2
+       self.ThreadPeriod           = 0.4
+       self.Time                   = 0.4
        self.MaxDegDispl            = 3
 
        " Max Speed [m/s]"

@@ -361,7 +361,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
         for i in range(0, self.Bridge.JointsNum):
             self.Bridge.Joints[i]   = Joint(i+1,
                                             self.Conf.Serial.COM[i],
-                                            self.Bridge.Patient,
+                                            self.Bridge,
                                             self.Conf.Exo,
                                             self.Coord)
 

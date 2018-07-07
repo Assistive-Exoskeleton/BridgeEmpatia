@@ -52,7 +52,7 @@ class DialogExoSetup(BridgeGUI.DialogExoSetup):
         self.portList = self.Conf.Serial.availableSerialPort()
 
         if len(self.portList) < 5:
-            self.error_lbl.SetLabel("Error: not enough serial COM" % len(self.portList))
+            self.error_lbl.SetLabel("Error: not enough serial COM")
             self.Error = True
 
         for i, choice in zip(range(0, 6), self.choice_COM_list):
@@ -132,7 +132,7 @@ class DialogExoSetup(BridgeGUI.DialogExoSetup):
             return
 
         " Clear drive error & Run test motor "
-        joint.DriveErrorClear()
+        jointDriveErrorClear()
         ret = joint.MotorTest()
 
         " Close serial port "
