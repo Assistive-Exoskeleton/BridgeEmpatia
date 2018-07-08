@@ -162,7 +162,7 @@ class Thread_InputClass(threading.Thread):
                 wx.CallAfter(Publisher.sendMessage, "ShowDialogError", msg = "# Error: Not implemented interface")
 
         " Update input info in main window "
-        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
+        wx.CallAfter(Publisher.sendMessage, "UpdategInputInfo")
 
         self.Running = True
 
@@ -179,7 +179,12 @@ class Thread_InputClass(threading.Thread):
                     if event.type == pygame.QUIT:
                         self.terminate()
 
-                    elif event.type == pygame.JOYBUTTONDOWN:
+                    elif event.type == pygame.JOYBUTTONDOWN or event.type == pygame.JOYBUTTONUP:
+
+                        self.Bridge.Joystick.SavePosition      = self.PyJoystick.get_button(2)
+                        self.Bridge.Joystick.GotoSavedPosition = self.PyJoystick.get_button(3)
+                        self.Bridge.Joystick.Alarm             = self.PyJoystick.get_button(4)
+                        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
                         if self.PyJoystick.get_button(0):
 
@@ -200,7 +205,8 @@ class Thread_InputClass(threading.Thread):
                                     self.Bridge.Joints[i].TargetDone = True
 
                         if self.PyJoystick.get_button(2):
-                            self.Bridge.Joystick.SavePosition = self.PyJoystick.get_button(3)
+
+
                             try:
                                 num = len(self.Bridge.SavedPositions)
                                 name = "Joystick " + str(num)
@@ -208,14 +214,33 @@ class Thread_InputClass(threading.Thread):
                                 wx.CallAfter(Publisher.sendMessage, "UpdateSavedPositions")
                             except Exception, e:
                                 print "#Error Save Position Failed | " + str(e)
+                            winsound.Beep(880, 500)
+                            time.sleep(0.500)
+                            winsound.Beep(880, 500)
+                            time.sleep(0.500)
 
                         if self.PyJoystick.get_button(3):
-                            self.Bridge.Joystick.GotoSavedPosition = self.PyJoystick.get_button(3)
+
+
+
                             try:
                                 self.Bridge.GoToPosition(len(self.Bridge.SavedPositions)-1)
                             except Exception, e:
                                 print "#Error Go To Position Failed | " + str(e)
 
+                            winsound.Beep(880, 500)
+                            time.sleep(0.500)
+                            winsound.Beep(880, 500)
+                            time.sleep(0.500)
+                            winsound.Beep(880, 500)
+                            time.sleep(0.500)
+
+                        if self.PyJoystick.get_button(4):
+
+                            print "Alarm"
+                            self.Bridge.MainWindow.disable_control_command(self)
+                            self.Bridge.SetStatus(ERROR)
+                            winsound.Beep(880, 1000)
 
                     elif event.type == pygame.JOYAXISMOTION:
 
@@ -258,6 +283,9 @@ class Thread_InputClass(threading.Thread):
                                 self.Coord.p0[2] = 0.0
                                 self.Coord.p0[3] = 0.0
 
+
+
+
                 pygame.event.clear()
 
             elif self.Bridge.Control.Input == "Vocal":
@@ -285,7 +313,10 @@ class Thread_InputClass(threading.Thread):
                     if self.VocalCmd[0:4] == 'aiut':
                         self.VocalCmd = ""
                         print '* Alarm! '
-                        self.VocalStatus = self.VOCAL_HELP
+                        self.Bridge.MainWindow.disable_control_command(self)
+                        self.Bridge.SetStatus(ERROR)
+                        winsound.Beep(880, 1000)
+                        self.VocalStatus = self.VOCAL_IDLE
 
                     elif 'termina' in self.VocalCmd:
                         self.VocalCmd = ""
@@ -387,7 +418,7 @@ class Thread_InputClass(threading.Thread):
 
                     elif self.VocalStatus == self.VOCAL_CONFIRM_POSITION_NAME:
 
-                        if self.VocalCmd.upper() == self.PositionName:
+                        if self.VocalCmd.upper() == self.PositionName and self.PositionName.upper() != "RECOGNITION FAILED":
                             self.Bridge.SavePosition(self.PositionName)
                             wx.CallAfter(Publisher.sendMessage, "UpdateSavedPositions")
                             winsound.PlaySound(self.AudioPath + 'NuovaPosizioneMemorizzata.wav', winsound.SND_FILENAME)
@@ -404,7 +435,6 @@ class Thread_InputClass(threading.Thread):
                                 self.PositionName = self.VocalCmd
                                 print self.PositionName
 
-                                self.VocalCmd = ""
                                 self.Bridge.GoToPosition(self.PositionNum)
                                 wx.CallAfter(Publisher.sendMessage, "UpdateSavedPositions")
 
@@ -422,6 +452,7 @@ class Thread_InputClass(threading.Thread):
                             self.Bip()
 
                             self.VocalStatus = self.VOCAL_IDLE
+                            self.Bridge.Control.Input = "Joystick"
                             #self.terminate()
 
                         elif self.VocalCmd == 'falso':
@@ -476,7 +507,7 @@ class Thread_InputClass(threading.Thread):
                     self.MainWindow.disable_control_command()
 
             " Update input info in main window "
-            wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
+            #wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
             time.sleep(0.1)
 
         print '- Input Thread Out'

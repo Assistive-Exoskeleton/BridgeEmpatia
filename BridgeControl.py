@@ -192,9 +192,11 @@ class Thread_ControlClass(threading.Thread):
 
                     if all(i == 0 for i in self.Coord.p0):
                         self.Bridge.Control.Status = POS_CTRL
+                        wx.CallAfter(Publisher.sendMessage, "UpdateControlMode", mode=self.Bridge.Control.Status)
+
                     else:
                         self.Bridge.Control.Status = SPEED_CTRL
-
+                        wx.CallAfter(Publisher.sendMessage, "UpdateControlMode", mode=self.Bridge.Control.Status)
 
                         " 2. Run IK algorithm "
                         self.MartaCtrl()
@@ -213,6 +215,8 @@ class Thread_ControlClass(threading.Thread):
                     self.Bridge.Joints[i].TargetDone = False
 
                 self.Bridge.Control.SetStatus(POS_CTRL_ABS)
+                wx.CallAfter(Publisher.sendMessage, "UpdateControlMode", mode = self.Bridge.Control.Status)
+
 
                 TargetDone  = [False] * self.Bridge.JointsNum
 

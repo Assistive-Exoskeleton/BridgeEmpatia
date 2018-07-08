@@ -6,6 +6,8 @@ import numpy
 import serial
 import threading, time
 
+
+
 IDLE                = 0
 INIT_SYSTEM         = 1
 DONNING             = 2
@@ -33,6 +35,8 @@ class Joint:
         self.JtargetStep    = self.deg2step(self.Jtarget)
         self.JminExo        = Exo.Jmin[Num-1]           # min joint angular position
         self.JmaxExo        = Exo.Jmax[Num-1]           # max joint angular position
+        self.Imin           = Exo.Imin[Num-1]
+        self.Imax           = Exo.Imax[Num-1]
         self.Jmin           = 0                         # patient min
         self.Jmax           = 0                         # patient max
         self.InitError      = False
@@ -278,7 +282,7 @@ class Joint:
 
     "Set the Absolute Position Mode: Profile #1"
     def SetAbsolutePositionMode(self):
-        targetspeed = '#1o%d\r' % int(4*self.Ratio)
+        targetspeed = '#1o%d\r' % int(3*self.Ratio)
         print targetspeed
         command = ["#1y1\r","#1p2\r",targetspeed]
 
@@ -288,6 +292,17 @@ class Joint:
             return True
         except Exception, e:
             print "# Set Absolute Position Mode failed | " + str(e)
+            return False
+
+    def SetStandStillCurrent(self,current):
+        targetcurrent = "#1r%d\r" % current
+        command = [targetcurrent]
+        try:
+            while self.WriteCmd(command) == False:
+                time.sleep(0.1)
+            return True
+        except Exception, e:
+            print "# Set Standstill Current failed | " + str(e)
             return False
 
     "Set the Relative Position Mode: Profile #3"
@@ -339,7 +354,7 @@ class Joint:
             return False
 
     def MotorStop(self):
-        command = ["#1S\r"]
+        command = ["#1S\r","#1S\r"]
 
         try:
             while self.WriteCmd(command) == False:
@@ -583,6 +598,9 @@ class Thread_JointInitClass(threading.Thread):
         print '+ J%d Default position (deg: %d | step: %d):' % (self.Jn.Num, self.Jn.Position, self.Jn.PositionStep)
         print 'J%d - target position (%f)' % (self.Jn.Num, self.Jn.Jdef)
 
+        self.Jn.SetStandStillCurrent(self.Jn.Imin)
+        self.Jn.MotorStop()
+
     def terminate(self):
         " Exit the thread "
         self.Running = False
@@ -605,12 +623,13 @@ class Thread_JointTargetPositionClass(threading.Thread):
 
         " Read Position"
         self.Jn.Position = self.Jn.GetPositionDeg()
+        self.Jn.PositionStep = self.Jn.GetPositionStep()
+        " Motor Error Reset "
+        self.Jn.DriveErrorClear()
 
         " Set Absolute Mode "
         self.Jn.SetAbsolutePositionMode()
-
-        " Motor Error Reset "
-        self.Jn.DriveErrorClear()
+        self.Jn.SetStandStillCurrent(self.Jn.Imax)
 
         " Set the Target position "
         self.Jn.SetPositionDeg(self.Jn.Jrest)
@@ -678,6 +697,7 @@ class Thread_JointUpdateClass(threading.Thread):
                     if self.Bridge.Control.Status == POS_CTRL:
 
                         self.Jn.SetRelativePositionMode()
+                        self.Jn.SetStandStillCurrent(self.Jn.Imax)
 
                         # "Position Control - Relative Position"
                         # command = ["#1y3\r", "#1s0\r", "#1A\r"]
@@ -739,6 +759,11 @@ class Thread_JointUpdateClass(threading.Thread):
                 print '# Error: JointUpdate %d failure | %s' % (self.Jn.Num, str(e))
                 self.terminate()
                 break
+
+        print "* Stopping Motors ..."
+        " Stopping Record "
+        self.Jn.MotorStop()
+        self.Jn.SetStandStillCurrent(self.Jn.Imin)
 
         " Flush COM Port"
         self.Jn.FlushPort()

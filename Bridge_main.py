@@ -129,7 +129,7 @@ class MainWindow(BridgeGUI.BridgeWindow):
         " Create timer function - Update input values "
         self.timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.UpdateInputValues, self.timer)
-
+        #self.Bind(wx.EVT_TIMER, self.UpdateInputInfo, self.timer)
 
     " ################### "
     " #### PUBLISHER #### "
@@ -183,14 +183,14 @@ class MainWindow(BridgeGUI.BridgeWindow):
             for i, lbl in zip(range(0, len(self.Ctrl_lbl)), self.Ctrl_lbl):
                 if case == i:
 
-                    if i != len(self.Ctrl_lbl):
+                    if i != ERROR:
                         lbl.SetBackgroundColour((57,232,149))
                     else:
                         lbl.SetBackgroundColour((224,97,97))
                 elif case ==  NONE:
                     pass
                 else:
-                    if i != len(self.Ctrl_lbl):
+                    if i != ERROR:
                         lbl.SetBackgroundColour((242,255,242))
                     else:
                         lbl.SetBackgroundColour((255,232,232))
@@ -244,6 +244,19 @@ class MainWindow(BridgeGUI.BridgeWindow):
         " Force win refresh (background issue) "
         self.Refresh()
 
+    def UpdateControlMode (self, mode):
+        if mode == POS_CTRL:
+            self.ControlMode_lbl.SetLabel("POSITION")
+        elif mode == POS_CTRL_ABS:
+            self.ControlMode_lbl.SetLabel("MOVEMENT")
+        elif mode == IDLE:
+            self.ControlMode_lbl.SetLabel("STOP")
+        elif mode == SPEED_CTRL:
+            self.ControlMode_lbl.SetLabel("SPEED")
+
+        " Force win refresh (background issue) "
+        self.Refresh()
+
     def UpdateInputInfo (self):
 
         " Set Input Info "
@@ -266,9 +279,15 @@ class MainWindow(BridgeGUI.BridgeWindow):
         else:
             self.JoystickRecallPos_lbl.SetBackgroundColour((242,255,242))
 
+        if self.Bridge.Joystick.Alarm:
+            self.JoystickAlarm_lbl.SetBackgroundColour((224,97,97))
+        else:
+            self.JoystickAlarm_lbl.SetBackgroundColour((255,232,232))
+
+
 
         " Force win refresh (background issue) "
-        #self.Refresh()
+        self.Refresh()
 
     def UpdateInputValues (self,msg):
 

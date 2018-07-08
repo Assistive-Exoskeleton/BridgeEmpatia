@@ -159,20 +159,20 @@ class ControlClass:
        " Timing Parameters"
        self.ThreadPeriod           = 0.4
        self.Time                   = 0.4
-       self.MaxDegDispl            = 3
+       self.MaxDegDispl            = 5
 
        " Max Speed [m/s]"
        self.S                      = 0.02
 
        " Tollerance sull'errore cartesiano nella cinematica inversa "
-       self.Tollerance             = 1e-2 #5e-3
+       self.Tollerance             = 5e-3
        self.Eps                    = 0.5 #0.2
        " Peso per smorzare la velocita' di giunto vicino alle singolarita'/limiti WS - NB massimo valore 1 "
-       self.Wq0s                   = 0.005 #0.2
+       self.Wq0s                   = 0.01 #0.2
 
        " IK parameters "
        self.Dol                    = 5     # gradi di distanza da ROM
-       self.Du                     = 0.1   # step to increase/decrease joint limit ramps
+       self.Du                     = 0.5 #0.5# step to increase/decrease joint limit ramps
        self.Alpha                  = 1
        self.Alpha0                 = 1
        self.IterMax                = 1000
@@ -218,7 +218,7 @@ class ControlClass:
    def SetStatus(self, status):
 
        self.Status = status
-       print '+ New Control Status =', self.Status
+       "Set Status"
 
 class BridgeCoordClass:
    def __init__(self):
@@ -304,6 +304,8 @@ class ExoClass:
        self.Jmax           = [0]*5
        self.Jratio         = [0]*5
        self.Joffset        = [0]*5
+       self.Imin           = [0]*5
+       self.Imax           = [0]*5
        self.Loaded         = False
        self.Filename       = ''
 
@@ -364,6 +366,17 @@ class BridgeConfClass:
             self.Exo.Joffset[2]         = int(Config.get(section[0],"J3_offset"))
             self.Exo.Joffset[3]         = int(Config.get(section[0],"J4_offset"))
             self.Exo.Joffset[4]         = int(Config.get(section[0],"J5_offset"))
+
+            self.Exo.Imin[0]            = int(Config.get(section[0],"J1_current_min"))
+            self.Exo.Imin[1]            = int(Config.get(section[0],"J2_current_min"))
+            self.Exo.Imin[2]            = int(Config.get(section[0],"J3_current_min"))
+            self.Exo.Imin[3]            = int(Config.get(section[0],"J4_current_min"))
+
+            self.Exo.Imax[0]            = int(Config.get(section[0],"J1_current_max"))
+            self.Exo.Imax[1]            = int(Config.get(section[0],"J2_current_max"))
+            self.Exo.Imax[2]            = int(Config.get(section[0],"J3_current_max"))
+            self.Exo.Imax[3]            = int(Config.get(section[0],"J4_current_max"))
+
 
         except Exception, e:
             print '# Error: ReadConfFile failed | ' + str(e)
@@ -429,7 +442,7 @@ class BridgeConfClass:
             Config.add_section(section)
 
             Config.set(section, 'FileName', self.Bridge.Patient.Filename)
-            Config.set(section, 'HMI', 'Joystick Keyboard')
+            Config.set(section, 'HMI', 'Joystick Keyboard Vocal')
             Config.set(section, 'COM_J1', self.Serial.COM[0])
             Config.set(section, 'COM_J2', self.Serial.COM[1])
             Config.set(section, 'COM_J3', self.Serial.COM[2])
@@ -459,6 +472,21 @@ class BridgeConfClass:
             Config.set(section, 'J3_offset', self.Exo.Joffset[2])
             Config.set(section, 'J4_offset', self.Exo.Joffset[3])
             Config.set(section, 'J5_offset', self.Exo.Joffset[4])
+
+            Config.set(section, 'J1_current_min', self.Exo.Imin[0])
+            Config.set(section, 'J2_current_min', self.Exo.Imin[1])
+            Config.set(section, 'J3_current_min', self.Exo.Imin[2])
+            Config.set(section, 'J4_current_min', self.Exo.Imin[3])
+            Config.set(section, 'J5_current_min', self.Exo.Imin[4])
+
+
+            Config.set(section, 'J1_current_max', self.Exo.Imax[0])
+            Config.set(section, 'J2_current_max', self.Exo.Imax[1])
+            Config.set(section, 'J3_current_max', self.Exo.Imax[2])
+            Config.set(section, 'J4_current_max', self.Exo.Imax[3])
+            Config.set(section, 'J5_current_max', self.Exo.Imax[4])
+
+
 
             cfgfile = open(self.exo_file,'w')
             Config.write(cfgfile)
