@@ -121,7 +121,7 @@ class DialogExoSetup(BridgeGUI.DialogExoSetup):
 
         joint = Joint(0,  # Num
                       serialcom,  # COM
-                      PatientEs,  # Ratio
+                      self.Bridge,  # Ratio
                       ExoEs,  # offset
                       None)  # Coord
 
@@ -132,7 +132,7 @@ class DialogExoSetup(BridgeGUI.DialogExoSetup):
             return
 
         " Clear drive error & Run test motor "
-        jointDriveErrorClear()
+        joint.DriveErrorClear()
         ret = joint.MotorTest()
 
         " Close serial port "
@@ -173,6 +173,8 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
                                 self.J5def_entry]
         self.Jrest_entry_list = [self.J1rest_entry, self.J2rest_entry, self.J3rest_entry, self.J4rest_entry,
                                  self.J5rest_entry]
+
+        self.l_entry_list = [self.l1_lbl, self.l2_lbl, self.l3_lbl]
 
         self.joystick_list = [self.joystick_forward_lbl, self.joystick_backward_lbl, self.joystick_left_lbl, self.joystick_right_lbl]
 
