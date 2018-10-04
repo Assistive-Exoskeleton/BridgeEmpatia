@@ -333,6 +333,7 @@ class Joint:
     def SetHomingMode(self):
         command = ["#1y2\r", "#1A\r"]
 
+
         try:
             while self.WriteCmd(command) == False:
                 time.sleep(0.01)
@@ -503,6 +504,8 @@ class Joint:
 
             self.DriveErrorReset()
             time.sleep(0.1)
+        else:
+            print "Homing not necessary!"
 
         return True
 

@@ -331,6 +331,7 @@ class DialogPatientSetup(BridgeGUI.Dialog_PatientSetup):
 " ########################### "
 " Dialog Joystick Calibration "
 " ########################### "
+
 class DialogJoystickCalibration(BridgeGUI.Dialog_JoystickCalibration):
 
     def __init__(self, parent, Conf, Bridge):
