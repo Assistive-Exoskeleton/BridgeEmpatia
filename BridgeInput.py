@@ -328,7 +328,7 @@ class Thread_InputClass(threading.Thread):
 
                     elif self.VocalStatus == self.VOCAL_IDLE:
 
-                        if 'jar' in self.VocalCmd:
+                        if 'attiva' in self.VocalCmd:
 
                             winsound.PlaySound(self.AudioPath + 'ConfermaAttivazione.wav', winsound.SND_FILENAME)
                             print "vero o falso?"
@@ -345,7 +345,7 @@ class Thread_InputClass(threading.Thread):
 
                     elif self.VocalStatus == self.VOCAL_RUNNING_CONFERMATION:
 
-                        if self.VocalCmd == 'vero':
+                        if self.VocalCmd == 'ok':
                             self.VocalCmd = ""
                             print '*** CONTROLLO VOCALE ATTIVATO ***'
                             winsound.PlaySound(self.AudioPath + 'SonoAttivo.wav', winsound.SND_FILENAME)
@@ -398,7 +398,7 @@ class Thread_InputClass(threading.Thread):
 
                     elif self.VocalStatus == self.VOCAL_SAVE_POSITION:
 
-                        if 'vero' in self.VocalCmd:
+                        if 'ok' in self.VocalCmd:
                             winsound.PlaySound(self.AudioPath + 'NomeNuovaPosizione.wav', winsound.SND_FILENAME)
                             self.VocalStatus = self.VOCAL_SAVE_POSITION_NAME
 
@@ -443,7 +443,7 @@ class Thread_InputClass(threading.Thread):
 
 
                     elif self.VocalStatus == self.VOCAL_STOP_CONFERMATION:
-                        if self.VocalCmd == 'vero':
+                        if self.VocalCmd == 'ok':
                             self.VocalCmd = ""
                             print '*** CONTROLLO VOCALE TERMINATO ***'
                             winsound.PlaySound(self.AudioPath + 'Spegnimento.wav', winsound.SND_FILENAME)
