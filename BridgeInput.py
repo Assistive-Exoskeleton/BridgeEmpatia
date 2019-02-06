@@ -260,9 +260,9 @@ class Thread_InputClass(threading.Thread):
 
                                 if i == 1:  # Z axis
                                     if axis > 0:
-                                        self.Coord.p0[2] = axis/self.Bridge.Patient.JoystickCalibration[0] # Forward
+                                        self.Coord.p0[2] = axis/self.Bridge.Patient.JoystickCalibration[0] # Upward
                                     else:
-                                        self.Coord.p0[2] = axis/self.Bridge.Patient.JoystickCalibration[1]  # Backward
+                                        self.Coord.p0[2] = axis/self.Bridge.Patient.JoystickCalibration[1]  # Downward
                                 else:       # Theta 5
                                     self.Coord.p0[3] = 0
 
