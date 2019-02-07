@@ -64,7 +64,7 @@ class Thread_InputClass(threading.Thread):
 
         " Variabili per il riconoscimento vocale "
         self.r                          = sr.Recognizer()
-        #self.r.energy_threshold         = 4000
+        #self.r.energy_threshold         = 2000
         self.r.dynamic_energy_threshold = False
 
 
@@ -92,7 +92,7 @@ class Thread_InputClass(threading.Thread):
 
         " Dizionari "
         self.instr_dict    = {'fer':'fermo', 'rip':'riposo', 'mem':'memorizza', 'dor':'dormi', 'ter':'termina', 'ric':'richiama'}
-        self.direction_dict = {'sin':[0,0.5,0,0], 'des':[0,-0.5,0,0], 'sal':[0,0,0.5,0], 'sce':[0,0,-0.5,0], 'ava':[0.5,0,0,0], 'ind':[-0.5,0,0,0]}
+        self.direction_dict = {'si':[0,0.5,0,0], 'de':[0,-0.5,0,0], 'sa':[0,0,0.5,0], 'sc':[0,0,-0.5,0], 'av':[0.5,0,0,0], 'in':[-0.5,0,0,0]}
         self.step_dict      = {'spostamento picc': self.Step_Param[0], 'spostamento medi': self.Step_Param[1], 'spostamento gran': self.Step_Param[2]}
         self.speed_dict = {'velocità picc': self.Speed_Param[0], 'velocità medi': self.Speed_Param[1], 'velocità gran': self.Speed_Param[2]}
 
@@ -549,7 +549,7 @@ class Thread_InputClass(threading.Thread):
             
             self.VocalCmd   = self.instr_dict[instr[0:3]]
 
-        elif instr[0:3] in self.direction_dict:
+        elif instr[0:2] in self.direction_dict:
 
             " ########## "
             " DIRECTIONS "
@@ -558,7 +558,7 @@ class Thread_InputClass(threading.Thread):
             " Rest VocalComand "
             self.VocalCmd   = ""
             " Update p0 coordinates "
-            self.Coord.p0   = self.direction_dict[instr[0:3]]
+            self.Coord.p0   = self.direction_dict[instr[0:2]]
 
         elif instr[0:16] in self.step_dict:
             " ##### "
