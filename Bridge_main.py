@@ -724,6 +724,31 @@ class MainWindow(BridgeGUI.BridgeWindow):
             print '#Error: Set IK parameters failed |' + str(e)
             return
 
+    def joystick_button_command(self, event):
+        "Change Working Plane via Virtual Button on GUI"
+        try:
+            " Update input info in main window "
+
+            if self.Bridge.Joystick.Mode:
+                self.Bridge.Joystick.Mode = 0
+                print '* Change Plane Button: X-Y'
+                winsound.Beep(880, 500)
+
+            else:
+                self.Bridge.Joystick.Mode = 1
+                print '* Change Plane Button: Z'
+                winsound.Beep(440, 500)
+
+            if self.Bridge.Status == RECALL_POSITION:
+                self.Bridge.SetStatus(RUNNING)
+                self.Bridge.Control.SetStatus(POS_CTRL)
+                for i in range(0, self.Bridge.JointsNum):
+                    self.Bridge.Joints[i].TargetDone = True
+            self.UpdateInputInfo()
+        except Exception, e:
+            print '#Error: Change working plane failed |' + str(e)
+        return
+
 
 
 " ############## "

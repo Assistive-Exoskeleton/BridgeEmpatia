@@ -162,7 +162,7 @@ class Thread_InputClass(threading.Thread):
                 wx.CallAfter(Publisher.sendMessage, "ShowDialogError", msg = "# Error: Not implemented interface")
 
         " Update input info in main window "
-        wx.CallAfter(Publisher.sendMessage, "UpdategInputInfo")
+        wx.CallAfter(Publisher.sendMessage, "UpdateInputInfo")
 
         self.Running = True
 

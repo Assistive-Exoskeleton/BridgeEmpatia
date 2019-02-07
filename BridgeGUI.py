@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 
 ###########################################################################
-## Python code generated with wxFormBuilder (version Jun 17 2015)
+## Python code generated with wxFormBuilder (version Dec 21 2016)
 ## http://www.wxformbuilder.org/
 ##
 ## PLEASE DO "NOT" EDIT THIS FILE!
@@ -66,7 +66,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText62 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Input", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText62.Wrap( -1 )
-		self.m_staticText62.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText62.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText62.SetBackgroundColour( wx.Colour( 243, 132, 112 ) )
 		self.m_staticText62.SetMinSize( wx.Size( 135,-1 ) )
 		
@@ -74,7 +74,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.inputDescription_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"None", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
 		self.inputDescription_lbl.Wrap( -1 )
-		self.inputDescription_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 93, 90, False, wx.EmptyString ) )
+		self.inputDescription_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_ITALIC, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.inputDescription_lbl.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		
 		bSizer2311112.Add( self.inputDescription_lbl, 0, wx.ALL|wx.EXPAND, 5 )
@@ -83,7 +83,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText911111 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"X", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText911111.Wrap( -1 )
-		self.m_staticText911111.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText911111.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText911111.SetToolTipString( u"Min" )
 		self.m_staticText911111.SetMinSize( wx.Size( 30,-1 ) )
 		
@@ -91,7 +91,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.P0_X_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"- -", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.P0_X_lbl.Wrap( -1 )
-		self.P0_X_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.P0_X_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer2411111.Add( self.P0_X_lbl, 1, wx.ALL, 5 )
 		
@@ -102,7 +102,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText9111111 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Y", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText9111111.Wrap( -1 )
-		self.m_staticText9111111.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText9111111.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText9111111.SetToolTipString( u"Min" )
 		self.m_staticText9111111.SetMinSize( wx.Size( 30,-1 ) )
 		
@@ -110,7 +110,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.P0_Y_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"- -", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.P0_Y_lbl.Wrap( -1 )
-		self.P0_Y_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.P0_Y_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer24111111.Add( self.P0_Y_lbl, 1, wx.ALL, 5 )
 		
@@ -121,7 +121,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText9111112 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Z", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText9111112.Wrap( -1 )
-		self.m_staticText9111112.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText9111112.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText9111112.SetToolTipString( u"Min" )
 		self.m_staticText9111112.SetMinSize( wx.Size( 30,-1 ) )
 		
@@ -129,7 +129,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.P0_Z_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"- -", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.P0_Z_lbl.Wrap( -1 )
-		self.P0_Z_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.P0_Z_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer24111112.Add( self.P0_Z_lbl, 1, wx.ALL, 5 )
 		
@@ -140,7 +140,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText9111113 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"PS", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText9111113.Wrap( -1 )
-		self.m_staticText9111113.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText9111113.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText9111113.SetToolTipString( u"Min" )
 		self.m_staticText9111113.SetMinSize( wx.Size( 30,-1 ) )
 		
@@ -148,7 +148,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.P0_PS_lbl = wx.StaticText( self.m_panel1, wx.ID_ANY, u"- -", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.P0_PS_lbl.Wrap( -1 )
-		self.P0_PS_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.P0_PS_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer24111113.Add( self.P0_PS_lbl, 1, wx.ALL, 5 )
 		
@@ -215,6 +215,9 @@ class BridgeWindow ( wx.Frame ):
 		
 		bSizer2311112.Add( bSizer2521111111, 1, wx.EXPAND, 5 )
 		
+		self.m_button35 = wx.Button( self.m_panel1, wx.ID_ANY, u"Joystick Button", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer2311112.Add( self.m_button35, 0, wx.ALL|wx.EXPAND, 5 )
+		
 		
 		bSizer6.Add( bSizer2311112, 0, wx.EXPAND, 5 )
 		
@@ -233,7 +236,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText6111121 = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Control Settings", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText6111121.Wrap( -1 )
-		self.m_staticText6111121.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText6111121.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText6111121.SetBackgroundColour( wx.Colour( 132, 193, 255 ) )
 		self.m_staticText6111121.SetMinSize( wx.Size( -1,20 ) )
 		
@@ -245,7 +248,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText1441 = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"State Machine", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.m_staticText1441.Wrap( -1 )
-		self.m_staticText1441.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1441.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText1441.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
 		
 		bSizer73.Add( self.m_staticText1441, 0, wx.ALL|wx.EXPAND, 5 )
@@ -308,7 +311,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_control_interface = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Control Interface", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.m_control_interface.Wrap( -1 )
-		self.m_control_interface.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_control_interface.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_control_interface.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
 		
 		bSizer107.Add( self.m_control_interface, 0, wx.ALL|wx.EXPAND, 5 )
@@ -316,7 +319,7 @@ class BridgeWindow ( wx.Frame ):
 		input_choiceChoices = [ u"None" ]
 		self.input_choice = wx.Choice( self.m_control_settings, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, input_choiceChoices, 0 )
 		self.input_choice.SetSelection( 0 )
-		self.input_choice.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, wx.EmptyString ) )
+		self.input_choice.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		
 		bSizer107.Add( self.input_choice, 0, wx.ALL|wx.EXPAND, 5 )
 		
@@ -327,7 +330,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_vocal_displacement = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Displacement", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.m_vocal_displacement.Wrap( -1 )
-		self.m_vocal_displacement.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_vocal_displacement.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_vocal_displacement.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
 		
 		bSizer106.Add( self.m_vocal_displacement, 0, wx.ALL|wx.EXPAND, 5 )
@@ -342,7 +345,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_speed_gain = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Speed Gain", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.m_speed_gain.Wrap( -1 )
-		self.m_speed_gain.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_speed_gain.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_speed_gain.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
 		
 		bSizer1061.Add( self.m_speed_gain, 0, wx.ALL|wx.EXPAND, 5 )
@@ -357,7 +360,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_speed_gain1 = wx.StaticText( self.m_control_settings, wx.ID_ANY, u"Control Mode", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.m_speed_gain1.Wrap( -1 )
-		self.m_speed_gain1.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_speed_gain1.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_speed_gain1.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
 		
 		bSizer10611.Add( self.m_speed_gain1, 0, wx.EXPAND|wx.ALL, 5 )
@@ -388,7 +391,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText61111211 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"Advanced Settings", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText61111211.Wrap( -1 )
-		self.m_staticText61111211.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText61111211.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText61111211.SetBackgroundColour( wx.Colour( 132, 193, 255 ) )
 		self.m_staticText61111211.SetMinSize( wx.Size( -1,20 ) )
 		
@@ -400,7 +403,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText14411 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"IK Parameters", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.m_staticText14411.Wrap( -1 )
-		self.m_staticText14411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText14411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText14411.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
 		
 		bSizer731.Add( self.m_staticText14411, 0, wx.EXPAND|wx.ALL, 5 )
@@ -525,7 +528,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText1443 = wx.StaticText( self.m_advanced_settings, wx.ID_ANY, u"Advanced", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.SIMPLE_BORDER )
 		self.m_staticText1443.Wrap( -1 )
-		self.m_staticText1443.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1443.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText1443.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INFOBK ) )
 		
 		bSizer741.Add( self.m_staticText1443, 0, wx.EXPAND|wx.ALL, 5 )
@@ -578,7 +581,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText6 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joint 1", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText6.Wrap( -1 )
-		self.m_staticText6.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText6.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText6.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_ACTIVECAPTION ) )
 		self.m_staticText6.SetMinSize( wx.Size( 140,-1 ) )
 		
@@ -586,13 +589,13 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J1desc_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Abduzione/adduzione spalla", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J1desc_lbl.Wrap( -1 )
-		self.J1desc_lbl.SetFont( wx.Font( 8, 70, 90, 90, False, wx.EmptyString ) )
+		self.J1desc_lbl.SetFont( wx.Font( 8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		
 		bSizer23.Add( self.J1desc_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		self.J1value_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"XX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
 		self.J1value_lbl.Wrap( -1 )
-		self.J1value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.J1value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer23.Add( self.J1value_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
@@ -645,7 +648,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J1initialized_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, wx.ST_NO_AUTORESIZE )
 		self.J1initialized_lbl.Wrap( -1 )
-		self.J1initialized_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J1initialized_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J1initialized_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
 		bSizer25.Add( self.J1initialized_lbl, 0, wx.EXPAND, 5 )
@@ -667,7 +670,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J1boundaries_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, wx.ST_NO_AUTORESIZE )
 		self.J1boundaries_lbl.Wrap( -1 )
-		self.J1boundaries_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J1boundaries_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J1boundaries_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer251.Add( self.J1boundaries_lbl, 0, 0, 5 )
@@ -689,7 +692,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J1fault_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, wx.ST_NO_AUTORESIZE )
 		self.J1fault_lbl.Wrap( -1 )
-		self.J1fault_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J1fault_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J1fault_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer252.Add( self.J1fault_lbl, 0, 0, 5 )
@@ -711,7 +714,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText61 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joint 2", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText61.Wrap( -1 )
-		self.m_staticText61.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText61.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText61.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_ACTIVECAPTION ) )
 		self.m_staticText61.SetMinSize( wx.Size( 140,-1 ) )
 		
@@ -719,13 +722,13 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J2desc_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Flesso/estensione spalla", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J2desc_lbl.Wrap( -1 )
-		self.J2desc_lbl.SetFont( wx.Font( 8, 70, 90, 90, False, wx.EmptyString ) )
+		self.J2desc_lbl.SetFont( wx.Font( 8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		
 		bSizer231.Add( self.J2desc_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		self.J2value_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"XX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
 		self.J2value_lbl.Wrap( -1 )
-		self.J2value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.J2value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer231.Add( self.J2value_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
@@ -778,7 +781,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J2initialized_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J2initialized_lbl.Wrap( -1 )
-		self.J2initialized_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J2initialized_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J2initialized_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
 		bSizer253.Add( self.J2initialized_lbl, 0, wx.EXPAND, 5 )
@@ -800,7 +803,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J2boundaries_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J2boundaries_lbl.Wrap( -1 )
-		self.J2boundaries_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J2boundaries_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J2boundaries_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer2511.Add( self.J2boundaries_lbl, 0, 0, 5 )
@@ -822,7 +825,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J2fault_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J2fault_lbl.Wrap( -1 )
-		self.J2fault_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J2fault_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J2fault_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer2521.Add( self.J2fault_lbl, 0, 0, 5 )
@@ -844,7 +847,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText611 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joint 3", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText611.Wrap( -1 )
-		self.m_staticText611.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText611.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText611.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_ACTIVECAPTION ) )
 		self.m_staticText611.SetMinSize( wx.Size( 140,-1 ) )
 		
@@ -852,13 +855,13 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J3desc_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Intra/extra rotazione spalla", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J3desc_lbl.Wrap( -1 )
-		self.J3desc_lbl.SetFont( wx.Font( 8, 70, 90, 90, False, wx.EmptyString ) )
+		self.J3desc_lbl.SetFont( wx.Font( 8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		
 		bSizer2311.Add( self.J3desc_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		self.J3value_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"XX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
 		self.J3value_lbl.Wrap( -1 )
-		self.J3value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.J3value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer2311.Add( self.J3value_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
@@ -911,7 +914,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J3initialized_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J3initialized_lbl.Wrap( -1 )
-		self.J3initialized_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J3initialized_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J3initialized_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
 		bSizer2531.Add( self.J3initialized_lbl, 0, wx.EXPAND, 5 )
@@ -933,7 +936,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J3boundaries_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J3boundaries_lbl.Wrap( -1 )
-		self.J3boundaries_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J3boundaries_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J3boundaries_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer25111.Add( self.J3boundaries_lbl, 0, 0, 5 )
@@ -955,7 +958,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J3fault_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J3fault_lbl.Wrap( -1 )
-		self.J3fault_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J3fault_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J3fault_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer25211.Add( self.J3fault_lbl, 0, 0, 5 )
@@ -977,7 +980,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText6111 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joint 4", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText6111.Wrap( -1 )
-		self.m_staticText6111.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText6111.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText6111.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_ACTIVECAPTION ) )
 		self.m_staticText6111.SetMinSize( wx.Size( 140,-1 ) )
 		
@@ -985,13 +988,13 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J4desc_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Flesso/estensione gomito", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J4desc_lbl.Wrap( -1 )
-		self.J4desc_lbl.SetFont( wx.Font( 8, 70, 90, 90, False, wx.EmptyString ) )
+		self.J4desc_lbl.SetFont( wx.Font( 8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		
 		bSizer23111.Add( self.J4desc_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		self.J4value_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"XX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
 		self.J4value_lbl.Wrap( -1 )
-		self.J4value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.J4value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer23111.Add( self.J4value_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
@@ -1044,7 +1047,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J4initialized_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J4initialized_lbl.Wrap( -1 )
-		self.J4initialized_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J4initialized_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J4initialized_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
 		bSizer25311.Add( self.J4initialized_lbl, 0, wx.EXPAND, 5 )
@@ -1066,7 +1069,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J4boundaries_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J4boundaries_lbl.Wrap( -1 )
-		self.J4boundaries_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J4boundaries_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J4boundaries_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer251111.Add( self.J4boundaries_lbl, 0, 0, 5 )
@@ -1088,7 +1091,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J4fault_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J4fault_lbl.Wrap( -1 )
-		self.J4fault_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J4fault_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J4fault_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer252111.Add( self.J4fault_lbl, 0, 0, 5 )
@@ -1110,7 +1113,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText61111 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joint 5", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText61111.Wrap( -1 )
-		self.m_staticText61111.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText61111.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText61111.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_ACTIVECAPTION ) )
 		self.m_staticText61111.SetMinSize( wx.Size( 140,-1 ) )
 		
@@ -1118,13 +1121,13 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J5desc_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Pronazione/supinaz. polso", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.J5desc_lbl.Wrap( -1 )
-		self.J5desc_lbl.SetFont( wx.Font( 8, 70, 90, 90, False, wx.EmptyString ) )
+		self.J5desc_lbl.SetFont( wx.Font( 8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		
 		bSizer231111.Add( self.J5desc_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		self.J5value_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"XX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
 		self.J5value_lbl.Wrap( -1 )
-		self.J5value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.J5value_lbl.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer231111.Add( self.J5value_lbl, 0, wx.ALL|wx.EXPAND, 5 )
 		
@@ -1177,7 +1180,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J5initialized_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J5initialized_lbl.Wrap( -1 )
-		self.J5initialized_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J5initialized_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J5initialized_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
 		bSizer253111.Add( self.J5initialized_lbl, 0, wx.EXPAND, 5 )
@@ -1199,7 +1202,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J5boundaries_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J5boundaries_lbl.Wrap( -1 )
-		self.J5boundaries_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J5boundaries_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J5boundaries_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer2511111.Add( self.J5boundaries_lbl, 0, 0, 5 )
@@ -1221,7 +1224,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.J5fault_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.J5fault_lbl.Wrap( -1 )
-		self.J5fault_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.J5fault_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.J5fault_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer2521111.Add( self.J5fault_lbl, 0, 0, 5 )
@@ -1243,7 +1246,7 @@ class BridgeWindow ( wx.Frame ):
 		
 		self.m_staticText611111 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Saved Positions", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText611111.Wrap( -1 )
-		self.m_staticText611111.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText611111.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText611111.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_ACTIVECAPTION ) )
 		self.m_staticText611111.SetMinSize( wx.Size( 120,-1 ) )
 		
@@ -1310,6 +1313,7 @@ class BridgeWindow ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.exit, id = self.m_menuItem2.GetId() )
 		self.Bind( wx.EVT_MENU, self.exo_setup_command, id = self.m_preferences.GetId() )
 		self.Bind( wx.EVT_MENU, self.patient_setup_command, id = self.m_patient.GetId() )
+		self.m_button35.Bind( wx.EVT_BUTTON, self.joystick_button_command )
 		self.input_choice.Bind( wx.EVT_CHOICE, self.set_control_interface )
 		self.displacement_entry.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.set_displacement )
 		self.speed_gain_entry.Bind( wx.EVT_SCROLL_THUMBRELEASE, self.set_speed_gain )
@@ -1338,6 +1342,9 @@ class BridgeWindow ( wx.Frame ):
 		event.Skip()
 	
 	def patient_setup_command( self, event ):
+		event.Skip()
+	
+	def joystick_button_command( self, event ):
 		event.Skip()
 	
 	def set_control_interface( self, event ):
@@ -1391,7 +1398,7 @@ class DialogDonning ( wx.Dialog ):
 		
 		self.error_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Please don the BRIDGE exoskeleton.\nPlease carefully follow the instructions reported on the user's manual.\nWhen donning is complete, press the OK button.", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.error_lbl.Wrap( -1 )
-		self.error_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.error_lbl.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.error_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer72.Add( self.error_lbl, 1, wx.ALL|wx.EXPAND, 5 )
@@ -1461,7 +1468,7 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		self.m_staticText8 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Joint 1", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText8.Wrap( -1 )
-		self.m_staticText8.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText8.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText8.SetMinSize( wx.Size( 40,-1 ) )
 		
 		bSizer12.Add( self.m_staticText8, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
@@ -1487,7 +1494,7 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		self.m_staticText9 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Joint 2", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText9.Wrap( -1 )
-		self.m_staticText9.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText9.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText9.SetMinSize( wx.Size( 40,-1 ) )
 		
 		bSizer13.Add( self.m_staticText9, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
@@ -1513,7 +1520,7 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		self.m_staticText10 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Joint 3", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText10.Wrap( -1 )
-		self.m_staticText10.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText10.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText10.SetMinSize( wx.Size( 40,-1 ) )
 		
 		bSizer15.Add( self.m_staticText10, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
@@ -1539,7 +1546,7 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		self.m_staticText11 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Joint 4", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText11.Wrap( -1 )
-		self.m_staticText11.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText11.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText11.SetMinSize( wx.Size( 40,-1 ) )
 		
 		bSizer16.Add( self.m_staticText11, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
@@ -1565,7 +1572,7 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		self.m_staticText12 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Joint 5", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText12.Wrap( -1 )
-		self.m_staticText12.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText12.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText12.SetMinSize( wx.Size( 40,-1 ) )
 		
 		bSizer17.Add( self.m_staticText12, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
@@ -1604,35 +1611,35 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		self.m_staticText1501 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"JOINT", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText1501.Wrap( -1 )
-		self.m_staticText1501.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1501.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText1501.SetMinSize( wx.Size( 50,-1 ) )
 		
 		bSizer901.Add( self.m_staticText1501, 0, wx.ALL, 5 )
 		
 		self.m_staticText161 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"MIN", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText161.Wrap( -1 )
-		self.m_staticText161.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText161.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText161.SetMinSize( wx.Size( 60,-1 ) )
 		
 		bSizer901.Add( self.m_staticText161, 0, wx.ALL, 5 )
 		
 		self.m_staticText162 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"MAX", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText162.Wrap( -1 )
-		self.m_staticText162.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText162.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText162.SetMinSize( wx.Size( 60,-1 ) )
 		
 		bSizer901.Add( self.m_staticText162, 0, wx.ALL, 5 )
 		
 		self.m_staticText166 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"OFFSET", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText166.Wrap( -1 )
-		self.m_staticText166.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText166.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText166.SetMinSize( wx.Size( 60,-1 ) )
 		
 		bSizer901.Add( self.m_staticText166, 0, wx.ALL, 5 )
 		
 		self.m_staticText167 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"RATIO", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText167.Wrap( -1 )
-		self.m_staticText167.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText167.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText167.SetMinSize( wx.Size( 60,-1 ) )
 		
 		bSizer901.Add( self.m_staticText167, 0, wx.ALL, 5 )
@@ -1838,7 +1845,7 @@ class DialogExoSetup ( wx.Dialog ):
 		
 		self.error_lbl = wx.StaticText( self.m_panel4, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.error_lbl.Wrap( -1 )
-		self.error_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.error_lbl.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.error_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		self.error_lbl.SetMinSize( wx.Size( 40,-1 ) )
 		
@@ -1965,7 +1972,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText150 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Patient Name", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText150.Wrap( -1 )
-		self.m_staticText150.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText150.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText150.SetMinSize( wx.Size( 100,-1 ) )
 		
 		bSizer90.Add( self.m_staticText150, 1, wx.ALIGN_CENTER_VERTICAL, 5 )
@@ -1988,7 +1995,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText1501 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joint", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText1501.Wrap( -1 )
-		self.m_staticText1501.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1501.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText1501.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		self.m_staticText1501.SetMinSize( wx.Size( 50,-1 ) )
 		
@@ -1996,28 +2003,28 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText161 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Min", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText161.Wrap( -1 )
-		self.m_staticText161.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText161.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText161.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer901.Add( self.m_staticText161, 0, wx.ALL, 5 )
 		
 		self.m_staticText162 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Max", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText162.Wrap( -1 )
-		self.m_staticText162.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText162.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText162.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer901.Add( self.m_staticText162, 0, wx.ALL, 5 )
 		
 		self.m_staticText163 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Donning", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText163.Wrap( -1 )
-		self.m_staticText163.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText163.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText163.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer901.Add( self.m_staticText163, 0, wx.ALL, 5 )
 		
 		self.m_staticText167 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Rest", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText167.Wrap( -1 )
-		self.m_staticText167.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText167.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText167.SetMinSize( wx.Size( 70,-1 ) )
 		
 		bSizer901.Add( self.m_staticText167, 0, wx.ALL, 5 )
@@ -2190,7 +2197,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText1631 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"L1", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1631.Wrap( -1 )
-		self.m_staticText1631.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1631.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer99.Add( self.m_staticText1631, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2201,7 +2208,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText164 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"L2", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText164.Wrap( -1 )
-		self.m_staticText164.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText164.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer99.Add( self.m_staticText164, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2212,7 +2219,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText165 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"L3", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText165.Wrap( -1 )
-		self.m_staticText165.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText165.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer99.Add( self.m_staticText165, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2234,7 +2241,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText1501411 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Joystick ", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText1501411.Wrap( -1 )
-		self.m_staticText1501411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1501411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.m_staticText1501411.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOWTEXT ) )
 		self.m_staticText1501411.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
@@ -2250,7 +2257,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText16311 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Forward", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
 		self.m_staticText16311.Wrap( -1 )
-		self.m_staticText16311.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText16311.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer991.Add( self.m_staticText16311, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2264,7 +2271,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText1641 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Backward", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
 		self.m_staticText1641.Wrap( -1 )
-		self.m_staticText1641.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText1641.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer991.Add( self.m_staticText1641, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2286,7 +2293,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText163111 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Left", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
 		self.m_staticText163111.Wrap( -1 )
-		self.m_staticText163111.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText163111.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer9911.Add( self.m_staticText163111, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2300,7 +2307,7 @@ class Dialog_PatientSetup ( wx.Dialog ):
 		
 		self.m_staticText16411 = wx.StaticText( self.m_panel6, wx.ID_ANY, u"Right", wx.DefaultPosition, wx.Size( 80,-1 ), 0 )
 		self.m_staticText16411.Wrap( -1 )
-		self.m_staticText16411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText16411.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer9911.Add( self.m_staticText16411, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2457,7 +2464,7 @@ class Dialog_Alert ( wx.Dialog ):
 		
 		self.alert_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.alert_lbl.Wrap( -1 )
-		self.alert_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.alert_lbl.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.alert_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer72.Add( self.alert_lbl, 1, wx.ALL|wx.EXPAND, 5 )
@@ -2515,7 +2522,7 @@ class Dialog_Error ( wx.Dialog ):
 		
 		self.error_lbl = wx.StaticText( self.m_panel6, wx.ID_ANY, u"MyLabel", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.error_lbl.Wrap( -1 )
-		self.error_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.error_lbl.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.error_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		
 		bSizer72.Add( self.error_lbl, 1, wx.ALL|wx.EXPAND, 5 )
@@ -2615,7 +2622,7 @@ class Dialog_Joint ( wx.Dialog ):
 		
 		self.m_staticText224 = wx.StaticText( self.m_panel4, wx.ID_ANY, u"Joint Manual Setup", wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE )
 		self.m_staticText224.Wrap( -1 )
-		self.m_staticText224.SetFont( wx.Font( 12, 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText224.SetFont( wx.Font( 12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer144.Add( self.m_staticText224, 0, wx.ALL|wx.EXPAND, 5 )
 		
@@ -2650,7 +2657,7 @@ class Dialog_Joint ( wx.Dialog ):
 		
 		self.error_lbl = wx.StaticText( self.m_panel4, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.ALIGN_CENTRE|wx.ST_NO_AUTORESIZE )
 		self.error_lbl.Wrap( -1 )
-		self.error_lbl.SetFont( wx.Font( 11, 70, 90, 92, False, wx.EmptyString ) )
+		self.error_lbl.SetFont( wx.Font( 11, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		self.error_lbl.SetForegroundColour( wx.Colour( 255, 0, 0 ) )
 		self.error_lbl.SetMinSize( wx.Size( 40,-1 ) )
 		
@@ -2723,7 +2730,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		self.m_staticText8 = wx.StaticText( self, wx.ID_ANY, u"Forward: ", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText8.Wrap( -1 )
-		self.m_staticText8.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText8.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer12.Add( self.m_staticText8, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2738,7 +2745,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		self.JoystickCalibration0_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.JoystickCalibration0_lbl.Wrap( -1 )
-		self.JoystickCalibration0_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibration0_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.JoystickCalibration0_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
 		bSizer12.Add( self.JoystickCalibration0_lbl, 0, wx.ALL, 5 )
@@ -2753,7 +2760,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		self.m_staticText81 = wx.StaticText( self, wx.ID_ANY, u"Backward:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText81.Wrap( -1 )
-		self.m_staticText81.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText81.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer121.Add( self.m_staticText81, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2768,7 +2775,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		self.JoystickCalibration1_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.JoystickCalibration1_lbl.Wrap( -1 )
-		self.JoystickCalibration1_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibration1_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.JoystickCalibration1_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
 		bSizer121.Add( self.JoystickCalibration1_lbl, 0, wx.ALL, 5 )
@@ -2783,7 +2790,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		self.m_staticText82 = wx.StaticText( self, wx.ID_ANY, u"Left:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText82.Wrap( -1 )
-		self.m_staticText82.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText82.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer122.Add( self.m_staticText82, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2798,7 +2805,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		self.JoystickCalibration2_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.JoystickCalibration2_lbl.Wrap( -1 )
-		self.JoystickCalibration2_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibration2_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.JoystickCalibration2_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
 		bSizer122.Add( self.JoystickCalibration2_lbl, 0, wx.ALL, 5 )
@@ -2813,7 +2820,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		self.m_staticText83 = wx.StaticText( self, wx.ID_ANY, u"Right:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText83.Wrap( -1 )
-		self.m_staticText83.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 92, False, wx.EmptyString ) )
+		self.m_staticText83.SetFont( wx.Font( wx.NORMAL_FONT.GetPointSize(), wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, wx.EmptyString ) )
 		
 		bSizer123.Add( self.m_staticText83, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
@@ -2828,7 +2835,7 @@ class Dialog_JoystickCalibration ( wx.Dialog ):
 		
 		self.JoystickCalibration3_lbl = wx.StaticText( self, wx.ID_ANY, u"○", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.JoystickCalibration3_lbl.Wrap( -1 )
-		self.JoystickCalibration3_lbl.SetFont( wx.Font( 18, 70, 90, 90, False, wx.EmptyString ) )
+		self.JoystickCalibration3_lbl.SetFont( wx.Font( 18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, wx.EmptyString ) )
 		self.JoystickCalibration3_lbl.SetForegroundColour( wx.Colour( 128, 255, 128 ) )
 		
 		bSizer123.Add( self.JoystickCalibration3_lbl, 0, wx.ALL, 5 )
