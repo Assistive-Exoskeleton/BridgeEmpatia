@@ -12,7 +12,7 @@ class PatientClass:
        self.l1             = 1 #None      # [m]
        self.l2             = 1 #None      # [m]
        self.l3             = 1 #None      # [m]
-       self.RJoint3        = 0.07     # [m]
+       self.RJoint3        = 0.0     # [m]
        self.Loaded         = False
        self.Filename       = 'Defaults.ini'
        self.Input          = ''
